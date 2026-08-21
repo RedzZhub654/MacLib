@@ -39,8 +39,8 @@ local ActivePalette = Palettes[ActivePaletteName]
 local Window = MacLib:Window({
     Title = "MacLib Test Lab",
     Subtitle = "Interactive component showcase",
-    HubLogo = "rbxassetid://10723425615", -- library icon beside the title
-    HubLogoColor = Color3.fromRGB(255, 255, 255),
+    -- Default hub logo: rbxassetid://137471163061841
+    -- Set HubLogo to a different image asset to override it, or false to hide it.
     Size = UDim2.fromOffset(900, 650),
     DragStyle = 1,
     DisabledWindowControls = {},

@@ -94,7 +94,7 @@ local Window = MacLib:Window({
 |---|---|---|---|
 | `Title` | `string` | Required display text | Sets the main title. |
 | `Subtitle` | `string` | Optional | Adds supporting text below the title. |
-| `HubLogo` | `string` | None | Displays a Roblox image asset beside the window title. |
+| `HubLogo` | `string` or `false` | `rbxassetid://137471163061841` | Uses the default logo, overrides it with another image asset, or hides it with `false`. |
 | `HubLogoColor` | `Color3` | White | Applies an optional tint to the hub logo. |
 | `Size` | `UDim2` | `UDim2.fromOffset(868, 650)` | Sets the initial window dimensions. |
 | `DragStyle` | `number` | `1` | Uses the move icon (`1`) or full UI surface (`2`) for dragging. |
@@ -115,13 +115,16 @@ local Window = MacLib:Window({
 
 ## Hub logo beside the title
 
-Set `HubLogo` to a Roblox image asset to place branding immediately beside the window title. The title and subtitle automatically reserve space for the logo and the global-settings button. Use `HubLogoColor` only when the source image is a monochrome or tintable asset.
+MacLib displays `rbxassetid://137471163061841` beside the window title by default. The title and subtitle automatically reserve space for the logo and the global-settings button. Set `HubLogo` to a different Roblox image asset to override the default, or set it to `false` to hide it. Use `HubLogoColor` only when the source image is a monochrome or tintable asset.
 
 ```lua
 local Window = MacLib:Window({
     Title = "My Hub",
     Subtitle = "Branded interface",
-    HubLogo = "rbxassetid://10723425615",
+
+    -- The default logo is used when HubLogo is omitted.
+    -- HubLogo = "rbxassetid://YOUR_IMAGE_ID", -- Optional override
+    -- HubLogo = false,                         -- Optional hide
     HubLogoColor = Color3.fromRGB(255, 255, 255),
     Size = UDim2.fromOffset(868, 650),
 })
@@ -352,7 +355,7 @@ Window:Dialog({
 | `Window:SetScale(number)` / `Window:GetScale()` | Updates or retrieves UI scale. |
 | `Window:UpdateTitle(string)` / `Window:UpdateSubtitle(string)` | Changes window text after creation. |
 | `Window:Unload()` | Cleans up the entire interface, including floating overlays. |
-| `HubLogo` / `HubLogoColor` | Adds an optional branded image beside the title and applies an optional tint. |
+| `HubLogo` / `HubLogoColor` | Uses the default hub logo, accepts an optional override or `false` to hide it, and applies an optional tint. |
 | `MacLib:SetFolder(string)` | Chooses the configuration folder. |
 | `MacLib:SaveConfig(string)` / `MacLib:LoadConfig(string)` | Saves or restores flagged control values. |
 | `MacLib:RefreshConfigList()` | Lists available configuration names. |

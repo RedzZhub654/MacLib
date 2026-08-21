@@ -407,14 +407,19 @@ function MacLib:Window(Settings)
 		ChangeGlobalSettingsButtonState("Default")
 	end)
 
-		local hasHubLogo = type(Settings.HubLogo) == "string" and Settings.HubLogo ~= ""
+		local defaultHubLogo = "rbxassetid://137471163061841"
+		local hubLogoAsset = Settings.HubLogo
+		if hubLogoAsset == nil then
+			hubLogoAsset = defaultHubLogo
+		end
+		local hasHubLogo = type(hubLogoAsset) == "string" and hubLogoAsset ~= ""
 		if hasHubLogo then
 			local hubLogo = Instance.new("ImageLabel")
 			hubLogo.Name = "HubLogo"
 			hubLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			hubLogo.BackgroundTransparency = 1
 			hubLogo.BorderSizePixel = 0
-			hubLogo.Image = Settings.HubLogo
+			hubLogo.Image = hubLogoAsset
 			hubLogo.ImageColor3 = Settings.HubLogoColor or Color3.fromRGB(255, 255, 255)
 			hubLogo.ScaleType = Enum.ScaleType.Fit
 			hubLogo.Position = UDim2.fromOffset(0, 11)
