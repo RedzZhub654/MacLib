@@ -35,6 +35,18 @@ local MacLib = loadstring(game:HttpGet(
 ))()
 ```
 
+> **Loading alone is intentionally silent.** The loader returns the `MacLib` table; it does not create a window by itself. Call `MacLib:Demo()`, create a window with `MacLib:Window({...})`, or run the complete test script below.
+
+### Quick visual check
+
+```lua
+local MacLib = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/maclib.txt"
+))()
+
+MacLib:Demo()
+```
+
 ## Run the test UI
 
 The fastest way to confirm a working installation is to run [`examples/test.lua`](./examples/test.lua). It opens a complete test interface with a floating player-stats bar, mobile recovery button, global setting, notification, dialog, toggle, slider, input, dropdown, color picker, keybind, and action buttons.
