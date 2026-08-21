@@ -78,7 +78,7 @@ local Window = MacLib:Window({
 | `Title`, `Subtitle` | Define the primary window text. |
 | `Size` | Sets initial window dimensions; defaults to `868 × 650`. |
 | `Keybind` | Toggles the visible state; defaults to `RightControl`. |
-| `DragStyle` | Uses the drag icon (`1`) or the full window (`2`) as the drag target. |
+| `DragStyle` | Drags from the full window by default. Set to `1` to use only the compact drag icon instead. |
 | `ShowUserInfo` | Displays the local-player block in the sidebar. |
 | `AcrylicBlur` | Controls the background blur treatment. |
 | `DisabledWindowControls` | Disables named controls such as `"Exit"` or `"Minimize"`. |
@@ -138,7 +138,7 @@ AutoDPIMargin = 32,
 
 ### Mobile quick-access button
 
-On touch-only devices, a circular menu button remains available whenever `MobileFloatButton` is enabled, whether the main UI is open or minimized. Tap it to toggle the window, or drag it to a comfortable position. The library keeps the full button inside the active viewport while you drag and after a resize or orientation change.
+On touch-only devices, a circular menu button remains available whenever `MobileFloatButton` is enabled, whether the main UI is open or minimized. Tap it to toggle the window, or use the standard direct drag gesture to reposition it. The full button remains inside the active viewport while dragging and after a resize or orientation change.
 
 ```lua
 MobileFloatButton = true,

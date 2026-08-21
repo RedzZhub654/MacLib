@@ -891,47 +891,21 @@ function MacLib:Window(Settings)
 		end
 	end
 
-	if not Settings.DragStyle or Settings.DragStyle == 1 then
-		interact.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				onDragStart(input)
-			end
-		end)
-
-		interact.InputChanged:Connect(onDragUpdate)
-
-		UserInputService.InputChanged:Connect(function(input)
-			if input == dragInput and dragging_ then
-				update(input)
-			end
-		end)
-
-		interact.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				dragging_ = false
-			end
-		end)
-	elseif Settings.DragStyle == 2 then
-		base.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				onDragStart(input)
-			end
-		end)
-
-		base.InputChanged:Connect(onDragUpdate)
-
-		UserInputService.InputChanged:Connect(function(input)
-			if input == dragInput and dragging_ then
-				update(input)
-			end
-		end)
-
-		base.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				dragging_ = false
-			end
-		end)
-	end
+	-- Drag the whole window by default; DragStyle = 1 retains the compact drag-icon target.
+	local dragTarget = Settings.DragStyle == 1 and interact or base
+	dragTarget.Active = true
+	dragTarget.InputBegan:Connect(onDragStart)
+	dragTarget.InputChanged:Connect(onDragUpdate)
+	UserInputService.InputChanged:Connect(function(input)
+		if input == dragInput and dragging_ then
+			update(input)
+		end
+	end)
+	UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging_ = false
+		end
+	end)
 
 	local currentTab = Instance.new("TextLabel")
 	currentTab.Name = "CurrentTab"
@@ -5715,18 +5689,18 @@ local function BindAutoDPI()
 				end
 				mobileFloatClampCallback = ClampMobileFloatPosition
 
-				local mobileFloatDragging = false
+			-- A conventional direct drag: tap toggles the UI and movement repositions the button.
+			local mobileFloatDragging = false
 			local mobileFloatMoved = false
 			local mobileFloatDragStart
 			local mobileFloatStartPosition
-			local mobileFloatDragInput
 
 			mobileFloatButton.InputBegan:Connect(function(input)
 				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
 				mobileFloatDragging = true
 				mobileFloatMoved = false
-					mobileFloatDragStart = input.Position
-					mobileFloatStartPosition = mobileFloatButton.AbsolutePosition
+				mobileFloatDragStart = input.Position
+				mobileFloatStartPosition = mobileFloatButton.AbsolutePosition
 
 				input.Changed:Connect(function()
 					if input.UserInputState ~= Enum.UserInputState.End then return end
@@ -5737,41 +5711,38 @@ local function BindAutoDPI()
 				end)
 			end)
 
-			mobileFloatButton.InputChanged:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
-					mobileFloatDragInput = input
-				end
-			end)
+			mobileFloatInputConnection = UserInputService.InputChanged:Connect(function(input)
+				if unloaded or not mobileFloatDragging then return end
+				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
 
-				mobileFloatInputConnection = UserInputService.InputChanged:Connect(function(input)
-				if unloaded or input ~= mobileFloatDragInput or not mobileFloatDragging then return end
 				local delta = input.Position - mobileFloatDragStart
 				if delta.Magnitude > 6 then
 					mobileFloatMoved = true
 				end
-					local camera = workspace.CurrentCamera
-					local size = mobileFloatButton.AbsoluteSize
-					if size.X <= 0 or size.Y <= 0 then
-						size = Vector2.new(52, 52)
-					end
-					if camera then
-						local viewport = camera.ViewportSize
-						local margin = math.min(12, math.max(0, math.min((viewport.X - size.X) / 2, (viewport.Y - size.Y) / 2)))
-						local minLeft = margin
-						local maxLeft = math.max(minLeft, viewport.X - size.X - margin)
-						local minTop = margin
-						local maxTop = math.max(minTop, viewport.Y - size.Y - margin)
-						local left = math.clamp(mobileFloatStartPosition.X + delta.X, minLeft, maxLeft)
-						local top = math.clamp(mobileFloatStartPosition.Y + delta.Y, minTop, maxTop)
-						mobileFloatButton.Position = UDim2.fromOffset(left + size.X, top + size.Y)
-					else
-						mobileFloatButton.Position = UDim2.fromOffset(
-							mobileFloatStartPosition.X + delta.X + size.X,
-							mobileFloatStartPosition.Y + delta.Y + size.Y
-						)
-					end
-				end)
-				task.defer(ClampMobileFloatPosition)
+
+				local camera = workspace.CurrentCamera
+				local size = mobileFloatButton.AbsoluteSize
+				if size.X <= 0 or size.Y <= 0 then
+					size = Vector2.new(52, 52)
+				end
+				if camera then
+					local viewport = camera.ViewportSize
+					local margin = math.min(12, math.max(0, math.min((viewport.X - size.X) / 2, (viewport.Y - size.Y) / 2)))
+					local minLeft = margin
+					local maxLeft = math.max(minLeft, viewport.X - size.X - margin)
+					local minTop = margin
+					local maxTop = math.max(minTop, viewport.Y - size.Y - margin)
+					local left = math.clamp(mobileFloatStartPosition.X + delta.X, minLeft, maxLeft)
+					local top = math.clamp(mobileFloatStartPosition.Y + delta.Y, minTop, maxTop)
+					mobileFloatButton.Position = UDim2.fromOffset(left + size.X, top + size.Y)
+				else
+					mobileFloatButton.Position = UDim2.fromOffset(
+						mobileFloatStartPosition.X + delta.X + size.X,
+						mobileFloatStartPosition.Y + delta.Y + size.Y
+					)
+				end
+			end)
+			task.defer(ClampMobileFloatPosition)
 			end
 
 			UserInputService.InputEnded:Connect(function(inp, gpe)

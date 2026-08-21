@@ -18,6 +18,7 @@ local created, Window = pcall(function()
         Subtitle = "Single working example",
         Size = UDim2.fromOffset(900, 650),
         Keybind = Enum.KeyCode.RightControl,
+        -- The full window is draggable by default. Set DragStyle = 1 for icon-only dragging.
         AcrylicBlur = true,
 
         AutoDPI = true,
@@ -50,7 +51,7 @@ local Main = Home:Section({ Side = "Left" })
 Main:Header({ Text = "MacLib is running" })
 Main:Paragraph({
     Header = "Success",
-    Body = "This is the repository's only example.lua. On touch devices, drag the floating button or tap it to toggle the window.",
+    Body = "Drag the window from its surface. On touch devices, drag the floating button or tap it to toggle the window.",
 })
 
 Main:Toggle({
