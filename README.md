@@ -4,7 +4,7 @@
 
 ![MacLib interface preview](assets/maclib-docs/welcome-2-5cc22d84.png)
 
-MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It provides a practical foundation for tabbed interfaces, rich controls, notifications, dialogs, mobile recovery controls, automatic viewport scaling, player stats, and Discord invite cards.
+MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It provides a practical foundation for tabbed interfaces, rich controls, notifications, dialogs, an always-available mobile quick-access control, automatic viewport scaling, and Discord invite cards.
 
 ---
 
@@ -20,7 +20,7 @@ MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It pro
 | **Original documentation** | [MacLib UI Library][1] |
 | **Original project** | [biggaboy212/Maclib][2] |
 
-> **One example only:** run [`example.lua`](./example.lua). It creates a working window, enables the responsive mobile and player-stats overlays, and includes a toggle plus notification callback.
+> **One example only:** run [`example.lua`](./example.lua). It creates a working window, enables the responsive mobile quick-access control, and includes a toggle plus notification callback.
 
 ---
 
@@ -28,7 +28,7 @@ MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It pro
 
 ### Copy this entire command
 
-This is the repository’s **only** runnable example. It loads MacLib, creates a visible window, enables the mobile floating control and responsive player stats, and prints a readable warning if loading or window creation fails.
+This is the repository’s **only** runnable example. It loads MacLib, creates a visible window, enables the mobile floating control, and prints a readable warning if loading or window creation fails.
 
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/RedzZhub654/MacLib/main/example.lua"))()
@@ -114,7 +114,7 @@ MainTab:Select()
 
 ### Automatic DPI scaling
 
-MacLib automatically adapts the main window to the active camera viewport. It recalculates after a resize, device rotation, or camera change. The minimized-window recovery button is clamped to the visible screen whenever it is shown.
+MacLib automatically adapts the main window to the active camera viewport. It recalculates after a resize, device rotation, or camera change. The mobile quick-access button is clamped fully inside the visible screen during dragging and whenever the viewport changes.
 
 ```lua
 AutoDPI = true,
@@ -131,9 +131,9 @@ AutoDPIMargin = 32,
 | `Window:GetAutoDPI()` | Returns the current automatic-scaling state. |
 | `Window:SetScale(number)` | Switches to manual scale control. |
 
-### Mobile recovery button
+### Mobile quick-access button
 
-On touch-only devices, a circular menu button appears when a `MobileFloatButton` window is **minimized**. Tap the button to restore the window, or drag it to a comfortable on-screen position. The button hides again as soon as the main UI reopens and is kept inside the active viewport after a resize or orientation change.
+On touch-only devices, a circular menu button remains available whenever `MobileFloatButton` is enabled, whether the main UI is open or minimized. Tap it to toggle the window, or drag it to a comfortable position. The library keeps the full button inside the active viewport while you drag and after a resize or orientation change.
 
 ```lua
 MobileFloatButton = true,

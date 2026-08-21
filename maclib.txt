@@ -5595,9 +5595,9 @@ local function BindAutoDPI()
 			windowState = State
 			base.Visible = State
 				if mobileFloatButton then
-					-- Keep the touch recovery control accessible whether the window is open or minimized.
-					mobileFloatButton.Visible = mobileFloatEnabled and not State
-					if mobileFloatButton.Visible and ClampMobileFloatPosition then
+					-- Keep the mobile quick-access control available while the UI is open or minimized.
+					mobileFloatButton.Visible = mobileFloatEnabled
+					if ClampMobileFloatPosition then
 						task.defer(ClampMobileFloatPosition)
 					end
 				end
@@ -5635,7 +5635,7 @@ local function BindAutoDPI()
 		local function ToggleMenu(source)
 			local state = not WindowFunctions:GetState()
 			WindowFunctions:SetState(state)
-			local hint = source == "mobile" and "The recovery button reopened the menu." or "Use " .. tostring(MenuKeybind.Name) .. " to toggle it."
+			local hint = source == "mobile" and "The floating button toggled the menu." or "Use " .. tostring(MenuKeybind.Name) .. " to toggle it."
 			WindowFunctions:Notify({
 				Title = Settings.Title,
 				Description = (state and "Maximized " or "Minimized ") .. "the menu. " .. hint,
@@ -5656,7 +5656,7 @@ local function BindAutoDPI()
 			mobileFloatButton.TextSize = 26
 			mobileFloatButton.Font = Enum.Font.GothamBold
 			mobileFloatButton.AutoButtonColor = false
-				mobileFloatButton.Visible = false
+				mobileFloatButton.Visible = mobileFloatEnabled
 				mobileFloatButton.ZIndex = 10
 			mobileFloatButton.Parent = macLib
 
@@ -5724,12 +5724,27 @@ local function BindAutoDPI()
 				if delta.Magnitude > 6 then
 					mobileFloatMoved = true
 				end
+					local camera = workspace.CurrentCamera
 					local size = mobileFloatButton.AbsoluteSize
-					mobileFloatButton.Position = UDim2.fromOffset(
-						mobileFloatStartPosition.X + delta.X + size.X,
-						mobileFloatStartPosition.Y + delta.Y + size.Y
-					)
-					ClampMobileFloatPosition()
+					if size.X <= 0 or size.Y <= 0 then
+						size = Vector2.new(52, 52)
+					end
+					if camera then
+						local viewport = camera.ViewportSize
+						local margin = math.min(12, math.max(0, math.min((viewport.X - size.X) / 2, (viewport.Y - size.Y) / 2)))
+						local minLeft = margin
+						local maxLeft = math.max(minLeft, viewport.X - size.X - margin)
+						local minTop = margin
+						local maxTop = math.max(minTop, viewport.Y - size.Y - margin)
+						local left = math.clamp(mobileFloatStartPosition.X + delta.X, minLeft, maxLeft)
+						local top = math.clamp(mobileFloatStartPosition.Y + delta.Y, minTop, maxTop)
+						mobileFloatButton.Position = UDim2.fromOffset(left + size.X, top + size.Y)
+					else
+						mobileFloatButton.Position = UDim2.fromOffset(
+							mobileFloatStartPosition.X + delta.X + size.X,
+							mobileFloatStartPosition.Y + delta.Y + size.Y
+						)
+					end
 				end)
 				task.defer(ClampMobileFloatPosition)
 			end

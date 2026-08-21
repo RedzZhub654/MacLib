@@ -24,7 +24,8 @@ local created, Window = pcall(function()
         AutoDPIMinScale = 0.35,
         AutoDPIMargin = 32,
 
-        -- Appears as a recovery button only after a touch user minimizes the window.
+        -- Remains available on touch devices while the window is open or minimized.
+        -- Dragging keeps the entire button inside the viewport.
         MobileFloatButton = true,
     })
 end)
@@ -44,7 +45,7 @@ local Main = Home:Section({ Side = "Left" })
 Main:Header({ Text = "MacLib is running" })
 Main:Paragraph({
     Header = "Success",
-    Body = "This is the repository's only example.lua. Minimize the window on a touch device to test the recovery button.",
+    Body = "This is the repository's only example.lua. On touch devices, drag the floating button or tap it to toggle the window.",
 })
 
 Main:Toggle({
