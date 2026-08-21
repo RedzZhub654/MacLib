@@ -13,6 +13,7 @@ MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It pro
 | Resource | Location |
 |---|---|
 | **Source code** | [`maclib.txt`](./maclib.txt) |
+| **Copy-paste quick start** | [`examples/quick-start.lua`](./examples/quick-start.lua) |
 | **Full working example** | [`examples/test.lua`](./examples/test.lua) |
 | **Repository** | [RedzZhub654/MacLib](https://github.com/RedzZhub654/MacLib) |
 | **Local UI screenshots** | [`assets/maclib-docs`](./assets/maclib-docs) |
@@ -20,29 +21,27 @@ MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It pro
 | **Original documentation** | [MacLib UI Library][1] |
 | **Original project** | [biggaboy212/Maclib][2] |
 
-> **Recommended route:** run the [test script](#run-the-test-interface) first. It demonstrates the current window, input, theme, mobile, player-stats, and Discord card features in one interface.
+> **Recommended route:** run the [copy-paste quick start](#quick-start) first. It creates a minimal working window, then move to the full feature test after that succeeds.
 
 ---
 
-## Start here
+## Quick start
 
-### Load the library
+### Copy this entire command
+
+This is the recommended first run. It executes [`examples/quick-start.lua`](./examples/quick-start.lua), which **loads MacLib and creates a visible window**. It also prints a readable warning if the library or window cannot initialize.
 
 ```lua
-local MacLib = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/maclib.txt"
+loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/examples/quick-start.lua"
 ))()
 ```
 
-Loading is intentionally silent: the loader returns the `MacLib` table, but does not create a window. Open the included demo immediately after loading when you need a quick visual check.
+> **Expected result:** a window titled **MacLib Quick Start** appears. Press **RightControl** to hide or restore it, and use **Show notification** to verify the button callback.
 
-```lua
-MacLib:Demo()
-```
+### Run the full feature test
 
-### Run the test interface
-
-The full test interface creates a working window and exercises callbacks, mobile controls, automatic DPI behavior, the player-stats overlay, themes, and the Discord invite card.
+When the quick start works, run the complete example for player stats, responsive scaling, palettes, the Discord invite card, and every major control.
 
 ```lua
 loadstring(game:HttpGet(
@@ -50,13 +49,15 @@ loadstring(game:HttpGet(
 ))()
 ```
 
-| Test area | What it covers |
-|---|---|
-| **Window lifecycle** | Window visibility, dragging, blur, keybinds, and close behavior. |
-| **Inputs** | Toggle, slider, input, dropdown, color picker, and keybind callbacks. |
-| **Responsive UX** | Mobile recovery control, automatic DPI scaling, and bounded floating elements. |
-| **Live widgets** | Player stats and public Discord invite statistics. |
-| **Feedback** | Notifications, dialogs, copy feedback, and action callbacks. |
+### Use MacLib as a module
+
+The library loader below only returns the `MacLib` table; on its own, it **does not** display a UI. Follow it by creating a window, as shown in the next section.
+
+```lua
+local MacLib = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/maclib.txt"
+))()
+```
 
 ---
 
