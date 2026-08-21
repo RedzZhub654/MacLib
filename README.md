@@ -129,7 +129,7 @@ MainTab:Select()
 
 ### Automatic DPI scaling
 
-MacLib automatically adapts the main window to the active camera viewport. It recalculates after a resize, device rotation, or camera change. The floating player-stats card also scales against both width and height, while floating controls are clamped to the visible screen.
+MacLib automatically adapts the main window to the active camera viewport. It recalculates after a resize, device rotation, or camera change. The player-stats card now also resizes its **frame and internal content** independently against both viewport width and height, so it remains compact even when main-window DPI scaling is disabled. Floating controls are clamped to the visible screen.
 
 ```lua
 AutoDPI = true,
@@ -148,7 +148,7 @@ AutoDPIMargin = 32,
 
 ### Mobile recovery button
 
-On touch-only devices, a minimized window can display a circular menu button. A tap restores the window; a drag repositions it. The button is kept inside the active viewport, even after a resize or orientation change.
+On touch-only devices, a circular menu button is displayed whenever `MobileFloatButton` is enabled. It remains visible while the main UI is open **and** when it is minimized; a tap toggles the window, while a drag repositions the button. The button is kept inside the active viewport, even after a resize or orientation change.
 
 ```lua
 MobileFloatButton = true,
@@ -161,6 +161,8 @@ The player-stats overlay stays visible while the main interface is minimized. It
 
 ```lua
 PlayerStatsEnabled = true,
+PlayerStatsAutoDPI = true,
+PlayerStatsMargin = 16,
 PlayerStatsBadge = "LIVE",
 PlayerStatsPosition = UDim2.new(0.5, 0, 0, 16),
 PlayerStatsDraggable = true,
@@ -175,6 +177,11 @@ PlayerStatsDraggable = true,
 | **Ping** | Roblox `Stats` service, with a safe unavailable fallback. |
 | **FPS** | Render-step measurement. |
 | **Players** | `Players:GetPlayers()` in the active server. |
+
+| Player-stats setting | Purpose |
+|---|---|
+| `PlayerStatsAutoDPI` | Enables independent responsive sizing for the card and its content. It is enabled by default. |
+| `PlayerStatsMargin` | Sets the viewport edge space used when calculating player-stats size; defaults to `16`. |
 
 ---
 

@@ -982,6 +982,7 @@ function MacLib:Window(Settings)
 
 			local playerStatsBar
 			local playerStatsScale
+			local UpdatePlayerStatsLayout
 			local ClampPlayerStatsPosition
 			local playerStatsConnection
 		local playerStatsInputConnection
@@ -1010,15 +1011,36 @@ function MacLib:Window(Settings)
 			playerStatsStroke.Parent = playerStatsBar
 
 			playerStatsScale = Instance.new("UIScale")
-			local camera = workspace.CurrentCamera
-			if autoDPIEnabled and camera then
-				playerStatsScale.Scale = math.clamp(math.min(
-					(camera.ViewportSize.X - (autoDPIMargin * 2)) / 620,
-					(camera.ViewportSize.Y - (autoDPIMargin * 2)) / 68,
+
+			local playerStatsBaseWidth = 620
+			local playerStatsBaseHeight = 68
+			local playerStatsMargin = Settings.PlayerStatsMargin or 16
+			local playerStatsAutoDPI = Settings.PlayerStatsAutoDPI ~= false
+
+			UpdatePlayerStatsLayout = function()
+				if not playerStatsBar or not playerStatsBar.Parent then return end
+				local activeCamera = workspace.CurrentCamera
+				if not playerStatsAutoDPI or not activeCamera then
+					playerStatsScale.Scale = 1
+					playerStatsBar.Size = UDim2.fromOffset(playerStatsBaseWidth, playerStatsBaseHeight)
+					return
+				end
+
+				local viewport = activeCamera.ViewportSize
+				local scale = math.clamp(math.min(
+					math.max(1, viewport.X - (playerStatsMargin * 2)) / playerStatsBaseWidth,
+					math.max(1, viewport.Y - (playerStatsMargin * 2)) / playerStatsBaseHeight,
 					1
 				), 0.1, 1)
+
+				-- UIScale adapts the internal content; direct sizing adapts the card itself.
+				playerStatsScale.Scale = scale
+				playerStatsBar.Size = UDim2.fromOffset(
+					math.max(1, math.floor(playerStatsBaseWidth * scale)),
+					math.max(1, math.floor(playerStatsBaseHeight * scale))
+				)
 			end
-			playerStatsScale.Parent = playerStatsBar
+			UpdatePlayerStatsLayout()
 
 			ClampPlayerStatsPosition = function()
 				local activeCamera = workspace.CurrentCamera
@@ -1046,6 +1068,7 @@ function MacLib:Window(Settings)
 			playerStatsContent.Size = UDim2.fromScale(1, 1)
 			playerStatsContent.ZIndex = 21
 			playerStatsContent.Parent = playerStatsBar
+			playerStatsScale.Parent = playerStatsContent
 
 			local playerStatsPadding = Instance.new("UIPadding")
 			playerStatsPadding.PaddingLeft = UDim.new(0, 12)
@@ -1234,16 +1257,9 @@ function MacLib:Window(Settings)
 			if unloaded then return end
 			if autoDPIEnabled then
 				UpdateWindowDPI()
-				if playerStatsScale then
-					local camera = workspace.CurrentCamera
-					if camera then
-						playerStatsScale.Scale = math.clamp(math.min(
-							(camera.ViewportSize.X - (autoDPIMargin * 2)) / 620,
-							(camera.ViewportSize.Y - (autoDPIMargin * 2)) / 68,
-							1
-						), 0.1, 1)
-					end
-				end
+			end
+			if UpdatePlayerStatsLayout then
+				UpdatePlayerStatsLayout()
 			end
 			if ClampPlayerStatsPosition then
 				task.defer(ClampPlayerStatsPosition)
@@ -2160,7 +2176,7 @@ function MacLib:Window(Settings)
 				section.Name = "Section"
 				section.AutomaticSize = Enum.AutomaticSize.Y
 				section.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				section.BackgroundTransparency = 0.98
+					section.BackgroundTransparency = 0.94
 				section.BorderColor3 = Color3.fromRGB(0, 0, 0)
 				section.BorderSizePixel = 0
 				section.Position = UDim2.fromScale(0, 6.78e-08)
@@ -2176,7 +2192,7 @@ function MacLib:Window(Settings)
 				sectionUIStroke.Name = "SectionUIStroke"
 				sectionUIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 				sectionUIStroke.Color = Color3.fromRGB(255, 255, 255)
-				sectionUIStroke.Transparency = 0.95
+					sectionUIStroke.Transparency = 0.85
 				sectionUIStroke.Parent = section
 
 				local sectionUIListLayout = Instance.new("UIListLayout")
@@ -2476,7 +2492,7 @@ function MacLib:Window(Settings)
 					sliderValue.TextTransparency = 0.1
 					--sliderValue.TextTruncate = Enum.TextTruncate.AtEnd
 					sliderValue.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					sliderValue.BackgroundTransparency = 0.95
+					sliderValue.BackgroundTransparency = 0.84
 					sliderValue.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					sliderValue.BorderSizePixel = 0
 					sliderValue.LayoutOrder = 1
@@ -2729,7 +2745,7 @@ function MacLib:Window(Settings)
 					inputBox.AnchorPoint = Vector2.new(1, 0.5)
 					inputBox.AutomaticSize = Enum.AutomaticSize.X
 					inputBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					inputBox.BackgroundTransparency = 0.95
+					inputBox.BackgroundTransparency = 0.84
 					inputBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					inputBox.BorderSizePixel = 0
 					inputBox.ClipsDescendants = true
@@ -2907,7 +2923,7 @@ function MacLib:Window(Settings)
 					binderBox.AnchorPoint = Vector2.new(1, 0.5)
 					binderBox.AutomaticSize = Enum.AutomaticSize.X
 					binderBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					binderBox.BackgroundTransparency = 0.95
+					binderBox.BackgroundTransparency = 0.84
 					binderBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					binderBox.BorderSizePixel = 0
 					binderBox.ClipsDescendants = true
@@ -3051,7 +3067,7 @@ function MacLib:Window(Settings)
 					local dropdown = Instance.new("Frame")
 					dropdown.Name = "Dropdown"
 					dropdown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					dropdown.BackgroundTransparency = 0.985
+					dropdown.BackgroundTransparency = 0.9
 					dropdown.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					dropdown.BorderSizePixel = 0
 					dropdown.Size = UDim2.new(1, 0, 0, 38)
@@ -3099,7 +3115,7 @@ function MacLib:Window(Settings)
 					dropdownUIStroke.Name = "DropdownUIStroke"
 					dropdownUIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 					dropdownUIStroke.Color = Color3.fromRGB(255, 255, 255)
-					dropdownUIStroke.Transparency = 0.95
+					dropdownUIStroke.Transparency = 0.85
 					dropdownUIStroke.Parent = dropdown
 
 					local dropdownUICorner = Instance.new("UICorner")
@@ -3146,7 +3162,7 @@ function MacLib:Window(Settings)
 					local search = Instance.new("Frame")
 					search.Name = "Search"
 					search.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					search.BackgroundTransparency = 0.95
+					search.BackgroundTransparency = 0.88
 					search.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					search.BorderSizePixel = 0
 					search.LayoutOrder = -1
@@ -3936,7 +3952,7 @@ function MacLib:Window(Settings)
 					inputBox.TextXAlignment = Enum.TextXAlignment.Left
 					inputBox.AnchorPoint = Vector2.new(1, 0.5)
 					inputBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					inputBox.BackgroundTransparency = 0.95
+					inputBox.BackgroundTransparency = 0.84
 					inputBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					inputBox.BorderSizePixel = 0
 					inputBox.ClipsDescendants = true
@@ -5850,6 +5866,7 @@ function MacLib:Window(Settings)
 	end
 
 			local mobileFloatButton
+			local mobileFloatInputConnection
 			local ClampMobileFloatPosition
 			local mobileFloatEnabled
 		if Settings.MobileFloatButton == nil then
@@ -5862,8 +5879,9 @@ function MacLib:Window(Settings)
 			windowState = State
 			base.Visible = State
 				if mobileFloatButton then
-					mobileFloatButton.Visible = mobileFloatEnabled and not State
-					if mobileFloatButton.Visible and ClampMobileFloatPosition then
+					-- Keep the touch recovery control accessible whether the window is open or minimized.
+					mobileFloatButton.Visible = mobileFloatEnabled
+					if ClampMobileFloatPosition then
 						task.defer(ClampMobileFloatPosition)
 					end
 				end
@@ -5884,6 +5902,9 @@ function MacLib:Window(Settings)
 		end
 			if playerStatsInputConnection then
 				playerStatsInputConnection:Disconnect()
+			end
+			if mobileFloatInputConnection then
+				mobileFloatInputConnection:Disconnect()
 			end
 			if autoDPIViewportConnection then
 				autoDPIViewportConnection:Disconnect()
@@ -5925,8 +5946,8 @@ function MacLib:Window(Settings)
 			mobileFloatButton.TextSize = 26
 			mobileFloatButton.Font = Enum.Font.GothamBold
 			mobileFloatButton.AutoButtonColor = false
-			mobileFloatButton.Visible = false
-			mobileFloatButton.ZIndex = 10
+				mobileFloatButton.Visible = true
+				mobileFloatButton.ZIndex = 40
 			mobileFloatButton.Parent = macLib
 
 			local mobileFloatCorner = Instance.new("UICorner")
@@ -5981,13 +6002,13 @@ function MacLib:Window(Settings)
 				end)
 			end)
 
-			mobileFloatButton.InputChanged:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.Touch then
-					mobileFloatDragInput = input
-				end
-			end)
+				mobileFloatButton.InputChanged:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.Touch then
+						mobileFloatDragInput = input
+					end
+				end)
 
-			UserInputService.InputChanged:Connect(function(input)
+				mobileFloatInputConnection = UserInputService.InputChanged:Connect(function(input)
 				if unloaded or input ~= mobileFloatDragInput or not mobileFloatDragging then return end
 				local delta = input.Position - mobileFloatDragStart
 				if delta.Magnitude > 6 then

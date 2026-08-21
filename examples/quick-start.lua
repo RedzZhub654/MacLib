@@ -20,6 +20,7 @@ local created, Window = pcall(function()
         Keybind = Enum.KeyCode.RightControl,
         AcrylicBlur = true,
         AutoDPI = true,
+        -- This touch control remains visible even while the window is open.
         MobileFloatButton = true,
         PlayerStatsEnabled = false,
     })

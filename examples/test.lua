@@ -54,11 +54,14 @@ local Window = MacLib:Window({
     AutoDPIMargin = 32,
 
     -- Mobile accessibility
+    -- The mobile float remains visible while the UI is open or minimized.
     MobileFloatButton = true,
     MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
 
-    -- Floating player status bar
+    -- Floating player status bar; it now resizes independently of main-window DPI.
     PlayerStatsEnabled = true,
+    PlayerStatsAutoDPI = true,
+    PlayerStatsMargin = 16,
     PlayerStatsBadge = "THEME",
     PlayerStatsPosition = UDim2.new(0.5, 0, 0, 16),
     PlayerStatsDraggable = true,
