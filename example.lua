@@ -31,6 +31,7 @@ local created, Window = pcall(function()
         PlayerStatsEnabled = true,
         PlayerStatsAutoDPI = true,
         PlayerStatsMargin = 16,
+        PlayerStatsDraggable = true,
         PlayerStatsBadge = "LIVE",
     })
 end)

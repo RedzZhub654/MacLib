@@ -994,8 +994,9 @@ function MacLib:Window(Settings)
 			playerStatsBar.AnchorPoint = Vector2.new(0.5, 0)
 			playerStatsBar.BackgroundColor3 = Color3.fromRGB(21, 20, 23)
 			playerStatsBar.BackgroundTransparency = 0.08
-			playerStatsBar.BorderSizePixel = 0
-			playerStatsBar.Position = Settings.PlayerStatsPosition or UDim2.new(0.5, 0, 0, 16)
+				playerStatsBar.BorderSizePixel = 0
+				playerStatsBar.ClipsDescendants = true
+				playerStatsBar.Position = Settings.PlayerStatsPosition or UDim2.new(0.5, 0, 0, 16)
 			playerStatsBar.Size = UDim2.fromOffset(620, 68)
 			playerStatsBar.Active = Settings.PlayerStatsDraggable ~= false
 			playerStatsBar.ZIndex = 20
@@ -1014,7 +1015,7 @@ function MacLib:Window(Settings)
 
 			local playerStatsBaseWidth = 620
 			local playerStatsBaseHeight = 68
-			local playerStatsMargin = Settings.PlayerStatsMargin or 16
+				local playerStatsMargin = math.max(0, tonumber(Settings.PlayerStatsMargin) or 16)
 			local playerStatsAutoDPI = Settings.PlayerStatsAutoDPI ~= false
 
 			UpdatePlayerStatsLayout = function()
@@ -1063,14 +1064,19 @@ function MacLib:Window(Settings)
 			end
 			task.defer(ClampPlayerStatsPosition)
 
-			local playerStatsContent = Instance.new("Frame")
-			playerStatsContent.BackgroundTransparency = 1
-			playerStatsContent.Size = UDim2.fromScale(1, 1)
-			playerStatsContent.ZIndex = 21
-			playerStatsContent.Parent = playerStatsBar
-			playerStatsScale.Parent = playerStatsContent
+				local playerStatsContent = Instance.new("Frame")
+				playerStatsContent.BackgroundTransparency = 1
+				-- Keep the layout authored at its base size, then scale it into the responsive outer frame.
+				playerStatsContent.Size = UDim2.fromOffset(playerStatsBaseWidth, playerStatsBaseHeight)
+				playerStatsContent.ZIndex = 21
+							playerStatsContent.Parent = playerStatsBar
+				playerStatsScale.Parent = playerStatsContent
+				task.defer(function()
+					UpdatePlayerStatsLayout()
+					ClampPlayerStatsPosition()
+				end)
 
-			local playerStatsPadding = Instance.new("UIPadding")
+				local playerStatsPadding = Instance.new("UIPadding")
 			playerStatsPadding.PaddingLeft = UDim.new(0, 12)
 			playerStatsPadding.PaddingRight = UDim.new(0, 12)
 			playerStatsPadding.Parent = playerStatsContent
@@ -1216,12 +1222,24 @@ function MacLib:Window(Settings)
 			end)
 
 			if Settings.PlayerStatsDraggable ~= false then
+				-- A full-card transparent handle prevents child labels and images from swallowing drag input.
+				local playerStatsDragHandle = Instance.new("TextButton")
+				playerStatsDragHandle.Name = "PlayerStatsDragHandle"
+				playerStatsDragHandle.BackgroundTransparency = 1
+				playerStatsDragHandle.BorderSizePixel = 0
+				playerStatsDragHandle.Text = ""
+				playerStatsDragHandle.AutoButtonColor = false
+				playerStatsDragHandle.Active = true
+				playerStatsDragHandle.Size = UDim2.fromScale(1, 1)
+				playerStatsDragHandle.ZIndex = 30
+				playerStatsDragHandle.Parent = playerStatsBar
+
 				local playerStatsDragging = false
 				local playerStatsDragStart
 				local playerStatsStartPosition
 				local playerStatsDragInput
 
-				playerStatsBar.InputBegan:Connect(function(input)
+				local function BeginPlayerStatsDrag(input)
 					if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
 					playerStatsDragging = true
 					playerStatsDragStart = input.Position
@@ -1230,18 +1248,21 @@ function MacLib:Window(Settings)
 					input.Changed:Connect(function()
 						if input.UserInputState == Enum.UserInputState.End then
 							playerStatsDragging = false
+							playerStatsDragInput = nil
+							ClampPlayerStatsPosition()
 						end
 					end)
-				end)
+				end
 
-				playerStatsBar.InputChanged:Connect(function(input)
+				playerStatsDragHandle.InputBegan:Connect(BeginPlayerStatsDrag)
+				playerStatsDragHandle.InputChanged:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 						playerStatsDragInput = input
 					end
 				end)
 
 				playerStatsInputConnection = UserInputService.InputChanged:Connect(function(input)
-					if unloaded or input ~= playerStatsDragInput or not playerStatsDragging then return end
+					if unloaded or not playerStatsDragging or input ~= playerStatsDragInput then return end
 					local delta = input.Position - playerStatsDragStart
 					local size = playerStatsBar.AbsoluteSize
 					playerStatsBar.Position = UDim2.fromOffset(
@@ -5987,7 +6008,7 @@ function MacLib:Window(Settings)
 			local mobileFloatDragInput
 
 			mobileFloatButton.InputBegan:Connect(function(input)
-				if input.UserInputType ~= Enum.UserInputType.Touch then return end
+				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
 				mobileFloatDragging = true
 				mobileFloatMoved = false
 					mobileFloatDragStart = input.Position
@@ -6002,11 +6023,11 @@ function MacLib:Window(Settings)
 				end)
 			end)
 
-				mobileFloatButton.InputChanged:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.Touch then
-						mobileFloatDragInput = input
-					end
-				end)
+			mobileFloatButton.InputChanged:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+					mobileFloatDragInput = input
+				end
+			end)
 
 				mobileFloatInputConnection = UserInputService.InputChanged:Connect(function(input)
 				if unloaded or input ~= mobileFloatDragInput or not mobileFloatDragging then return end

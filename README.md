@@ -144,7 +144,7 @@ MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
 
 ### Floating player stats
 
-The player-stats overlay stays visible while the main interface is minimized. It displays the local Roblox avatar and display name, plus live ping, FPS, and server population.
+The player-stats overlay stays visible while the main interface is minimized. It displays the local Roblox avatar and display name, plus live ping, FPS, and server population. Dragging now starts from a full-card transparent handle, so labels, icons, and avatar images cannot block a mouse or touch drag. On compact viewports, the card frame and its authored content shrink together.
 
 ```lua
 PlayerStatsEnabled = true,
@@ -169,6 +169,7 @@ PlayerStatsDraggable = true,
 |---|---|
 | `PlayerStatsAutoDPI` | Enables independent responsive sizing for the card and its content. It is enabled by default. |
 | `PlayerStatsMargin` | Sets the viewport edge space used when calculating player-stats size; defaults to `16`. |
+| `PlayerStatsDraggable` | Enables full-card mouse and touch dragging. It is enabled by default. |
 
 ---
 
