@@ -149,7 +149,7 @@ MobileToggleButton = true,
 
 ## Executor profile card
 
-The executor profile area in the lower-left sidebar now uses a restrained slate outline and a dark card surface. This highlights the local-player information without adding a white border or a window-wide overlay effect.
+The executor profile area in the lower-left sidebar now uses a restrained slate outline and a dark card surface. Beneath the display name and Roblox username, it shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor line follows the existing profile privacy state and is redacted when user information is hidden.
 
 ---
 

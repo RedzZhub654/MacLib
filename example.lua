@@ -52,7 +52,7 @@ local Main = Home:Section({ Side = "Left" })
 Main:Header({ Text = "MacLib is running" })
 Main:Paragraph({
     Header = "Success",
-    Body = "Drag the window from its surface. On touch devices, tap the hub-logo button to toggle the UI or drag it without losing control.",
+    Body = "Drag the window from its surface. The lower-left profile card shows your executor below your Roblox name; on touch devices, use the hub-logo button to toggle the UI or drag it without losing control.",
 })
 
 Home:CreateDiscordInvite({

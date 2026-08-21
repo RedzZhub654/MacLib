@@ -592,6 +592,15 @@ function MacLib:Window(Settings)
 
 	headshot.Parent = informationGroup
 
+	local executorName = "Unknown Executor"
+	local executorDetector = identifyexecutor or getexecutorname
+	if type(executorDetector) == "function" then
+		local detected, value = pcall(executorDetector)
+		if detected and type(value) == "string" and value ~= "" then
+			executorName = value
+		end
+	end
+
 	local userAndDisplayFrame = Instance.new("Frame")
 	userAndDisplayFrame.Name = "UserAndDisplayFrame"
 	userAndDisplayFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -599,7 +608,7 @@ function MacLib:Window(Settings)
 	userAndDisplayFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	userAndDisplayFrame.BorderSizePixel = 0
 	userAndDisplayFrame.LayoutOrder = 1
-	userAndDisplayFrame.Size = UDim2.new(1, -42, 0, 32)
+	userAndDisplayFrame.Size = UDim2.new(1, -42, 0, 44)
 
 	local displayName = Instance.new("TextLabel")
 	displayName.Name = "DisplayName"
@@ -657,6 +666,27 @@ function MacLib:Window(Settings)
 	username.LayoutOrder = 1
 	username.Parent = userAndDisplayFrame
 	username.Size = UDim2.fromScale(1,0)
+
+	local executorLabel = Instance.new("TextLabel")
+	executorLabel.Name = "ExecutorName"
+	executorLabel.FontFace = Font.new(
+		assets.interFont,
+		Enum.FontWeight.Medium,
+		Enum.FontStyle.Normal
+	)
+	executorLabel.Text = "Executor: " .. executorName
+	executorLabel.TextColor3 = Color3.fromRGB(175, 182, 198)
+	executorLabel.TextSize = 10
+	executorLabel.TextTransparency = 0.25
+	executorLabel.TextTruncate = Enum.TextTruncate.AtEnd
+	executorLabel.TextXAlignment = Enum.TextXAlignment.Left
+	executorLabel.TextYAlignment = Enum.TextYAlignment.Top
+	executorLabel.AutomaticSize = Enum.AutomaticSize.XY
+	executorLabel.BackgroundTransparency = 1
+	executorLabel.BorderSizePixel = 0
+	executorLabel.LayoutOrder = 2
+	executorLabel.Parent = userAndDisplayFrame
+	executorLabel.Size = UDim2.fromScale(1, 0)
 
 	userAndDisplayFrame.Parent = informationGroup
 
@@ -5760,12 +5790,14 @@ local function BindAutoDPI()
 			headshot.Image = (isReady and headshotImage) or "rbxassetid://0"
 			username.Text = "@" .. LocalPlayer.Name
 			displayName.Text = LocalPlayer.DisplayName
+			executorLabel.Text = "Executor: " .. executorName
 		else
 			headshot.Image = assets.userInfoBlurred
 			local nameLength = #LocalPlayer.Name
 			local displayNameLength = #LocalPlayer.DisplayName
 			username.Text = "@" .. string.rep(".", nameLength)
 			displayName.Text = string.rep(".", displayNameLength)
+			executorLabel.Text = string.rep(".", #executorName + 10)
 		end
 	end
 
