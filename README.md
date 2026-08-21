@@ -13,15 +13,14 @@ MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It pro
 | Resource | Location |
 |---|---|
 | **Source code** | [`maclib.txt`](./maclib.txt) |
-| **Copy-paste quick start** | [`examples/quick-start.lua`](./examples/quick-start.lua) |
-| **Full working example** | [`examples/test.lua`](./examples/test.lua) |
+| **Working example** | [`example.lua`](./example.lua) |
 | **Repository** | [RedzZhub654/MacLib](https://github.com/RedzZhub654/MacLib) |
 | **Local UI screenshots** | [`assets/maclib-docs`](./assets/maclib-docs) |
 | **Image provenance** | [`assets/maclib-docs/SOURCES.md`](./assets/maclib-docs/SOURCES.md) |
 | **Original documentation** | [MacLib UI Library][1] |
 | **Original project** | [biggaboy212/Maclib][2] |
 
-> **Recommended route:** run the [copy-paste quick start](#quick-start) first. It creates a minimal working window, then move to the full feature test after that succeeds.
+> **One example only:** run [`example.lua`](./example.lua). It creates a working window, enables the responsive mobile and player-stats overlays, and includes a toggle plus notification callback.
 
 ---
 
@@ -29,25 +28,15 @@ MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It pro
 
 ### Copy this entire command
 
-This is the recommended first run. It executes [`examples/quick-start.lua`](./examples/quick-start.lua), which **loads MacLib and creates a visible window**. It also prints a readable warning if the library or window cannot initialize.
+This is the repository’s **only** runnable example. It loads MacLib, creates a visible window, enables the mobile floating control and responsive player stats, and prints a readable warning if loading or window creation fails.
 
 ```lua
 loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/examples/quick-start.lua"
+    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/example.lua"
 ))()
 ```
 
-> **Expected result:** a window titled **MacLib Quick Start** appears. Press **RightControl** to hide or restore it, and use **Show notification** to verify the button callback.
-
-### Run the full feature test
-
-When the quick start works, run the complete example for player stats, responsive scaling, palettes, the Discord invite card, and every major control.
-
-```lua
-loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/examples/test.lua"
-))()
-```
+> **Expected result:** a window titled **MacLib** appears. Press **RightControl** to hide or restore it, use the floating touch button on mobile, and select **Show notification** to verify the callback.
 
 ### Use MacLib as a module
 
