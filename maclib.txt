@@ -5253,10 +5253,21 @@ function MacLib:Window(Settings)
 		return notifications.Visible
 	end
 
-	function WindowFunctions:SetState(State)
-		windowState = State
-		base.Visible = State
-	end
+		local mobileFloatButton
+		local mobileFloatEnabled
+		if Settings.MobileFloatButton == nil then
+			mobileFloatEnabled = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+		else
+			mobileFloatEnabled = Settings.MobileFloatButton
+		end
+
+		function WindowFunctions:SetState(State)
+			windowState = State
+			base.Visible = State
+			if mobileFloatButton then
+				mobileFloatButton.Visible = mobileFloatEnabled and not State
+			end
+		end
 
 	function WindowFunctions:GetState()
 		return windowState
@@ -5278,17 +5289,87 @@ function MacLib:Window(Settings)
 
 	local MenuKeybind = Settings.Keybind or Enum.KeyCode.RightControl
 
-	local function ToggleMenu()
-		local state = not WindowFunctions:GetState()
-		WindowFunctions:SetState(state)
-		WindowFunctions:Notify({
-			Title = Settings.Title,
-			Description = (state and "Maximized " or "Minimized ") .. "the menu. Use " .. tostring(MenuKeybind.Name) .. " to toggle it.",
-			Lifetime = 5
-		})
-	end
+		local function ToggleMenu(source)
+			local state = not WindowFunctions:GetState()
+			WindowFunctions:SetState(state)
+			local hint = source == "mobile" and "Tap the floating button to toggle it." or "Use " .. tostring(MenuKeybind.Name) .. " to toggle it."
+			WindowFunctions:Notify({
+				Title = Settings.Title,
+				Description = (state and "Maximized " or "Minimized ") .. "the menu. " .. hint,
+				Lifetime = 5
+			})
+		end
 
-	UserInputService.InputEnded:Connect(function(inp, gpe)
+		if mobileFloatEnabled then
+			mobileFloatButton = Instance.new("TextButton")
+			mobileFloatButton.Name = "MobileFloatButton"
+			mobileFloatButton.AnchorPoint = Vector2.new(1, 1)
+			mobileFloatButton.BackgroundColor3 = Color3.fromRGB(28, 28, 30)
+			mobileFloatButton.BorderSizePixel = 0
+			mobileFloatButton.Position = Settings.MobileFloatButtonPosition or UDim2.new(1, -24, 1, -24)
+			mobileFloatButton.Size = UDim2.fromOffset(52, 52)
+			mobileFloatButton.Text = "☰"
+			mobileFloatButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+			mobileFloatButton.TextSize = 26
+			mobileFloatButton.Font = Enum.Font.GothamBold
+			mobileFloatButton.AutoButtonColor = false
+			mobileFloatButton.Visible = false
+			mobileFloatButton.ZIndex = 10
+			mobileFloatButton.Parent = macLib
+
+			local mobileFloatCorner = Instance.new("UICorner")
+			mobileFloatCorner.CornerRadius = UDim.new(1, 0)
+			mobileFloatCorner.Parent = mobileFloatButton
+
+			local mobileFloatStroke = Instance.new("UIStroke")
+			mobileFloatStroke.Color = Color3.fromRGB(255, 255, 255)
+			mobileFloatStroke.Transparency = 0.78
+			mobileFloatStroke.Parent = mobileFloatButton
+
+			local mobileFloatDragging = false
+			local mobileFloatMoved = false
+			local mobileFloatDragStart
+			local mobileFloatStartPosition
+			local mobileFloatDragInput
+
+			mobileFloatButton.InputBegan:Connect(function(input)
+				if input.UserInputType ~= Enum.UserInputType.Touch then return end
+				mobileFloatDragging = true
+				mobileFloatMoved = false
+				mobileFloatDragStart = input.Position
+				mobileFloatStartPosition = mobileFloatButton.Position
+
+				input.Changed:Connect(function()
+					if input.UserInputState ~= Enum.UserInputState.End then return end
+					mobileFloatDragging = false
+					if not mobileFloatMoved then
+						ToggleMenu("mobile")
+					end
+				end)
+			end)
+
+			mobileFloatButton.InputChanged:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+					mobileFloatDragInput = input
+				end
+			end)
+
+			UserInputService.InputChanged:Connect(function(input)
+				if unloaded or input ~= mobileFloatDragInput or not mobileFloatDragging then return end
+				local delta = input.Position - mobileFloatDragStart
+				if delta.Magnitude > 6 then
+					mobileFloatMoved = true
+				end
+				mobileFloatButton.Position = UDim2.new(
+					mobileFloatStartPosition.X.Scale,
+					mobileFloatStartPosition.X.Offset + delta.X,
+					mobileFloatStartPosition.Y.Scale,
+					mobileFloatStartPosition.Y.Offset + delta.Y
+				)
+			end)
+		end
+
+		UserInputService.InputEnded:Connect(function(inp, gpe)
 		if gpe then return end
 		if inp.KeyCode == MenuKeybind then
 			ToggleMenu()

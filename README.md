@@ -52,6 +52,27 @@ local Window = MacLib:Window({
 | `ShowUserInfo` | Displays or redacts user details in the UI. |
 | `Keybind` | Selects the key used to toggle window visibility. |
 | `AcrylicBlur` | Enables or disables the window blur treatment. |
+| `MobileFloatButton` | Enables or disables the mobile floating toggle; on touch-only devices, it is enabled automatically unless explicitly set. |
+| `MobileFloatButtonPosition` | Sets the initial `UDim2` position of the floating toggle; it defaults to the lower-right corner. |
+
+### Mobile floating button
+
+When MacLib is minimized on a touch-only device, a circular floating menu button appears above the game UI. A short tap restores the window, while dragging the button repositions it for a more comfortable thumb reach. The button is hidden while the window is open and is removed automatically with the rest of the interface when `Window:Unload()` is called.
+
+```lua
+local Window = MacLib:Window({
+    Title = "My Project",
+    Subtitle = "Mobile-ready UI",
+    Size = UDim2.fromOffset(868, 650),
+    MobileFloatButton = true,
+    MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
+})
+```
+
+| Setting | Type | Default | Effect |
+|---|---|---|---|
+| `MobileFloatButton` | `boolean` | Enabled on touch-only devices | Creates the draggable button used to restore a minimized window. |
+| `MobileFloatButtonPosition` | `UDim2` | `UDim2.new(1, -24, 1, -24)` | Controls the initial on-screen placement of that button. |
 
 ## Library lifecycle and configuration
 
