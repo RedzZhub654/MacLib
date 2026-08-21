@@ -65,9 +65,8 @@ Home:CreateDiscordInvite({
     Banner = HUB_LOGO,
     Link = "https://discord.gg/HfeN8GKgpV",
     Button = "Copy Invite",
+    Footer = "●  Enzo Hub community",
     Side = "Right",
-    RefreshInterval = 5,
-    -- Request = request, -- Optional explicit HTTP adapter when your executor needs one.
     OnCopy = function(link, copied)
         print("[MacLib] Discord invite:", link, "Copied:", copied)
     end,

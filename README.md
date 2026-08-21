@@ -320,7 +320,7 @@ Window:Dialog({
 
 ## Discord invite widget
 
-`Tab:CreateDiscordInvite(config)` creates a community card in either tab column. It supports optional Roblox icon and banner assets, copy-link feedback, and live online and total member counts. The example below uses the verified **Enzo Hub** invite with the default hub logo as both its card icon and banner. For live counts, the widget first uses an optional custom request callback, then common executor request functions (`syn.request`, `http_request`, `request`, Fluxus, and KRNL), before falling back to `game:HttpGet` and `HttpService:GetAsync`. It uses Discord’s public invite endpoint with `with_counts=true`, which returns the approximate presence and member count fields. [10]
+`Tab:CreateDiscordInvite(config)` creates a polished static community card in either tab column. It supports Roblox icon and banner assets, an optional footer label, copy-link feedback, and no external HTTP dependency. The example below uses the **Enzo Hub** invite with the default hub logo as both its card icon and banner.
 
 ```lua
 local HUB_LOGO = "rbxassetid://137471163061841"
@@ -334,8 +334,8 @@ local Card = MainTab:CreateDiscordInvite({
     Link = "https://discord.gg/HfeN8GKgpV",
 
     Button = "Copy Invite",
+    Footer = "●  Enzo Hub community",
     Side = "Right",
-    RefreshInterval = 5,
 
     OnCopy = function(link, copied)
         print("Invite:", link, "Copied:", copied)
@@ -353,8 +353,7 @@ local Card = MainTab:CreateDiscordInvite({
 | `Link` | Empty | Full Discord URL or invite code. |
 | `Button` | `"Join Server"` | Copy-action label. |
 | `Side` | `1` | Use `1` or `"Left"`; use `2` or `"Right"` for the other column. |
-| `RefreshInterval` | `5` seconds | Live-stat cadence; values below five seconds are raised to five. |
-| `Request` | None | Optional `function(url)` or executor-compatible request callback. It receives a `GET` request table and should return a response body string or a table with `Body` and a 2xx `StatusCode`. |
+| `Footer` | `"●  Community invite"` | Static label displayed above the copy button. |
 | `OnCopy` | None | Receives `link` and the clipboard success flag. |
 
 ### Card methods
@@ -364,11 +363,11 @@ local Card = MainTab:CreateDiscordInvite({
 | `Card:GetFrame()` | Returns the underlying widget frame. |
 | `Card:SetTitle(value)` | Updates the title. |
 | `Card:SetDescription(value)` | Updates the supporting text. |
-| `Card:SetLink(value)` | Changes the link and requests a refresh. |
-| `Card:Refresh()` | Requests fresh public live counts now. |
-| `Card:Destroy()` | Stops future refreshes and removes the card. |
+| `Card:SetLink(value)` | Changes the Discord invite link used by the copy button. |
+| `Card:SetFooter(value)` | Updates the static community label. |
+| `Card:Destroy()` | Removes the card. |
 
-> Live counts are best-effort. An invalid invite, unavailable HTTP access, or rate-limited response leaves the card available but marks its statistics as unavailable. The copy action uses the clipboard API offered by the host environment and otherwise reports **Link Ready**.
+> The invite card is intentionally static and never makes remote requests. The copy action uses the clipboard API offered by the host environment and otherwise reports **Link Ready**.
 
 ---
 
