@@ -209,7 +209,7 @@ function MacLib:Window(Settings)
 	dividerInteract.Size = UDim2.new(1, 6, 1, 0)
 	dividerInteract.Text = ""
 	dividerInteract.TextColor3 = Color3.fromRGB(0, 0, 0)
-	dividerInteract.TextSize = 16
+	dividerInteract.TextSize = 18
 	dividerInteract.Parent = divider
 
 	local windowControls = Instance.new("Frame")
@@ -258,7 +258,7 @@ function MacLib:Window(Settings)
 	exit.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 	exit.Text = ""
 	exit.TextColor3 = Color3.fromRGB(0, 0, 0)
-	exit.TextSize = 16
+	exit.TextSize = 18
 	exit.AutoButtonColor = false
 	exit.BackgroundColor3 = Color3.fromRGB(250, 93, 86)
 	exit.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -276,7 +276,7 @@ function MacLib:Window(Settings)
 	minimize.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 	minimize.Text = ""
 	minimize.TextColor3 = Color3.fromRGB(0, 0, 0)
-	minimize.TextSize = 16
+	minimize.TextSize = 18
 	minimize.AutoButtonColor = false
 	minimize.BackgroundColor3 = Color3.fromRGB(252, 190, 57)
 	minimize.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -295,7 +295,7 @@ function MacLib:Window(Settings)
 	maximize.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 	maximize.Text = ""
 	maximize.TextColor3 = Color3.fromRGB(0, 0, 0)
-	maximize.TextSize = 16
+	maximize.TextSize = 18
 	maximize.AutoButtonColor = false
 	maximize.BackgroundColor3 = Color3.fromRGB(119, 174, 94)
 	maximize.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -468,7 +468,7 @@ function MacLib:Window(Settings)
 	title.Text = Settings.Title
 	title.TextColor3 = Color3.fromRGB(255, 255, 255)
 	title.RichText = true
-	title.TextSize = 20
+	title.TextSize = 22
 	title.TextTransparency = 0.1
 	title.TextTruncate = Enum.TextTruncate.SplitWord
 	title.TextXAlignment = Enum.TextXAlignment.Left
@@ -492,7 +492,7 @@ function MacLib:Window(Settings)
 	subtitle.Text = Settings.Subtitle
 	subtitle.RichText = true
 	subtitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-	subtitle.TextSize = 14
+	subtitle.TextSize = 16
 	subtitle.TextTransparency = 0.7
 	subtitle.TextTruncate = Enum.TextTruncate.SplitWord
 	subtitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -536,7 +536,7 @@ function MacLib:Window(Settings)
 	userInfo.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	userInfo.BorderSizePixel = 0
 	userInfo.Position = UDim2.new(0, 0, 1, -12)
-	userInfo.Size = UDim2.new(1, -4, 0, 84)
+	userInfo.Size = UDim2.new(1, -4, 0, 96)
 
 	local informationGroup = Instance.new("Frame")
 	informationGroup.Name = "InformationGroup"
@@ -561,7 +561,7 @@ function MacLib:Window(Settings)
 
 	local informationGroupUIPadding = Instance.new("UIPadding")
 	informationGroupUIPadding.Name = "InformationGroupUIPadding"
-	informationGroupUIPadding.PaddingBottom = UDim.new(0, 8)
+	informationGroupUIPadding.PaddingBottom = UDim.new(0, 10)
 	informationGroupUIPadding.PaddingLeft = UDim.new(0, 10)
 	informationGroupUIPadding.PaddingRight = UDim.new(0, 10)
 	informationGroupUIPadding.Parent = informationGroup
@@ -591,7 +591,7 @@ function MacLib:Window(Settings)
 	headshot.BackgroundTransparency = 1
 	headshot.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	headshot.BorderSizePixel = 0
-	headshot.Size = UDim2.fromOffset(38, 38)
+	headshot.Size = UDim2.fromOffset(42, 42)
 	headshot.Image = GetProfileAvatarImage()
 
 	local uICorner3 = Instance.new("UICorner")
@@ -618,7 +618,7 @@ function MacLib:Window(Settings)
 	userAndDisplayFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	userAndDisplayFrame.BorderSizePixel = 0
 	userAndDisplayFrame.LayoutOrder = 1
-	userAndDisplayFrame.Size = UDim2.new(1, -46, 0, 58)
+	userAndDisplayFrame.Size = UDim2.new(1, -50, 0, 64)
 
 	local displayName = Instance.new("TextLabel")
 	displayName.Name = "DisplayName"
@@ -629,7 +629,7 @@ function MacLib:Window(Settings)
 	)
 	displayName.Text = LocalPlayer.DisplayName
 	displayName.TextColor3 = Color3.fromRGB(255, 255, 255)
-	displayName.TextSize = 18
+	displayName.TextSize = 20
 	displayName.TextTransparency = 0.1
 	displayName.TextTruncate = Enum.TextTruncate.SplitWord
 	displayName.TextXAlignment = Enum.TextXAlignment.Left
@@ -663,7 +663,7 @@ function MacLib:Window(Settings)
 	)
 	username.Text = "@" .. LocalPlayer.Name
 	username.TextColor3 = Color3.fromRGB(255, 255, 255)
-	username.TextSize = 15
+	username.TextSize = 17
 	username.TextTransparency = 0.7
 	username.TextTruncate = Enum.TextTruncate.SplitWord
 	username.TextXAlignment = Enum.TextXAlignment.Left
@@ -682,7 +682,7 @@ function MacLib:Window(Settings)
 	statusRow.BackgroundTransparency = 1
 	statusRow.BorderSizePixel = 0
 	statusRow.LayoutOrder = 2
-	statusRow.Size = UDim2.new(1, 0, 0, 17)
+	statusRow.Size = UDim2.new(1, 0, 0, 21)
 	statusRow.Parent = userAndDisplayFrame
 
 	local executorLabel = Instance.new("TextLabel")
@@ -694,7 +694,7 @@ function MacLib:Window(Settings)
 	)
 	executorLabel.Text = "Executor: " .. executorName
 	executorLabel.TextColor3 = Color3.fromRGB(190, 198, 214)
-	executorLabel.TextSize = 15
+	executorLabel.TextSize = 17
 	executorLabel.TextTransparency = 0.08
 	executorLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	executorLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -722,7 +722,7 @@ function MacLib:Window(Settings)
 	)
 	latencyLabel.Text = "Ping: -- ms"
 	latencyLabel.TextColor3 = Color3.fromRGB(151, 211, 168)
-	latencyLabel.TextSize = 15
+	latencyLabel.TextSize = 17
 	latencyLabel.TextTransparency = 0.05
 	latencyLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	latencyLabel.TextXAlignment = Enum.TextXAlignment.Right
@@ -801,7 +801,7 @@ function MacLib:Window(Settings)
 	tabSwitchers.BackgroundTransparency = 1
 	tabSwitchers.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	tabSwitchers.BorderSizePixel = 0
-	tabSwitchers.Size = UDim2.new(1, 0, 1, -123)
+	tabSwitchers.Size = UDim2.new(1, 0, 1, -135)
 
 	local tabSwitchersScrollingFrame = Instance.new("ScrollingFrame")
 	tabSwitchersScrollingFrame.Name = "TabSwitchersScrollingFrame"
@@ -970,7 +970,7 @@ function MacLib:Window(Settings)
 	interact.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 	interact.Text = ""
 	interact.TextColor3 = Color3.fromRGB(0, 0, 0)
-	interact.TextSize = 16
+	interact.TextSize = 18
 	interact.AnchorPoint = Vector2.new(0.5, 0.5)
 	interact.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	interact.BackgroundTransparency = 1
@@ -1109,7 +1109,7 @@ function MacLib:Window(Settings)
 	currentTab.Text = ""
 	currentTab.RichText = true
 	currentTab.TextColor3 = Color3.fromRGB(255, 255, 255)
-	currentTab.TextSize = 17
+	currentTab.TextSize = 19
 	currentTab.TextTransparency = 0.5
 	currentTab.TextTruncate = Enum.TextTruncate.SplitWord
 	currentTab.TextXAlignment = Enum.TextXAlignment.Left
@@ -1471,7 +1471,7 @@ local function BindAutoDPI()
 		globalSetting.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 		globalSetting.Text = ""
 		globalSetting.TextColor3 = Color3.fromRGB(0, 0, 0)
-		globalSetting.TextSize = 16
+		globalSetting.TextSize = 18
 		globalSetting.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		globalSetting.BackgroundTransparency = 1
 		globalSetting.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -1489,7 +1489,7 @@ local function BindAutoDPI()
 		settingName.Text = Settings.Name
 		settingName.RichText = true
 		settingName.TextColor3 = Color3.fromRGB(255, 255, 255)
-		settingName.TextSize = 15
+		settingName.TextSize = 17
 		settingName.TextTransparency = 0.5
 		settingName.TextTruncate = Enum.TextTruncate.SplitWord
 		settingName.TextXAlignment = Enum.TextXAlignment.Left
@@ -1521,7 +1521,7 @@ local function BindAutoDPI()
 		)
 		checkmark.Text = "✓"
 		checkmark.TextColor3 = Color3.fromRGB(255, 255, 255)
-		checkmark.TextSize = 15
+		checkmark.TextSize = 17
 		checkmark.TextTransparency = 1
 		checkmark.TextXAlignment = Enum.TextXAlignment.Left
 		checkmark.TextYAlignment = Enum.TextYAlignment.Top
@@ -1662,7 +1662,7 @@ local function BindAutoDPI()
 			tabSwitcher.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 			tabSwitcher.Text = ""
 			tabSwitcher.TextColor3 = Color3.fromRGB(0, 0, 0)
-			tabSwitcher.TextSize = 16
+			tabSwitcher.TextSize = 18
 			tabSwitcher.AutoButtonColor = false
 			tabSwitcher.AnchorPoint = Vector2.new(0.5, 0)
 			tabSwitcher.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1719,7 +1719,7 @@ local function BindAutoDPI()
 			tabSwitcherName.Text = Settings.Name
 			tabSwitcherName.RichText = true
 			tabSwitcherName.TextColor3 = Color3.fromRGB(255, 255, 255)
-			tabSwitcherName.TextSize = 18
+			tabSwitcherName.TextSize = 20
 			tabSwitcherName.TextTransparency = 0.5
 			tabSwitcherName.TextTruncate = Enum.TextTruncate.SplitWord
 			tabSwitcherName.TextXAlignment = Enum.TextXAlignment.Left
@@ -1896,7 +1896,7 @@ local function BindAutoDPI()
 					title.Font = Enum.Font.GothamBold
 					title.Text = Config.Title or "Discord Server"
 					title.TextColor3 = Color3.fromRGB(255, 255, 255)
-					title.TextSize = 18
+					title.TextSize = 20
 					title.TextTruncate = Enum.TextTruncate.AtEnd
 					title.TextXAlignment = Enum.TextXAlignment.Left
 					title.Position = UDim2.fromOffset(68, 63)
@@ -1910,7 +1910,7 @@ local function BindAutoDPI()
 					description.Font = Enum.Font.Gotham
 					description.Text = Config.Description or ""
 					description.TextColor3 = Color3.fromRGB(190, 190, 198)
-					description.TextSize = 14
+					description.TextSize = 16
 					description.TextTruncate = Enum.TextTruncate.AtEnd
 					description.TextWrapped = true
 					description.TextXAlignment = Enum.TextXAlignment.Left
@@ -1926,7 +1926,7 @@ local function BindAutoDPI()
 					communityLabel.Font = Enum.Font.GothamMedium
 					communityLabel.Text = Config.Footer or "●  Community invite"
 					communityLabel.TextColor3 = Color3.fromRGB(137, 201, 151)
-					communityLabel.TextSize = 13
+					communityLabel.TextSize = 15
 					communityLabel.TextTruncate = Enum.TextTruncate.AtEnd
 					communityLabel.TextXAlignment = Enum.TextXAlignment.Left
 					communityLabel.Position = UDim2.fromOffset(14, 137)
@@ -1943,7 +1943,7 @@ local function BindAutoDPI()
 					copyButton.Font = Enum.Font.GothamBold
 					copyButton.Text = Config.Button or "Join Server"
 					copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-					copyButton.TextSize = 13
+					copyButton.TextSize = 15
 					copyButton.Position = UDim2.new(1, -14, 1, -13)
 					copyButton.Size = UDim2.fromOffset(105, 28)
 					copyButton.ZIndex = 2
@@ -2065,7 +2065,7 @@ local function BindAutoDPI()
 					buttonInteract.FontFace = Font.new(assets.interFont)
 					buttonInteract.RichText = true
 					buttonInteract.TextColor3 = Color3.fromRGB(255, 255, 255)
-					buttonInteract.TextSize = 15
+					buttonInteract.TextSize = 17
 					buttonInteract.TextTransparency = 0.5
 					buttonInteract.TextTruncate = Enum.TextTruncate.AtEnd
 					buttonInteract.TextXAlignment = Enum.TextXAlignment.Left
@@ -2160,7 +2160,7 @@ local function BindAutoDPI()
 					toggleName.Text = ToggleFunctions.Settings.Name
 					toggleName.RichText = true
 					toggleName.TextColor3 = Color3.fromRGB(255, 255, 255)
-					toggleName.TextSize = 15
+					toggleName.TextSize = 17
 					toggleName.TextTransparency = 0.5
 					toggleName.TextTruncate = Enum.TextTruncate.AtEnd
 					toggleName.TextXAlignment = Enum.TextXAlignment.Left
@@ -2290,7 +2290,7 @@ local function BindAutoDPI()
 					slider.BackgroundTransparency = 1
 					slider.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					slider.BorderSizePixel = 0
-					slider.Size = UDim2.new(1, 0, 0, 38)
+					slider.Size = UDim2.new(1, 0, 0, 46)
 					slider.Parent = section
 
 					local sliderName = Instance.new("TextLabel")
@@ -2299,7 +2299,7 @@ local function BindAutoDPI()
 					sliderName.Text = SliderFunctions.Settings.Name
 					sliderName.RichText = true
 					sliderName.TextColor3 = Color3.fromRGB(255, 255, 255)
-					sliderName.TextSize = 15
+					sliderName.TextSize = 17
 					sliderName.TextTransparency = 0.5
 					sliderName.TextTruncate = Enum.TextTruncate.AtEnd
 					sliderName.TextXAlignment = Enum.TextXAlignment.Left
@@ -2327,7 +2327,7 @@ local function BindAutoDPI()
 					sliderValue.Name = "SliderValue"
 					sliderValue.FontFace = Font.new(assets.interFont)
 					sliderValue.TextColor3 = Color3.fromRGB(255, 255, 255)
-					sliderValue.TextSize = 14
+					sliderValue.TextSize = 16
 					sliderValue.TextTransparency = 0.1
 					--sliderValue.TextTruncate = Enum.TextTruncate.AtEnd
 					sliderValue.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -2336,7 +2336,7 @@ local function BindAutoDPI()
 					sliderValue.BorderSizePixel = 0
 					sliderValue.LayoutOrder = 1
 					sliderValue.Position = UDim2.fromScale(-0.0789, 0.171)
-					sliderValue.Size = UDim2.fromOffset(41, 21)
+					sliderValue.Size = UDim2.fromOffset(56, 27)
 					sliderValue.ClipsDescendants = true
 
 					local sliderValueUICorner = Instance.new("UICorner")
@@ -2361,7 +2361,7 @@ local function BindAutoDPI()
 
 					local sliderElementsUIListLayout = Instance.new("UIListLayout")
 					sliderElementsUIListLayout.Name = "SliderElementsUIListLayout"
-					sliderElementsUIListLayout.Padding = UDim.new(0, 20)
+					sliderElementsUIListLayout.Padding = UDim.new(0, 14)
 					sliderElementsUIListLayout.FillDirection = Enum.FillDirection.Horizontal
 					sliderElementsUIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 					sliderElementsUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -2377,7 +2377,7 @@ local function BindAutoDPI()
 					sliderBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					sliderBar.BorderSizePixel = 0
 					sliderBar.Position = UDim2.fromScale(0.219, 0.457)
-					sliderBar.Size = UDim2.fromOffset(123, 3)
+					sliderBar.Size = UDim2.fromOffset(123, 4)
 
 					local sliderHead = Instance.new("ImageButton")
 					sliderHead.Name = "SliderHead"
@@ -2388,14 +2388,14 @@ local function BindAutoDPI()
 					sliderHead.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					sliderHead.BorderSizePixel = 0
 					sliderHead.Position = UDim2.fromScale(1, 0.5)
-					sliderHead.Size = UDim2.fromOffset(12, 12)
+					sliderHead.Size = UDim2.fromOffset(14, 14)
 					sliderHead.Parent = sliderBar
 
 					sliderBar.Parent = sliderElements
 
 					local sliderElementsUIPadding = Instance.new("UIPadding")
 					sliderElementsUIPadding.Name = "SliderElementsUIPadding"
-					sliderElementsUIPadding.PaddingTop = UDim.new(0, 3)
+					sliderElementsUIPadding.PaddingTop = UDim.new(0, 6)
 					sliderElementsUIPadding.Parent = sliderElements
 
 					sliderElements.Parent = slider
@@ -2440,13 +2440,13 @@ local function BindAutoDPI()
 							posXScale = math.clamp((input.Position.X - sliderBar.AbsolutePosition.X) / sliderBar.AbsoluteSize.X, 0, 1)
 						else
 							local value = val
-							posXScale = (value - SliderFunctions.Settings.Minimum) / (SliderFunctions.Settings.Maximum - Settings.Minimum)
+							posXScale = (value - SliderFunctions.Settings.Minimum) / (SliderFunctions.Settings.Maximum - SliderFunctions.Settings.Minimum)
 						end
 
 						local pos = UDim2.new(posXScale, 0, 0.5, 0)
 						sliderHead.Position = pos
 
-						finalValue = posXScale * (SliderFunctions.Settings.Maximum - SliderFunctions.Settings.Minimum) + Settings.Minimum
+						finalValue = posXScale * (SliderFunctions.Settings.Maximum - SliderFunctions.Settings.Minimum) + SliderFunctions.Settings.Minimum
 
 						sliderValue.Text = (Settings.Prefix or "") .. ValueDisplayMethod(finalValue, SliderFunctions.Settings.Precision) .. (Settings.Suffix or "")
 
@@ -2560,7 +2560,7 @@ local function BindAutoDPI()
 					inputName.Text = InputFunctions.Settings.Name
 					inputName.RichText = true
 					inputName.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputName.TextSize = 15
+					inputName.TextSize = 17
 					inputName.TextTransparency = 0.5
 					inputName.TextTruncate = Enum.TextTruncate.AtEnd
 					inputName.TextXAlignment = Enum.TextXAlignment.Left
@@ -2579,7 +2579,7 @@ local function BindAutoDPI()
 					inputBox.FontFace = Font.new(assets.interFont)
 					inputBox.Text = "Hello world!"
 					inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputBox.TextSize = 14
+					inputBox.TextSize = 16
 					inputBox.TextTransparency = 0.1
 					inputBox.AnchorPoint = Vector2.new(1, 0.5)
 					inputBox.AutomaticSize = Enum.AutomaticSize.X
@@ -2736,7 +2736,7 @@ local function BindAutoDPI()
 					keybindName.Text = KeybindFunctions.Settings.Name
 					keybindName.RichText = true
 					keybindName.TextColor3 = Color3.fromRGB(255, 255, 255)
-					keybindName.TextSize = 15
+					keybindName.TextSize = 17
 					keybindName.TextTransparency = 0.5
 					keybindName.TextTruncate = Enum.TextTruncate.AtEnd
 					keybindName.TextXAlignment = Enum.TextXAlignment.Left
@@ -2757,7 +2757,7 @@ local function BindAutoDPI()
 					binderBox.PlaceholderText = "..."
 					binderBox.Text = ""
 					binderBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-					binderBox.TextSize = 14
+					binderBox.TextSize = 16
 					binderBox.TextTransparency = 0.1
 					binderBox.AnchorPoint = Vector2.new(1, 0.5)
 					binderBox.AutomaticSize = Enum.AutomaticSize.X
@@ -2924,7 +2924,7 @@ local function BindAutoDPI()
 					interact.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 					interact.Text = ""
 					interact.TextColor3 = Color3.fromRGB(0, 0, 0)
-					interact.TextSize = 16
+					interact.TextSize = 18
 					interact.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 					interact.BackgroundTransparency = 1
 					interact.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -2938,7 +2938,7 @@ local function BindAutoDPI()
 					dropdownName.Text = Settings.Default and (DropdownFunctions.Settings.Name .. " • " .. table.concat(Selected, ", ")) or (DropdownFunctions.Settings.Name .. "...")
 					dropdownName.RichText = true
 					dropdownName.TextColor3 = Color3.fromRGB(255, 255, 255)
-					dropdownName.TextSize = 15
+					dropdownName.TextSize = 17
 					dropdownName.TextTransparency = 0.5
 					dropdownName.TextTruncate = Enum.TextTruncate.SplitWord
 					dropdownName.TextXAlignment = Enum.TextXAlignment.Left
@@ -3043,7 +3043,7 @@ local function BindAutoDPI()
 					searchBox.PlaceholderText = "Search..."
 					searchBox.Text = ""
 					searchBox.TextColor3 = Color3.fromRGB(200, 200, 200)
-					searchBox.TextSize = 16
+					searchBox.TextSize = 18
 					searchBox.TextXAlignment = Enum.TextXAlignment.Left
 					searchBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 					searchBox.BackgroundTransparency = 1
@@ -3210,7 +3210,7 @@ local function BindAutoDPI()
 						option.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 						option.Text = ""
 						option.TextColor3 = Color3.fromRGB(0, 0, 0)
-						option.TextSize = 16
+						option.TextSize = 18
 						option.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 						option.BackgroundTransparency = 1
 						option.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -3228,7 +3228,7 @@ local function BindAutoDPI()
 						optionName.Text = v
 						optionName.RichText = true
 						optionName.TextColor3 = Color3.fromRGB(255, 255, 255)
-						optionName.TextSize = 15
+						optionName.TextSize = 17
 						optionName.TextTransparency = 0.5
 						optionName.TextTruncate = Enum.TextTruncate.AtEnd
 						optionName.TextXAlignment = Enum.TextXAlignment.Left
@@ -3255,7 +3255,7 @@ local function BindAutoDPI()
 						checkmark.FontFace = Font.new(assets.interFont)
 						checkmark.Text = "✓"
 						checkmark.TextColor3 = Color3.fromRGB(255, 255, 255)
-						checkmark.TextSize = 15
+						checkmark.TextSize = 17
 						checkmark.TextTransparency = 1
 						checkmark.TextXAlignment = Enum.TextXAlignment.Left
 						checkmark.TextYAlignment = Enum.TextYAlignment.Top
@@ -3492,7 +3492,7 @@ local function BindAutoDPI()
 					colorpickerName.FontFace = Font.new(assets.interFont)
 					colorpickerName.Text = Settings.Name
 					colorpickerName.TextColor3 = Color3.fromRGB(255, 255, 255)
-					colorpickerName.TextSize = 15
+					colorpickerName.TextSize = 17
 					colorpickerName.TextTransparency = 0.5
 					colorpickerName.RichText = true
 					colorpickerName.TextTruncate = Enum.TextTruncate.AtEnd
@@ -3539,7 +3539,7 @@ local function BindAutoDPI()
 					interact.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 					interact.Text = ""
 					interact.TextColor3 = Color3.fromRGB(0, 0, 0)
-					interact.TextSize = 16
+					interact.TextSize = 18
 					interact.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 					interact.BackgroundTransparency = 1
 					interact.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -3619,7 +3619,7 @@ local function BindAutoDPI()
 					value.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
 					value.Text = ""
 					value.TextColor3 = Color3.fromRGB(0, 0, 0)
-					value.TextSize = 16
+					value.TextSize = 18
 					value.AutoButtonColor = false
 					value.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 					value.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -3756,7 +3756,7 @@ local function BindAutoDPI()
 					inputName.FontFace = Font.new(assets.interFont)
 					inputName.Text = "Red"
 					inputName.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputName.TextSize = 15
+					inputName.TextSize = 17
 					inputName.TextTransparency = 0.5
 					inputName.TextTruncate = Enum.TextTruncate.AtEnd
 					inputName.TextXAlignment = Enum.TextXAlignment.Left
@@ -3786,7 +3786,7 @@ local function BindAutoDPI()
 					inputBox.FontFace = Font.new(assets.interFont)
 					inputBox.Text = "255"
 					inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputBox.TextSize = 14
+					inputBox.TextSize = 16
 					inputBox.TextTransparency = 0.1
 					inputBox.TextXAlignment = Enum.TextXAlignment.Left
 					inputBox.AnchorPoint = Vector2.new(1, 0.5)
@@ -3840,7 +3840,7 @@ local function BindAutoDPI()
 					inputName1.FontFace = Font.new(assets.interFont)
 					inputName1.Text = "Green"
 					inputName1.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputName1.TextSize = 15
+					inputName1.TextSize = 17
 					inputName1.TextTransparency = 0.5
 					inputName1.TextTruncate = Enum.TextTruncate.AtEnd
 					inputName1.TextXAlignment = Enum.TextXAlignment.Left
@@ -3869,7 +3869,7 @@ local function BindAutoDPI()
 					inputBox1.FontFace = Font.new(assets.interFont)
 					inputBox1.Text = "255"
 					inputBox1.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputBox1.TextSize = 14
+					inputBox1.TextSize = 16
 					inputBox1.TextTransparency = 0.1
 					inputBox1.TextXAlignment = Enum.TextXAlignment.Left
 					inputBox1.AnchorPoint = Vector2.new(1, 0.5)
@@ -3923,7 +3923,7 @@ local function BindAutoDPI()
 					inputName2.FontFace = Font.new(assets.interFont)
 					inputName2.Text = "Blue"
 					inputName2.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputName2.TextSize = 15
+					inputName2.TextSize = 17
 					inputName2.TextTransparency = 0.5
 					inputName2.TextTruncate = Enum.TextTruncate.AtEnd
 					inputName2.TextXAlignment = Enum.TextXAlignment.Left
@@ -3952,7 +3952,7 @@ local function BindAutoDPI()
 					inputBox2.FontFace = Font.new(assets.interFont)
 					inputBox2.Text = "255"
 					inputBox2.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputBox2.TextSize = 14
+					inputBox2.TextSize = 16
 					inputBox2.TextTransparency = 0.1
 					inputBox2.TextXAlignment = Enum.TextXAlignment.Left
 					inputBox2.AnchorPoint = Vector2.new(1, 0.5)
@@ -4007,7 +4007,7 @@ local function BindAutoDPI()
 					inputName3.FontFace = Font.new(assets.interFont)
 					inputName3.Text = "Alpha"
 					inputName3.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputName3.TextSize = 15
+					inputName3.TextSize = 17
 					inputName3.TextTransparency = 0.5
 					inputName3.TextTruncate = Enum.TextTruncate.AtEnd
 					inputName3.TextXAlignment = Enum.TextXAlignment.Left
@@ -4036,7 +4036,7 @@ local function BindAutoDPI()
 					inputBox3.FontFace = Font.new(assets.interFont)
 					inputBox3.Text = "0"
 					inputBox3.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputBox3.TextSize = 14
+					inputBox3.TextSize = 16
 					inputBox3.TextTransparency = 0.1
 					inputBox3.TextXAlignment = Enum.TextXAlignment.Left
 					inputBox3.AnchorPoint = Vector2.new(1, 0.5)
@@ -4089,7 +4089,7 @@ local function BindAutoDPI()
 					inputName4.FontFace = Font.new(assets.interFont)
 					inputName4.Text = "Hex"
 					inputName4.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputName4.TextSize = 15
+					inputName4.TextSize = 17
 					inputName4.TextTransparency = 0.5
 					inputName4.TextTruncate = Enum.TextTruncate.AtEnd
 					inputName4.TextXAlignment = Enum.TextXAlignment.Left
@@ -4119,7 +4119,7 @@ local function BindAutoDPI()
 					inputBox4.FontFace = Font.new(assets.interFont)
 					inputBox4.Text = "255"
 					inputBox4.TextColor3 = Color3.fromRGB(255, 255, 255)
-					inputBox4.TextSize = 14
+					inputBox4.TextSize = 16
 					inputBox4.TextTransparency = 0.1
 					inputBox4.TextXAlignment = Enum.TextXAlignment.Left
 					inputBox4.AnchorPoint = Vector2.new(1, 0.5)
@@ -4276,7 +4276,7 @@ local function BindAutoDPI()
 					)
 					confirm.Text = "Confirm"
 					confirm.TextColor3 = Color3.fromRGB(255, 255, 255)
-					confirm.TextSize = 17
+					confirm.TextSize = 19
 					confirm.TextTransparency = 0.5
 					confirm.TextTruncate = Enum.TextTruncate.AtEnd
 					confirm.AutoButtonColor = false
@@ -4310,7 +4310,7 @@ local function BindAutoDPI()
 					)
 					cancel.Text = "Cancel"
 					cancel.TextColor3 = Color3.fromRGB(255, 255, 255)
-					cancel.TextSize = 17
+					cancel.TextSize = 19
 					cancel.TextTransparency = 0.5
 					cancel.TextTruncate = Enum.TextTruncate.AtEnd
 					cancel.AutoButtonColor = false
@@ -4369,7 +4369,7 @@ local function BindAutoDPI()
 					paragraphHeader.RichText = true
 					paragraphHeader.Text = ColorpickerFunctions.Settings.Name
 					paragraphHeader.TextColor3 = Color3.fromRGB(255, 255, 255)
-					paragraphHeader.TextSize = 20
+					paragraphHeader.TextSize = 22
 					paragraphHeader.TextTransparency = 0.4
 					paragraphHeader.TextWrapped = true
 					paragraphHeader.TextYAlignment = Enum.TextYAlignment.Top
@@ -4783,7 +4783,7 @@ local function BindAutoDPI()
 					headerText.RichText = true
 					headerText.Text = HeaderFunctions.Settings.Text or HeaderFunctions.Settings.Name
 					headerText.TextColor3 = Color3.fromRGB(255, 255, 255)
-					headerText.TextSize = 18
+					headerText.TextSize = 20
 					headerText.TextTransparency = 0.3
 					headerText.TextWrapped = true
 					headerText.TextXAlignment = Enum.TextXAlignment.Left
@@ -4827,7 +4827,7 @@ local function BindAutoDPI()
 					labelText.RichText = true
 					labelText.Text = LabelFunctions.Settings.Text or LabelFunctions.Settings.Name -- Settings.Name Deprecated use Settings.Text
 					labelText.TextColor3 = Color3.fromRGB(255, 255, 255)
-					labelText.TextSize = 15
+					labelText.TextSize = 17
 					labelText.TextTransparency = 0.5
 					labelText.TextWrapped = true
 					labelText.TextXAlignment = Enum.TextXAlignment.Left
@@ -4871,7 +4871,7 @@ local function BindAutoDPI()
 					subLabelText.RichText = true
 					subLabelText.Text = SubLabelFunctions.Settings.Text or SubLabelFunctions.Settings.Name -- Settings.Name Deprecated use Settings.Text
 					subLabelText.TextColor3 = Color3.fromRGB(255, 255, 255)
-					subLabelText.TextSize = 14
+					subLabelText.TextSize = 16
 					subLabelText.TextTransparency = 0.7
 					subLabelText.TextWrapped = true
 					subLabelText.TextXAlignment = Enum.TextXAlignment.Left
@@ -4919,7 +4919,7 @@ local function BindAutoDPI()
 					paragraphHeader.RichText = true
 					paragraphHeader.Text = ParagraphFunctions.Settings.Header
 					paragraphHeader.TextColor3 = Color3.fromRGB(255, 255, 255)
-					paragraphHeader.TextSize = 17
+					paragraphHeader.TextSize = 19
 					paragraphHeader.TextTransparency = 0.4
 					paragraphHeader.TextWrapped = true
 					paragraphHeader.TextXAlignment = Enum.TextXAlignment.Left
@@ -4943,7 +4943,7 @@ local function BindAutoDPI()
 					paragraphBody.RichText = true
 					paragraphBody.Text = ParagraphFunctions.Settings.Body
 					paragraphBody.TextColor3 = Color3.fromRGB(255, 255, 255)
-					paragraphBody.TextSize = 15
+					paragraphBody.TextSize = 17
 					paragraphBody.TextTransparency = 0.5
 					paragraphBody.TextWrapped = true
 					paragraphBody.TextXAlignment = Enum.TextXAlignment.Left
@@ -5277,7 +5277,7 @@ local function BindAutoDPI()
 		notificationTitle.RichText = true
 		notificationTitle.Text = Settings.Title
 		notificationTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-		notificationTitle.TextSize = 15
+		notificationTitle.TextSize = 17
 		notificationTitle.TextTransparency = 0.2
 		notificationTitle.TextTruncate = Enum.TextTruncate.SplitWord
 		notificationTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -5305,7 +5305,7 @@ local function BindAutoDPI()
 		)
 		notificationDescription.Text = Settings.Description
 		notificationDescription.TextColor3 = Color3.fromRGB(255, 255, 255)
-		notificationDescription.TextSize = 13
+		notificationDescription.TextSize = 15
 		notificationDescription.TextTransparency = 0.5
 		notificationDescription.TextWrapped = true
 		notificationDescription.RichText = true
@@ -5350,7 +5350,7 @@ local function BindAutoDPI()
 		interactable.FontFace = Font.new(assets.interFont)
 		interactable.Text = "✓"
 		interactable.TextColor3 = Color3.fromRGB(255, 255, 255)
-		interactable.TextSize = 19
+		interactable.TextSize = 21
 		interactable.TextTransparency = 0.2
 		interactable.AnchorPoint = Vector2.new(1, 0.5)
 		interactable.AutomaticSize = Enum.AutomaticSize.XY
@@ -5518,7 +5518,7 @@ local function BindAutoDPI()
 		paragraphHeader.RichText = true
 		paragraphHeader.Text = Settings.Title
 		paragraphHeader.TextColor3 = Color3.fromRGB(255, 255, 255)
-		paragraphHeader.TextSize = 20
+		paragraphHeader.TextSize = 22
 		paragraphHeader.TextTransparency = 0.4
 		paragraphHeader.TextWrapped = true
 		paragraphHeader.AutomaticSize = Enum.AutomaticSize.Y
@@ -5541,7 +5541,7 @@ local function BindAutoDPI()
 		paragraphBody.RichText = true
 		paragraphBody.Text = Settings.Description
 		paragraphBody.TextColor3 = Color3.fromRGB(255, 255, 255)
-		paragraphBody.TextSize = 16
+		paragraphBody.TextSize = 18
 		paragraphBody.TextTransparency = 0.5
 		paragraphBody.TextWrapped = true
 		paragraphBody.AutomaticSize = Enum.AutomaticSize.Y
@@ -5615,7 +5615,7 @@ local function BindAutoDPI()
 			button.FontFace = Font.new(assets.interFont)
 			button.Text = v.Name
 			button.TextColor3 = Color3.fromRGB(255, 255, 255)
-			button.TextSize = 17
+			button.TextSize = 19
 			button.TextTransparency = 0.5
 			button.TextTruncate = Enum.TextTruncate.AtEnd
 			button.AutoButtonColor = false
