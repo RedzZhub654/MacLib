@@ -4,7 +4,7 @@
 
 ![MacLib interface preview](assets/maclib-docs/welcome-2-5cc22d84.png)
 
-MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It provides a practical foundation for tabbed interfaces, rich controls, notifications, dialogs, an always-available mobile quick-access control, automatic viewport scaling, and Discord invite cards.
+MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It provides a practical foundation for tabbed interfaces, enlarged readable typography, rich controls, notifications, dialogs, an always-available mobile quick-access control, automatic viewport scaling, and Discord invite cards.
 
 ---
 
@@ -160,7 +160,7 @@ MobileToggleButton = true,
 
 ## Executor profile card
 
-The executor profile area in the lower-left sidebar now uses a restrained slate outline and a comfortable full-width, 68-pixel dark card. It uses a 34-pixel avatar, compact text spacing, and a 12-pixel lift above the bottom edge so the card fits naturally without looking detached or cramped. The display name, Roblox username, executor name, and ping value use larger, readable type. Beneath the display name and Roblox username, the compact status row shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available, plus a live **`Ping: <ms> ms`** readout refreshed every 0.25 seconds by default. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor and ping values follow the existing profile privacy state and are redacted when user information is hidden.
+The executor profile area in the lower-left sidebar now uses a restrained slate outline and a comfortable full-width, 84-pixel dark card. It uses a 38-pixel avatar, expanded spacing, and a 12-pixel lift above the bottom edge so the larger text remains clear without looking cramped. The display name, Roblox username, executor name, and ping value all use enlarged, readable type. Beneath the display name and Roblox username, the compact status row shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available, plus a live **`Ping: <ms> ms`** readout refreshed every 0.25 seconds by default. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor and ping values follow the existing profile privacy state and are redacted when user information is hidden.
 
 | Ping color | Latency range | Meaning |
 |---|---:|---|
