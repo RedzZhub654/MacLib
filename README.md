@@ -1,33 +1,32 @@
 # MacLib
 
-> A macOS-inspired Roblox UI library with responsive windows, configurable controls, a mobile recovery button, and a floating live player-stats bar.
+> **A macOS-inspired Roblox UI library** for polished windows, responsive overlays, configurable controls, and live community widgets.
 
 ![MacLib interface preview](assets/maclib-docs/welcome-2-5cc22d84.png)
 
-MacLib ships as a single Lua file and is designed to make feature-rich Roblox interfaces quick to assemble. It supports organized tabs and sections, configuration-aware controls, notifications, dialogs, a mobile-friendly floating window toggle, and a live overlay that displays the local player’s avatar, ping, FPS, and server population.
+MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It provides a practical foundation for tabbed interfaces, rich controls, notifications, dialogs, mobile recovery controls, automatic viewport scaling, player stats, and Discord invite cards.
 
-| Project resource | Link |
+---
+
+## At a glance
+
+| Resource | Location |
 |---|---|
+| **Source code** | [`maclib.txt`](./maclib.txt) |
+| **Full working example** | [`examples/test.lua`](./examples/test.lua) |
 | **Repository** | [RedzZhub654/MacLib](https://github.com/RedzZhub654/MacLib) |
-| **Library source** | [`maclib.txt`](./maclib.txt) |
-| **Ready-to-run test UI** | [`examples/test.lua`](./examples/test.lua) |
-| **Local visual assets** | [`assets/maclib-docs`](./assets/maclib-docs) |
-| **Image-source manifest** | [`assets/maclib-docs/SOURCES.md`](./assets/maclib-docs/SOURCES.md) |
+| **Local UI screenshots** | [`assets/maclib-docs`](./assets/maclib-docs) |
+| **Image provenance** | [`assets/maclib-docs/SOURCES.md`](./assets/maclib-docs/SOURCES.md) |
 | **Original documentation** | [MacLib UI Library][1] |
 | **Original project** | [biggaboy212/Maclib][2] |
 
-## Guide map
+> **Recommended route:** run the [test script](#run-the-test-interface) first. It demonstrates the current window, input, theme, mobile, player-stats, and Discord card features in one interface.
 
-| Start here | Build features | Reference |
-|---|---|---|
-| [Load MacLib](#load-maclib) | [Create a window](#create-a-window) | [Window options](#window-options) |
-| [Run the test UI](#run-the-test-ui) | [Build a layout](#build-a-layout) | [Controls](#controls) |
-| [Use mobile support](#mobile-window-toggle) | [Automatic DPI](#automatic-dpi-scaling) | [Window and configuration methods](#window-and-configuration-methods) |
-| [Use player stats](#floating-player-stats-bar) | [Discord invite widget](#discord-invite-widget) | [Credits and sources](#credits-and-sources) |
+---
 
-## Load MacLib
+## Start here
 
-MacLib is published in this repository as [`maclib.txt`](./maclib.txt). The following loader points to this repository’s main branch. For production use, review the code you run and consider pinning the URL to a specific commit so that your build stays reproducible.
+### Load the library
 
 ```lua
 local MacLib = loadstring(game:HttpGet(
@@ -35,21 +34,15 @@ local MacLib = loadstring(game:HttpGet(
 ))()
 ```
 
-> **Loading alone is intentionally silent.** The loader returns the `MacLib` table; it does not create a window by itself. Call `MacLib:Demo()`, create a window with `MacLib:Window({...})`, or run the complete test script below.
-
-### Quick visual check
+Loading is intentionally silent: the loader returns the `MacLib` table, but does not create a window. Open the included demo immediately after loading when you need a quick visual check.
 
 ```lua
-local MacLib = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/maclib.txt"
-))()
-
 MacLib:Demo()
 ```
 
-## Run the test UI
+### Run the test interface
 
-The fastest way to confirm a working installation is to run [`examples/test.lua`](./examples/test.lua). It opens a complete test interface with a floating player-stats bar, mobile recovery button, global setting, notification, dialog, toggle, slider, input, dropdown, color picker, keybind, and action buttons.
+The full test interface creates a working window and exercises callbacks, mobile controls, automatic DPI behavior, the player-stats overlay, themes, and the Discord invite card.
 
 ```lua
 loadstring(game:HttpGet(
@@ -57,82 +50,53 @@ loadstring(game:HttpGet(
 ))()
 ```
 
-> **What the test script proves:** it validates the main window lifecycle, interactive callbacks, visible state changes, player-stats updates, and desktop or touch dragging. Use it as a known-good starting point, then replace the callbacks with your own application logic.
-
-| Test area | Included behavior |
+| Test area | What it covers |
 |---|---|
-| Core window | Title, subtitle, keybind, drag behavior, acrylic blur, and close flow. |
-| Mobile support | A floating circular button restores a minimized window on touch-only devices. |
-| Player stats | Local avatar, display name, ping, FPS, player count, badge, and drag support. |
-| Inputs | Toggle, slider, text input, dropdown, color picker, and keybind callbacks. |
-| Feedback | Notification and confirmation-dialog examples. |
+| **Window lifecycle** | Window visibility, dragging, blur, keybinds, and close behavior. |
+| **Inputs** | Toggle, slider, input, dropdown, color picker, and keybind callbacks. |
+| **Responsive UX** | Mobile recovery control, automatic DPI scaling, and bounded floating elements. |
+| **Live widgets** | Player stats and public Discord invite statistics. |
+| **Feedback** | Notifications, dialogs, copy feedback, and action callbacks. |
 
-## Create a window
+---
 
-A window is the root of every MacLib interface. Configure only the options your project needs; omitted options use the library’s defaults.
+## Create your first window
 
-```lua
-local Window = MacLib:Window({
-    Title = "My Project",
-    Subtitle = "Interface ready",
-    Size = UDim2.fromOffset(900, 650),
-    DragStyle = 1,
-    DisabledWindowControls = {},
-    ShowUserInfo = true,
-    Keybind = Enum.KeyCode.RightControl,
-    AcrylicBlur = true,
-
-    MobileFloatButton = true,
-    PlayerStatsEnabled = true,
-    PlayerStatsBadge = "BETA",
-})
-```
-
-### Window options
-
-| Option | Type | Default behavior | Purpose |
-|---|---|---|---|
-| `Title` | `string` | Required display text | Sets the main title. |
-| `Subtitle` | `string` | Optional | Adds supporting text below the title. |
-| `HubLogo` | `string` or `false` | `rbxassetid://137471163061841` | Uses the default logo, overrides it with another image asset, or hides it with `false`. |
-| `HubLogoColor` | `Color3` | White | Applies an optional tint to the hub logo. |
-| `Size` | `UDim2` | `UDim2.fromOffset(868, 650)` | Sets the initial window dimensions. |
-| `DragStyle` | `number` | `1` | Uses the move icon (`1`) or full UI surface (`2`) for dragging. |
-| `DisabledWindowControls` | `table` | `{}` | Disables named controls such as `"Exit"` or `"Minimize"`. |
-| `ShowUserInfo` | `boolean` | `true` | Shows the local-player block in the window sidebar. |
-| `Keybind` | `Enum.KeyCode` | `RightControl` | Toggles the window’s visible state. |
-| `AcrylicBlur` | `boolean` | `true` | Enables the blur treatment behind the interface. |
-| `AutoDPI` | `boolean` | `true` | Automatically scales the main window and player-stats bar to fit the active viewport. |
-| `AutoDPIMinScale` | `number` | `0.35` | Sets the smallest scale that automatic DPI scaling can apply. |
-| `AutoDPIMargin` | `number` | `32` | Reserves edge space, in pixels, when calculating the responsive scale. |
-| `MobileFloatButton` | `boolean` | Auto-enabled on touch-only devices | Controls the minimized-window recovery button. |
-| `MobileFloatButtonPosition` | `UDim2` | Bottom-right | Sets the floating recovery button’s initial position. |
-| `PlayerStatsEnabled` | `boolean` | `true` | Creates the independent floating player-stats bar. |
-| `PlayerStatsBadge` | `string` or `false` | `"BETA"` | Sets the badge next to the display name, or removes it with `false`. |
-| `PlayerStatsPosition` | `UDim2` | Top-center | Sets the stats bar’s initial position. |
-| `PlayerStatsDraggable` | `boolean` | `true` | Enables touch and mouse dragging for the stats bar. |
-| `PlayerStatsAvatar` | `string` | Local player’s Roblox avatar | Overrides the automatically retrieved avatar thumbnail. |
-
-## Hub logo beside the title
-
-MacLib displays `rbxassetid://137471163061841` beside the window title by default. The title and subtitle automatically reserve space for the logo and the global-settings button. Set `HubLogo` to a different Roblox image asset to override the default, or set it to `false` to hide it. Use `HubLogoColor` only when the source image is a monochrome or tintable asset.
+A window is the root of a MacLib interface. Start small, then enable the optional pieces as your project requires.
 
 ```lua
 local Window = MacLib:Window({
     Title = "My Hub",
-    Subtitle = "Branded interface",
+    Subtitle = "Ready to go",
+    Size = UDim2.fromOffset(900, 650),
 
-    -- The default logo is used when HubLogo is omitted.
-    -- HubLogo = "rbxassetid://YOUR_IMAGE_ID", -- Optional override
-    -- HubLogo = false,                         -- Optional hide
-    HubLogoColor = Color3.fromRGB(255, 255, 255),
-    Size = UDim2.fromOffset(868, 650),
+    Keybind = Enum.KeyCode.RightControl,
+    AcrylicBlur = true,
+    AutoDPI = true,
+
+    MobileFloatButton = true,
+    PlayerStatsEnabled = true,
+    PlayerStatsBadge = "LIVE",
 })
 ```
 
+### Core options
+
+| Option | Purpose |
+|---|---|
+| `Title`, `Subtitle` | Define the primary window text. |
+| `Size` | Sets initial window dimensions; defaults to `868 × 650`. |
+| `Keybind` | Toggles the visible state; defaults to `RightControl`. |
+| `DragStyle` | Uses the drag icon (`1`) or the full window (`2`) as the drag target. |
+| `ShowUserInfo` | Displays the local-player block in the sidebar. |
+| `AcrylicBlur` | Controls the background blur treatment. |
+| `DisabledWindowControls` | Disables named controls such as `"Exit"` or `"Minimize"`. |
+
+---
+
 ## Build a layout
 
-MacLib uses a predictable hierarchy: **Window → Tab Group → Tab → Section → Control**. Tab groups organize navigation; tabs define pages; sections place controls in the left or right column. [3] [4] [5]
+MacLib follows a straightforward structure: **Window → Tab Group → Tab → Section → Control**. Tabs organize pages, while sections place controls in the left or right column. [3] [4] [5]
 
 ```lua
 local TabGroup = Window:TabGroup()
@@ -148,149 +112,147 @@ local Right = MainTab:Section({ Side = "Right" })
 Left:Header({ Text = "Controls" })
 Left:Paragraph({
     Header = "Welcome",
-    Body = "Place your controls below this text.",
+    Body = "Add controls below this text.",
 })
 
 MainTab:Select()
 ```
 
-| Tab layout | Section layout |
+| Tab navigation | Two-column sections |
 |---|---|
 | ![Tab layout reference](assets/maclib-docs/adding_tabs-1-0ef57fa5.png) | ![Section layout reference](assets/maclib-docs/adding_sections-1-4cb01cdc.png) |
 
-## Mobile window toggle
+---
 
-When a MacLib window is minimized on a touch-only device, the library can display a circular floating menu button. A tap restores the window; dragging moves the button to a comfortable on-screen position. The button position is clamped to the active viewport, so it cannot be dragged off-screen. The control is hidden while the main UI is open and is cleaned up when `Window:Unload()` runs.
+## Responsive experience
 
-```lua
-local Window = MacLib:Window({
-    Title = "Mobile-ready UI",
-    Size = UDim2.fromOffset(868, 650),
-    MobileFloatButton = true,
-    MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
-})
-```
+### Automatic DPI scaling
 
-## Automatic DPI scaling
-
-MacLib now scales itself against the active camera viewport by default. The main window is reduced only when needed to respect the configured edge margin, while the floating player-stats bar scales against both viewport width and height for compact displays. The calculation re-runs when the viewport changes, including device rotation and window resizing; both floating controls are then kept inside the visible screen area.
+MacLib automatically adapts the main window to the active camera viewport. It recalculates after a resize, device rotation, or camera change. The floating player-stats card also scales against both width and height, while floating controls are clamped to the visible screen.
 
 ```lua
-local Window = MacLib:Window({
-    Title = "Responsive UI",
-    Size = UDim2.fromOffset(900, 650),
-
-    AutoDPI = true,
-    AutoDPIMinScale = 0.35,
-    AutoDPIMargin = 32,
-})
+AutoDPI = true,
+AutoDPIMinScale = 0.35,
+AutoDPIMargin = 32,
 ```
 
-| Method or setting | Purpose |
+| Setting or method | Effect |
 |---|---|
-| `AutoDPI = true` | Enables responsive viewport scaling at window creation. |
-| `AutoDPIMinScale = 0.35` | Prevents the main window from shrinking below the selected minimum scale. |
-| `AutoDPIMargin = 32` | Leaves a 32-pixel border around the scaled main window when space permits. |
-| `Window:SetAutoDPI(boolean)` | Enables or disables future automatic scale updates at runtime. |
-| `Window:GetAutoDPI()` | Returns whether automatic DPI scaling is active. |
-| `Window:SetScale(number)` | Applies a manual scale and turns automatic DPI scaling off, giving manual control precedence. |
+| `AutoDPI` | Enables viewport-aware scaling. It is enabled by default. |
+| `AutoDPIMinScale` | Sets the minimum allowed main-window scale. |
+| `AutoDPIMargin` | Reserves viewport edge space during scaling. |
+| `Window:SetAutoDPI(boolean)` | Enables or disables automatic updates at runtime. |
+| `Window:GetAutoDPI()` | Returns the current automatic-scaling state. |
+| `Window:SetScale(number)` | Switches to manual scale control. |
 
-The test script includes an **Automatic DPI** toggle under **Settings → Window actions**. Use it while resizing a desktop viewport or rotating a device to verify the responsive behavior.
+### Mobile recovery button
 
-## Floating player-stats bar
+On touch-only devices, a minimized window can display a circular menu button. A tap restores the window; a drag repositions it. The button is kept inside the active viewport, even after a resize or orientation change.
 
-The player-stats bar is a separate overlay, so it remains available even when the main window is minimized. It uses the local player’s **Roblox avatar** and **display name** rather than a hard-coded username, and refreshes ping, FPS, and player count at a short interval. The user, signal, gauge, and users icons are sourced from the icon set supplied with this project.
+```lua
+MobileFloatButton = true,
+MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
+```
+
+### Floating player stats
+
+The player-stats overlay stays visible while the main interface is minimized. It displays the local Roblox avatar and display name, plus live ping, FPS, and server population.
+
+```lua
+PlayerStatsEnabled = true,
+PlayerStatsBadge = "LIVE",
+PlayerStatsPosition = UDim2.new(0.5, 0, 0, 16),
+PlayerStatsDraggable = true,
+
+-- Optional override:
+-- PlayerStatsAvatar = "rbxassetid://YOUR_IMAGE_ID",
+```
+
+| Value | Source |
+|---|---|
+| **Avatar and name** | Local Roblox player; the avatar can be overridden. |
+| **Ping** | Roblox `Stats` service, with a safe unavailable fallback. |
+| **FPS** | Render-step measurement. |
+| **Players** | `Players:GetPlayers()` in the active server. |
+
+---
+
+## Brand the window
+
+MacLib displays `rbxassetid://137471163061841` beside the title by default. The title block automatically reserves space for both the hub logo and the global-settings button.
 
 ```lua
 local Window = MacLib:Window({
-    Title = "Status overlay demo",
-    Size = UDim2.fromOffset(868, 650),
+    Title = "My Hub",
+    Subtitle = "Branded interface",
 
-    PlayerStatsEnabled = true,
-    PlayerStatsBadge = "TEST",
-    PlayerStatsPosition = UDim2.new(0.5, 0, 0, 16),
-    PlayerStatsDraggable = true,
-
-    -- Optional custom profile image:
-    -- PlayerStatsAvatar = "rbxassetid://YOUR_IMAGE_ID",
+    -- Default logo is used when this is omitted.
+    -- HubLogo = "rbxassetid://YOUR_IMAGE_ID", -- Optional override
+    -- HubLogo = false,                         -- Optional hide
+    HubLogoColor = Color3.fromRGB(255, 255, 255),
 })
 ```
 
-| Live value | Source | Display behavior |
+| Option | Default | Purpose |
 |---|---|---|
-| Avatar and name | Local Roblox player | Automatically fetched avatar thumbnail and display name; an image asset can override the avatar. |
-| Ping | Roblox `Stats` service | Displayed in milliseconds; falls back safely when unavailable. |
-| FPS | Render-step measurement | Calculated from rendered frames over the refresh interval. |
-| Players | `Players:GetPlayers()` | Shows the current population of the active server. |
+| `HubLogo` | `rbxassetid://137471163061841` | Uses the default asset, another image asset, or `false` to hide the logo. |
+| `HubLogoColor` | White | Applies a tint to a monochrome or tintable image. |
 
-## Theme customization
+---
 
-A practical theme workflow keeps your color decisions in a single palette table and passes those tokens into your own callbacks, custom instances, and MacLib color controls. The included [`examples/test.lua`](./examples/test.lua) now contains four ready-to-test palettes: **Sunset**, **Ocean**, **Forest**, and **Lavender**. Choosing a palette updates the example’s accent color picker and palette description so you can verify the selected values immediately.
+## Customize your own visuals
 
-> **Scope:** MacLib currently keeps its core window styling internally consistent. Palette tokens are intended for the visual behavior you add around MacLib—such as feature highlights, custom instances, notifications you manage, and color-picker defaults—rather than a global runtime restyle of every built-in component.
+MacLib preserves its own core styling, while a palette table gives your feature callbacks a clean place to keep custom colors. The test interface contains four palettes: **Sunset**, **Ocean**, **Forest**, and **Lavender**.
 
 ```lua
-local Palettes = {
-    Ocean = {
-        Accent = Color3.fromRGB(74, 166, 255),
-        Background = Color3.fromRGB(19, 30, 46),
-        Surface = Color3.fromRGB(31, 60, 88),
-        Text = Color3.fromRGB(235, 247, 255),
-    },
-    Forest = {
-        Accent = Color3.fromRGB(105, 196, 132),
-        Background = Color3.fromRGB(22, 34, 27),
-        Surface = Color3.fromRGB(39, 71, 49),
-        Text = Color3.fromRGB(238, 255, 241),
-    },
+local Palette = {
+    Accent = Color3.fromRGB(74, 166, 255),
+    Background = Color3.fromRGB(19, 30, 46),
+    Surface = Color3.fromRGB(31, 60, 88),
+    Text = Color3.fromRGB(235, 247, 255),
 }
-
-local ActivePalette = Palettes.Ocean
 
 Section:Colorpicker({
     Name = "Accent color",
-    Default = ActivePalette.Accent,
+    Default = Palette.Accent,
     Alpha = 0,
     Callback = function(color)
-        -- Apply `color` to the custom visuals in your own feature.
-        print("New accent:", color)
+        print("Apply this color to your own feature:", color)
     end,
 })
 ```
 
-| Palette | Accent | Background | Surface | Text |
-|---|---:|---:|---:|---:|
-| **Sunset** | `244, 101, 92` | `30, 24, 28` | `58, 37, 43` | `255, 240, 239` |
-| **Ocean** | `74, 166, 255` | `19, 30, 46` | `31, 60, 88` | `235, 247, 255` |
-| **Forest** | `105, 196, 132` | `22, 34, 27` | `39, 71, 49` | `238, 255, 241` |
-| **Lavender** | `173, 134, 255` | `33, 27, 47` | `63, 48, 91` | `247, 242, 255` |
+| Palette | Accent | Background | Surface |
+|---|---:|---:|---:|
+| **Sunset** | `244, 101, 92` | `30, 24, 28` | `58, 37, 43` |
+| **Ocean** | `74, 166, 255` | `19, 30, 46` | `31, 60, 88` |
+| **Forest** | `105, 196, 132` | `22, 34, 27` | `39, 71, 49` |
+| **Lavender** | `173, 134, 255` | `33, 27, 47` | `63, 48, 91` |
 
-The test script’s `ApplyPalette` function is a compact pattern for palette selection. It updates the accent picker, refreshes the on-screen palette details, and exposes the active `Background`, `Surface`, and `Text` tokens for use in your own UI behavior.
+---
 
-## Controls
+## Add controls
 
-Interactive controls can receive an optional **flag** as their second argument. Flags allow values to participate in MacLib’s configuration system. The original API reference documents the complete option fields and object methods. [6]
+Interactive controls can receive an optional **flag** as their second argument. Flags allow values to participate in MacLib configuration storage. The original API reference provides the complete field and method details. [6]
 
-| Control | Typical use | Key capabilities |
-|---|---|---|
-| `Section:Button` | Run an action | Invokes a callback. |
-| `Section:Toggle` | Store a boolean state | Get or update the state. |
-| `Section:Slider` | Choose a number in a range | Get or update the value; customize formatting and precision. |
-| `Section:Input` | Capture text | Read or replace text; use built-in or custom filters. |
-| `Section:Dropdown` | Choose one or many values | Search, require a selection, and update options dynamically. |
-| `Section:Keybind` | Bind a Roblox input | Bind, unbind, and retrieve the active input. |
-| `Section:Colorpicker` | Choose a color and alpha | Update color or transparency programmatically. |
-| `Section:Header` | Add a section heading | Update text or visibility. |
-| `Section:Paragraph` | Add explanatory content | Update its header and body text. |
-| `Section:Label` / `SubLabel` | Add lightweight text | Update text or visibility. |
-| `Section:Divider` / `Spacer` | Separate controls | Hide or remove the divider, or create spacing. |
+| Control | Use it for |
+|---|---|
+| `Section:Button` | Invoking an action. |
+| `Section:Toggle` | Tracking a boolean state. |
+| `Section:Slider` | Choosing a numeric range. |
+| `Section:Input` | Capturing text. |
+| `Section:Dropdown` | Choosing one or more values. |
+| `Section:Keybind` | Binding a Roblox input. |
+| `Section:Colorpicker` | Selecting color and transparency. |
+| `Section:Header`, `Paragraph`, `Label`, `SubLabel` | Presenting explanatory text. |
+| `Section:Divider`, `Spacer` | Creating visual separation. |
 
 ```lua
 local Enabled = Left:Toggle({
     Name = "Enable feature",
     Default = false,
     Callback = function(value)
-        print("Feature enabled:", value)
+        print("Enabled:", value)
     end,
 }, "FeatureEnabled")
 
@@ -307,27 +269,29 @@ local Amount = Left:Slider({
 }, "Amount")
 
 Left:Button({
-    Name = "Show values",
+    Name = "Show current values",
     Callback = function()
         print(Enabled:GetState(), Amount:GetValue())
     end,
 })
 ```
 
-## Notifications and dialogs
+---
 
-Use notifications for transient feedback and dialogs when the user must make a choice. Both return objects that can be updated or canceled after creation. [7] [8]
+## Show feedback
+
+Use notifications for short-lived status messages and dialogs when the player must confirm a choice. Both objects can be updated or canceled after creation. [7] [8]
 
 ```lua
 Window:Notify({
     Title = "Saved",
-    Description = "Your settings were saved successfully.",
+    Description = "Your settings were saved.",
     Lifetime = 3,
 })
 
 Window:Dialog({
     Title = "Reset settings?",
-    Description = "This example shows a confirmation flow.",
+    Description = "This demonstrates a confirmation flow.",
     Buttons = {
         {
             Name = "Confirm",
@@ -340,17 +304,21 @@ Window:Dialog({
 })
 ```
 
+---
+
 ## Discord invite widget
 
-`Tab:CreateDiscordInvite(config)` creates a Discord server invite card in a tab column. The card supports optional Roblox asset images, a copy-link button, and live online and total member counts. It calls Discord’s public `GET /invites/{code}?with_counts=true` endpoint without storing credentials; Discord documents that this response provides `approximate_presence_count` and `approximate_member_count`. [10]
+`Tab:CreateDiscordInvite(config)` creates a community card in either tab column. It supports optional Roblox icon and banner assets, copy-link feedback, and live online and total member counts. The widget uses Discord’s public invite endpoint with `with_counts=true`, which returns the approximate presence and member count fields. [10]
 
 ```lua
-local DiscordCard = MainTab:CreateDiscordInvite({
+local Card = MainTab:CreateDiscordInvite({
     Title = "Discord Developers",
-    Description = "A live Discord invite example.",
-    Icon = "rbxassetid://YOUR_SERVER_ICON",       -- Optional
-    Banner = "rbxassetid://YOUR_SERVER_BANNER",   -- Optional
+    Description = "A live public invite example.",
+
+    Icon = "rbxassetid://YOUR_SERVER_ICON",     -- Optional
+    Banner = "rbxassetid://YOUR_SERVER_BANNER", -- Optional
     Link = "https://discord.gg/discord-developers",
+
     Button = "Copy Invite",
     Side = 2,
     RefreshInterval = 5,
@@ -361,58 +329,66 @@ local DiscordCard = MainTab:CreateDiscordInvite({
 })
 ```
 
-| Property | Type | Default | Description |
-|---|---|---|---|
-| `Title` | `string` | `"Discord Server"` | Card title. If omitted, a server name returned by the public invite response is used when available. |
-| `Description` | `string` | Empty | Supporting card text. If omitted, an invite-response description is used when available. |
-| `Icon` | `string` | Empty | Optional Roblox asset ID for the server icon. |
-| `Banner` | `string` | Empty | Optional Roblox asset ID for the banner image. A Discord-inspired gradient is used when omitted. |
-| `Link` | `string` | Empty | Full Discord invite URL or an invite code, such as `discord.gg/example`. |
-| `Button` | `string` | `"Join Server"` | Label for the copy-link action. |
-| `Side` | `number` or `string` | `1` | Tab column: `1` or `"Left"`; use `2` or `"Right"` for the other column. |
-| `RefreshInterval` | `number` | `5` seconds | Live-stat refresh cadence; values lower than five seconds are raised to five seconds. |
-| `OnCopy` | `function(link, copied)` | None | Optional callback after the copy-link attempt. |
+### Configuration
 
-Clicking the action button attempts to copy the configured link with the host environment’s clipboard function. If clipboard access is unavailable, the card provides **Link Ready** feedback instead. Live counts are best-effort: an invalid or expired invite, blocked HTTP access, or a rate-limited response leaves the card in an unavailable state rather than interrupting the rest of the interface.
+| Property | Default | Notes |
+|---|---|---|
+| `Title` | `"Discord Server"` | Uses the returned server name when omitted and available. |
+| `Description` | Empty | Uses the returned server description when omitted and available. |
+| `Icon`, `Banner` | Empty | Optional Roblox asset IDs; a gradient fills the banner space when omitted. |
+| `Link` | Empty | Full Discord URL or invite code. |
+| `Button` | `"Join Server"` | Copy-action label. |
+| `Side` | `1` | Use `1` or `"Left"`; use `2` or `"Right"` for the other column. |
+| `RefreshInterval` | `5` seconds | Live-stat cadence; values below five seconds are raised to five. |
+| `OnCopy` | None | Receives `link` and the clipboard success flag. |
 
-| Returned method | Purpose |
-|---|---|
-| `DiscordCard:GetFrame()` | Returns the widget frame for advanced local customization. |
-| `DiscordCard:SetTitle(value)` | Updates the visible title. |
-| `DiscordCard:SetDescription(value)` | Updates the supporting text. |
-| `DiscordCard:SetLink(value)` | Changes the invite link and requests a refresh. |
-| `DiscordCard:Refresh()` | Immediately requests the latest public approximate counts. |
-| `DiscordCard:Destroy()` | Stops future refreshes and destroys the card. |
-
-## Window and configuration methods
+### Card methods
 
 | Method | Purpose |
 |---|---|
-| `Window:SetState(boolean)` | Shows or hides the main window. |
-| `Window:GetState()` | Returns whether the main window is visible. |
+| `Card:GetFrame()` | Returns the underlying widget frame. |
+| `Card:SetTitle(value)` | Updates the title. |
+| `Card:SetDescription(value)` | Updates the supporting text. |
+| `Card:SetLink(value)` | Changes the link and requests a refresh. |
+| `Card:Refresh()` | Requests fresh public live counts now. |
+| `Card:Destroy()` | Stops future refreshes and removes the card. |
+
+> Live counts are best-effort. An invalid invite, unavailable HTTP access, or rate-limited response leaves the card available but marks its statistics as unavailable. The copy action uses the clipboard API offered by the host environment and otherwise reports **Link Ready**.
+
+---
+
+## Window and configuration API
+
+| Method | Purpose |
+|---|---|
+| `Window:SetState(boolean)` / `Window:GetState()` | Changes or reads main-window visibility. |
 | `Window:SetNotificationsState(boolean)` | Shows or hides the notification area. |
-| `Window:GetNotificationsState()` | Returns notification visibility. |
-| `Window:SetAcrylicBlurState(boolean)` | Enables or disables acrylic blur. |
-| `Window:GetAcrylicBlurState()` | Returns the blur state. |
+| `Window:SetAcrylicBlurState(boolean)` | Changes the blur state. |
 | `Window:SetUserInfoState(boolean)` | Shows or redacts sidebar user information. |
-| `Window:SetSize(UDim2)` / `Window:GetSize()` | Updates or retrieves the window size. |
-| `Window:SetScale(number)` / `Window:GetScale()` | Updates or retrieves UI scale. |
-| `Window:UpdateTitle(string)` / `Window:UpdateSubtitle(string)` | Changes window text after creation. |
-| `Window:Unload()` | Cleans up the entire interface, including floating overlays. |
-| `HubLogo` / `HubLogoColor` | Uses the default hub logo, accepts an optional override or `false` to hide it, and applies an optional tint. |
+| `Window:SetSize(UDim2)` / `Window:GetSize()` | Changes or reads window dimensions. |
+| `Window:SetScale(number)` / `Window:GetScale()` | Uses or reads a manual scale. |
+| `Window:UpdateTitle(string)` | Changes the title after creation. |
+| `Window:UpdateSubtitle(string)` | Changes the subtitle after creation. |
+| `Window:Unload()` | Cleans up the full interface and floating overlays. |
 | `MacLib:SetFolder(string)` | Chooses the configuration folder. |
-| `MacLib:SaveConfig(string)` / `MacLib:LoadConfig(string)` | Saves or restores flagged control values. |
+| `MacLib:SaveConfig(path)` / `MacLib:LoadConfig(path)` | Saves or restores flagged controls. |
 | `MacLib:RefreshConfigList()` | Lists available configuration names. |
 | `MacLib:LoadAutoLoadConfig()` | Loads the selected automatic configuration. |
-| `MacLib:Demo()` | Opens the built-in library demonstration. |
+| `MacLib:Demo()` | Opens the built-in demonstration. |
+
+---
 
 ## Visual reference
 
-All visual references are stored locally under [`assets/maclib-docs`](./assets/maclib-docs), and the image provenance is recorded in [`SOURCES.md`](./assets/maclib-docs/SOURCES.md). The gallery below keeps the primary component examples in the repository so this guide does not depend on the external documentation site.
+The component screenshots below are stored locally in this repository. Their original documentation pages and media URLs are recorded in [`assets/maclib-docs/SOURCES.md`](./assets/maclib-docs/SOURCES.md).
+
+### Feedback and settings
 
 | Global setting | Notification | Dialog |
 |---|---|---|
 | ![Global setting reference](assets/maclib-docs/adding_a_global_setting-1-482cfbda.png) | ![Notification reference](assets/maclib-docs/displaying_a_notification-1-8c82c17d.png) | ![Dialog reference](assets/maclib-docs/prompting_a_dialog-1-8304c37f.png) |
+
+### Inputs
 
 | Button | Input | Slider |
 |---|---|---|
@@ -426,13 +402,17 @@ All visual references are stored locally under [`assets/maclib-docs`](./assets/m
 |---|---|---|
 | ![Dropdown reference](assets/maclib-docs/dropdown-1-a4b2b6cb.png) | ![Header reference](assets/maclib-docs/header-1-d83ad2ef.png) | ![Paragraph reference](assets/maclib-docs/paragraph-1-08a4734f.png) |
 
+### Supporting elements
+
 | Label | Sub-label | Divider |
 |---|---|---|
 | ![Label reference](assets/maclib-docs/label-1-a995812a.png) | ![Sub-label reference](assets/maclib-docs/sub_label-1-91f9255e.png) | ![Divider reference](assets/maclib-docs/divider-1-fbe76a72.png) |
 
+---
+
 ## Credits and sources
 
-This README is an original repository guide and retains attribution to the original MacLib project. The public documentation credits **biggaboy212** as UI designer, lead developer, and programmer. [9]
+This is an original repository guide that preserves credit to the MacLib project. The public documentation credits **biggaboy212** as UI designer, lead developer, and programmer. [9]
 
 [1]: https://brady-xyz.gitbook.io/maclib-ui-library "MacLib UI Library documentation"
 [2]: https://github.com/biggaboy212/Maclib/tree/main "Original MacLib repository"
