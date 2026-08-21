@@ -149,7 +149,7 @@ MobileToggleButton = true,
 
 ## Executor profile card
 
-The executor profile area in the lower-left sidebar now uses a restrained slate outline and a fixed **220 × 60** dark card, with a 26-pixel avatar and compact text spacing so it stays unobtrusive. Beneath the display name and Roblox username, it shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor line follows the existing profile privacy state and is redacted when user information is hidden.
+The executor profile area in the lower-left sidebar now uses a restrained slate outline and a comfortable full-width, 68-pixel dark card. It uses a 30-pixel avatar, compact text spacing, and a 12-pixel lift above the bottom edge so the card fits naturally without looking detached or cramped. Beneath the display name and Roblox username, it shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor line follows the existing profile privacy state and is redacted when user information is hidden.
 
 By default, the card uses the local player’s Roblox avatar thumbnail. Supply any valid Roblox image string—such as an `rbxassetid://` image asset or an `rbxthumb://` thumbnail—to replace it.
 
