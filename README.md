@@ -62,17 +62,21 @@ local Window = MacLib:Window({
     AcrylicBlur = true,
     AutoDPI = true,
 
-    -- White outside glow; every field remains customizable.
+    -- Layered white outside glow that softly fades outward.
     WindowGlowColor = Color3.fromRGB(255, 255, 255),
     WindowGlowTransparency = 0.97,
     WindowGlowStrokeTransparency = 0.74,
+    WindowGlowFadeTransparency = 0.93,
+    WindowOutlineTransparency = 0.72,
 
-    -- Default textured UI background and stronger dividers.
+    -- Default textured UI background at full image contrast.
     UIBackground = "rbxassetid://100502373939372",
-    UIBackgroundTransparency = 0.68,
+    UIBackgroundContrast = 1,
     DividerTransparency = 0.78,
 
     MobileToggleButton = true,
+    InterfaceOverlay = true,
+    InterfaceOverlayButton = true,
 })
 ```
 
@@ -143,24 +147,27 @@ AutoDPIMargin = 32,
 
 ### Draggable mobile UI toggle
 
-On touch-only devices, a circular menu button is available whenever `MobileToggleButton` is enabled, whether the main UI is open or minimized. Tap it to toggle the main UI open or closed, or drag it freely to any position. The library intentionally does **not** clamp it to the viewport, so it can be moved beyond any screen edge.
+On touch-only devices, a circular menu button is available whenever `MobileToggleButton` is enabled, whether the main UI is open or minimized. It uses the configured hub logo by default. Tap it to toggle the main UI open or closed, or drag it freely to any position. The drag is bound to the active touch or mouse input so the button stays attached to your hand; it is intentionally not clamped to the viewport and can move beyond any screen edge.
 
 ```lua
 MobileToggleButton = true,
+-- MobileToggleLogo = "rbxassetid://YOUR_IMAGE_ID", -- Optional override
 ```
 
 ---
 
 ## Custom window glow
 
-MacLib adds a soft **white external halo** behind the main window, visibly extending beyond its sides and rounded corners. Set `WindowGlowColor` to any Roblox `Color3` value to match your hub palette. The fill and outline transparencies are independent so you can keep the glow restrained or make it more prominent.
+MacLib adds a layered **white external halo** behind the main window. A defined inner white outline transitions through a softer outer stroke, creating a visible fade as the glow extends beyond the sides and rounded corners. Set `WindowGlowColor` to any Roblox `Color3` value to match your hub palette.
 
 ```lua
 local Window = MacLib:Window({
     Title = "My Hub",
     WindowGlowColor = Color3.fromRGB(255, 255, 255), -- White outside glow
     WindowGlowTransparency = 0.97,                   -- Soft outer halo
-    WindowGlowStrokeTransparency = 0.74,             -- Defined edge
+    WindowGlowStrokeTransparency = 0.74,             -- Defined inner edge
+    WindowGlowFadeTransparency = 0.93,                -- Soft fading outer edge
+    WindowOutlineTransparency = 0.72,                 -- White window outline
 })
 ```
 
@@ -168,7 +175,27 @@ local Window = MacLib:Window({
 |---|---:|---|
 | `WindowGlowColor` | White | Sets the external color at the window sides and corners. |
 | `WindowGlowTransparency` | `0.97` | Controls the soft halo fill; lower values are brighter. |
-| `WindowGlowStrokeTransparency` | `0.74` | Controls the two-pixel edge stroke; lower values are brighter. |
+| `WindowGlowStrokeTransparency` | `0.74` | Controls the defined inner glow edge; lower values are brighter. |
+| `WindowGlowFadeTransparency` | `0.93` | Controls the softer outer glow layer that fades into the scene. |
+| `WindowOutlineTransparency` | `0.72` | Controls the white border directly around the window. |
+
+---
+
+## Interface overlay controls
+
+A title-area **Interface** pill appears beside the title by default. While the UI is open, select it to open a compact overlay panel inspired by the referenced interface. The panel includes working controls for **Blur Background**, **Background FX**, **Overlay FX**, and the **White Outline**. The globe icon beside it opens the same panel.
+
+```lua
+InterfaceOverlay = true,       -- Adds the working Interface controls
+InterfaceOverlayButton = true, -- Shows the title-area Interface pill
+```
+
+| Interface control | Runtime effect |
+|---|---|
+| `Blur Background` | Toggles MacLib acrylic blur. |
+| `Background FX` | Shows or hides the configured UI background image. |
+| `Overlay FX` | Shows or hides the outer glow layers. |
+| `White Outline` | Shows or hides the primary window outline. |
 
 ---
 
@@ -179,7 +206,7 @@ MacLib uses `rbxassetid://100502373939372` as its default textured UI background
 ```lua
 UIBackground = "rbxassetid://100502373939372", -- Default background
 UIBackgroundColor = Color3.fromRGB(255, 255, 255),
-UIBackgroundTransparency = 0.68,
+UIBackgroundContrast = 1, -- Fully visible image; use 0–1
 DividerTransparency = 0.78,
 ```
 
@@ -187,7 +214,8 @@ DividerTransparency = 0.78,
 |---|---:|---|
 | `UIBackground` | `rbxassetid://100502373939372` | Provides the root-window background image; use `false` to disable it. |
 | `UIBackgroundColor` | White | Tints the background image. |
-| `UIBackgroundTransparency` | `0.68` | Controls background-image visibility; lower values are more visible. |
+| `UIBackgroundContrast` | `1` | Sets background image strength from `0` (hidden) to `1` (fully visible). |
+| `UIBackgroundTransparency` | None | Optional direct transparency override; when supplied, it takes precedence over `UIBackgroundContrast`. |
 | `DividerTransparency` | `0.78` | Controls built-in divider and section-line contrast; lower values are stronger. |
 
 ---

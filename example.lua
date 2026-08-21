@@ -25,18 +25,22 @@ local created, Window = pcall(function()
         AutoDPIMinScale = 0.35,
         AutoDPIMargin = 32,
 
-        -- White outside glow with independently adjustable intensity.
+        -- Layered white outline and outer fade.
         WindowGlowColor = Color3.fromRGB(255, 255, 255),
         WindowGlowTransparency = 0.97,
         WindowGlowStrokeTransparency = 0.74,
+        WindowGlowFadeTransparency = 0.93,
+        WindowOutlineTransparency = 0.72,
 
-        -- Default textured background and stronger divider contrast.
+        -- Fully visible default background and stronger dividers.
         UIBackground = "rbxassetid://100502373939372",
-        UIBackgroundTransparency = 0.68,
+        UIBackgroundContrast = 1,
         DividerTransparency = 0.78,
 
-        -- Tap to toggle the UI, or drag this button freely beyond screen edges.
+        -- Uses the configured hub logo; tap toggles and drag stays attached to your input.
         MobileToggleButton = true,
+        InterfaceOverlay = true,
+        InterfaceOverlayButton = true,
     })
 end)
 
@@ -55,7 +59,7 @@ local Main = Home:Section({ Side = "Left" })
 Main:Header({ Text = "MacLib is running" })
 Main:Paragraph({
     Header = "Success",
-    Body = "Drag the window from its surface. On touch devices, tap the menu button to toggle the UI or drag it freely beyond the screen edges.",
+    Body = "Drag the window from its surface. On touch devices, tap the hub-logo button to toggle the UI or drag it without losing control.",
 })
 
 Main:Toggle({

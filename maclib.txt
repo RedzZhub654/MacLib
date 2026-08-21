@@ -115,18 +115,23 @@ function MacLib:Window(Settings)
 	base.ClipsDescendants = false
 
 	local defaultUIBackground = "rbxassetid://100502373939372"
+	local uiBackground
 	local uiBackgroundAsset = Settings.UIBackground
 	if uiBackgroundAsset == nil then
 		uiBackgroundAsset = defaultUIBackground
 	end
 	if type(uiBackgroundAsset) == "string" and uiBackgroundAsset ~= "" then
-		local uiBackground = Instance.new("ImageLabel")
+		uiBackground = Instance.new("ImageLabel")
 		uiBackground.Name = "UIBackground"
 		uiBackground.BackgroundTransparency = 1
 		uiBackground.BorderSizePixel = 0
 		uiBackground.Image = uiBackgroundAsset
 		uiBackground.ImageColor3 = Settings.UIBackgroundColor or Color3.fromRGB(255, 255, 255)
-		uiBackground.ImageTransparency = Settings.UIBackgroundTransparency or 0.68
+		local uiBackgroundTransparency = Settings.UIBackgroundTransparency
+		if uiBackgroundTransparency == nil then
+			uiBackgroundTransparency = 1 - math.clamp(Settings.UIBackgroundContrast or 1, 0, 1)
+		end
+		uiBackground.ImageTransparency = uiBackgroundTransparency
 		uiBackground.ScaleType = Enum.ScaleType.Crop
 		uiBackground.Size = UDim2.fromScale(1, 1)
 		uiBackground.ZIndex = 1
@@ -175,7 +180,7 @@ function MacLib:Window(Settings)
 	baseUIStroke.Name = "BaseUIStroke"
 	baseUIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	baseUIStroke.Color = Color3.fromRGB(255, 255, 255)
-	baseUIStroke.Transparency = 0.9
+	baseUIStroke.Transparency = Settings.WindowOutlineTransparency or 0.72
 	baseUIStroke.Parent = base
 
 	-- A soft white external halo extending beyond the unclipped window sides and corners.
@@ -202,6 +207,29 @@ function MacLib:Window(Settings)
 	windowGlowStroke.Thickness = 2
 	windowGlowStroke.Transparency = Settings.WindowGlowStrokeTransparency or 0.74
 	windowGlowStroke.Parent = windowGlow
+
+	local windowGlowFalloff = Instance.new("Frame")
+	windowGlowFalloff.Name = "WindowGlowFalloff"
+	windowGlowFalloff.AnchorPoint = Vector2.new(0.5, 0.5)
+	windowGlowFalloff.BackgroundTransparency = 1
+	windowGlowFalloff.BorderSizePixel = 0
+	windowGlowFalloff.Position = UDim2.fromScale(0.5, 0.5)
+	windowGlowFalloff.Size = UDim2.new(1, 56, 1, 56)
+	windowGlowFalloff.ZIndex = 0
+	windowGlowFalloff.Parent = base
+
+	local windowGlowFalloffCorner = Instance.new("UICorner")
+	windowGlowFalloffCorner.Name = "WindowGlowFalloffCorner"
+	windowGlowFalloffCorner.CornerRadius = UDim.new(0, 38)
+	windowGlowFalloffCorner.Parent = windowGlowFalloff
+
+	local windowGlowFalloffStroke = Instance.new("UIStroke")
+	windowGlowFalloffStroke.Name = "WindowGlowFalloffStroke"
+	windowGlowFalloffStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	windowGlowFalloffStroke.Color = Settings.WindowGlowColor or Color3.fromRGB(255, 255, 255)
+	windowGlowFalloffStroke.Thickness = 3
+	windowGlowFalloffStroke.Transparency = Settings.WindowGlowFadeTransparency or 0.93
+	windowGlowFalloffStroke.Parent = windowGlowFalloff
 
 	local sidebar = Instance.new("Frame")
 	sidebar.Name = "Sidebar"
@@ -428,9 +456,36 @@ function MacLib:Window(Settings)
 	globalSettingsButton.BackgroundTransparency = 1
 	globalSettingsButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	globalSettingsButton.BorderSizePixel = 0
-	globalSettingsButton.Position = UDim2.fromScale(1, 0.5)
+	globalSettingsButton.Position = UDim2.new(1, -4, 0.5, 0)
 	globalSettingsButton.Size = UDim2.fromOffset(16,16)
 	globalSettingsButton.Parent = informationHolder
+
+	local interfaceOverlayButton
+	if Settings.InterfaceOverlayButton ~= false then
+		interfaceOverlayButton = Instance.new("TextButton")
+		interfaceOverlayButton.Name = "InterfaceOverlayButton"
+		interfaceOverlayButton.AnchorPoint = Vector2.new(1, 0.5)
+		interfaceOverlayButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		interfaceOverlayButton.BackgroundTransparency = 0.92
+		interfaceOverlayButton.BorderSizePixel = 0
+		interfaceOverlayButton.Font = Enum.Font.GothamMedium
+		interfaceOverlayButton.Position = UDim2.new(1, -28, 0.5, 0)
+		interfaceOverlayButton.Size = UDim2.fromOffset(92, 24)
+		interfaceOverlayButton.Text = "Interface"
+		interfaceOverlayButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+		interfaceOverlayButton.TextSize = 11
+		interfaceOverlayButton.TextTransparency = 0.25
+		interfaceOverlayButton.Parent = informationHolder
+
+		local interfaceOverlayCorner = Instance.new("UICorner")
+		interfaceOverlayCorner.CornerRadius = UDim.new(0, 12)
+		interfaceOverlayCorner.Parent = interfaceOverlayButton
+
+		local interfaceOverlayStroke = Instance.new("UIStroke")
+		interfaceOverlayStroke.Color = Color3.fromRGB(255, 255, 255)
+		interfaceOverlayStroke.Transparency = 0.75
+		interfaceOverlayStroke.Parent = interfaceOverlayButton
+	end
 
 	local function ChangeGlobalSettingsButtonState(State)
 		if State == "Default" then
@@ -482,7 +537,8 @@ function MacLib:Window(Settings)
 		titleFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		titleFrame.BorderSizePixel = 0
 		titleFrame.Position = hasHubLogo and UDim2.fromOffset(38, 0) or UDim2.new()
-		titleFrame.Size = hasHubLogo and UDim2.new(1, -58, 1, 0) or UDim2.fromScale(1, 1)
+		local titleRightInset = interfaceOverlayButton and 152 or 58
+	titleFrame.Size = hasHubLogo and UDim2.new(1, -titleRightInset, 1, 0) or UDim2.new(1, -titleRightInset, 1, 0)
 
 	local title = Instance.new("TextLabel")
 	title.Name = "Title"
@@ -1055,6 +1111,12 @@ local function BindAutoDPI()
 		if not hasGlobalSetting then return end
 		toggle()
 	end)
+	if interfaceOverlayButton then
+		interfaceOverlayButton.MouseButton1Click:Connect(function()
+			if not hasGlobalSetting then return end
+			toggle()
+		end)
+	end
 	globalSettings.MouseEnter:Connect(function()
 		hovering = true
 	end)
@@ -1436,6 +1498,50 @@ local function BindAutoDPI()
 		end
 
 		return GlobalSettingFunctions
+	end
+
+	if Settings.InterfaceOverlay ~= false then
+		local interfaceOverlayHeader = Instance.new("TextLabel")
+		interfaceOverlayHeader.Name = "InterfaceOverlayHeader"
+		interfaceOverlayHeader.BackgroundTransparency = 1
+		interfaceOverlayHeader.BorderSizePixel = 0
+		interfaceOverlayHeader.Font = Enum.Font.GothamSemibold
+		interfaceOverlayHeader.LayoutOrder = -1
+		interfaceOverlayHeader.Size = UDim2.fromOffset(200, 24)
+		interfaceOverlayHeader.Text = "Interface"
+		interfaceOverlayHeader.TextColor3 = Color3.fromRGB(255, 255, 255)
+		interfaceOverlayHeader.TextSize = 15
+		interfaceOverlayHeader.TextXAlignment = Enum.TextXAlignment.Left
+		interfaceOverlayHeader.Parent = globalSettings
+
+		WindowFunctions:GlobalSetting({
+			Name = "Blur Background",
+			Default = acrylicBlur,
+			Callback = function(value)
+				WindowFunctions:SetAcrylicBlurState(value)
+			end,
+		})
+		WindowFunctions:GlobalSetting({
+			Name = "Background FX",
+			Default = uiBackground ~= nil and uiBackground.Visible,
+			Callback = function(value)
+				if uiBackground then uiBackground.Visible = value end
+			end,
+		})
+		WindowFunctions:GlobalSetting({
+			Name = "Overlay FX",
+			Default = true,
+			Callback = function(value)
+				windowGlow.Visible = value
+			end,
+		})
+		WindowFunctions:GlobalSetting({
+			Name = "White Outline",
+			Default = true,
+			Callback = function(value)
+				baseUIStroke.Enabled = value
+			end,
+		})
 	end
 
 	function WindowFunctions:TabGroup()
@@ -5658,7 +5764,11 @@ local function BindAutoDPI()
 		end
 
 		if mobileToggleEnabled then
-			mobileToggleButton = Instance.new("TextButton")
+			local mobileToggleLogo = Settings.MobileToggleLogo
+			if mobileToggleLogo == nil then
+				mobileToggleLogo = type(hubLogoAsset) == "string" and hubLogoAsset or defaultHubLogo
+			end
+			mobileToggleButton = Instance.new("ImageButton")
 			mobileToggleButton.Name = "MobileToggleButton"
 			mobileToggleButton.AnchorPoint = Vector2.new(1, 1)
 			mobileToggleButton.Active = true
@@ -5666,10 +5776,9 @@ local function BindAutoDPI()
 			mobileToggleButton.BorderSizePixel = 0
 			mobileToggleButton.Position = UDim2.new(1, -16, 1, -16)
 			mobileToggleButton.Size = UDim2.fromOffset(48, 48)
-			mobileToggleButton.Text = "☰"
-			mobileToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-			mobileToggleButton.TextSize = 24
-			mobileToggleButton.Font = Enum.Font.GothamBold
+			mobileToggleButton.Image = mobileToggleLogo
+			mobileToggleButton.ImageColor3 = Settings.MobileToggleLogoColor or Color3.fromRGB(255, 255, 255)
+			mobileToggleButton.ScaleType = Enum.ScaleType.Fit
 			mobileToggleButton.AutoButtonColor = false
 			mobileToggleButton.Visible = mobileToggleEnabled
 			mobileToggleButton.ZIndex = 10
@@ -5684,32 +5793,39 @@ local function BindAutoDPI()
 			mobileToggleStroke.Transparency = 0.78
 			mobileToggleStroke.Parent = mobileToggleButton
 
-			-- Tap to toggle the UI; drag directly to reposition the button inside the viewport.
+			-- Tap toggles the UI. Drag ownership is tracked so the button never escapes the active pointer.
 			local mobileToggleDragging = false
 			local mobileToggleMoved = false
 			local mobileToggleDragStart
 			local mobileToggleStartPosition
+			local mobileToggleDragInput
 
 			mobileToggleButton.InputBegan:Connect(function(input)
 				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
 				mobileToggleDragging = true
 				mobileToggleMoved = false
+				mobileToggleDragInput = input
 				mobileToggleDragStart = input.Position
 				mobileToggleStartPosition = mobileToggleButton.AbsolutePosition
 
 				input.Changed:Connect(function()
 					if input.UserInputState ~= Enum.UserInputState.End then return end
 					mobileToggleDragging = false
+					mobileToggleDragInput = nil
 					if not mobileToggleMoved then
 						ToggleMenu("mobile")
 					end
 				end)
 			end)
 
-			mobileToggleInputConnection = UserInputService.InputChanged:Connect(function(input)
-				if unloaded or not mobileToggleDragging then return end
-				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+			mobileToggleButton.InputChanged:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+					mobileToggleDragInput = input
+				end
+			end)
 
+			mobileToggleInputConnection = UserInputService.InputChanged:Connect(function(input)
+				if unloaded or not mobileToggleDragging or input ~= mobileToggleDragInput then return end
 				local delta = input.Position - mobileToggleDragStart
 				if delta.Magnitude > 6 then
 					mobileToggleMoved = true
