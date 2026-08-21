@@ -12,6 +12,10 @@
 | **Original documentation** | [MacLib UI Library][1] |
 | **Original project** | [biggaboy212/Maclib][2] |
 
+The images used below are stored in this repository under [`assets/maclib-docs`](./assets/maclib-docs), so the README does not depend on the external documentation site for its visual examples. Each asset’s original source page is recorded in [`SOURCES.md`](./assets/maclib-docs/SOURCES.md).
+
+![MacLib interface preview](assets/maclib-docs/welcome-2-5cc22d84.png)
+
 ## Getting started
 
 MacLib is loaded as a Lua module and then used to create a window. The loader below has been changed from the documentation’s original upstream URL so that it retrieves the `maclib.txt` file in **this** repository. Before executing remotely fetched code, inspect the revision you intend to use and consider pinning the URL to a commit SHA for reproducible builds.
@@ -36,6 +40,8 @@ local Window = MacLib:Window({
     AcrylicBlur = true,
 })
 ```
+
+![Tab group reference](assets/maclib-docs/creating_a_tab_group-1-3eaf4a69.png)
 
 | Window option | Purpose |
 |---|---|
@@ -75,6 +81,10 @@ local Tab = Group:Tab({
 local Section = Tab:Section({ Side = "Left" })
 ```
 
+| Tab layout | Section layout |
+|---|---|
+| ![Tab layout reference](assets/maclib-docs/adding_tabs-1-0ef57fa5.png) | ![Section layout reference](assets/maclib-docs/adding_sections-1-4cb01cdc.png) |
+
 | Layer | Creation method | Main responsibility |
 |---|---|---|
 | Tab group | `Window:TabGroup()` | Visually groups related tabs. |
@@ -85,6 +95,10 @@ local Section = Tab:Section({ Side = "Left" })
 ## Interaction feedback
 
 MacLib provides UI-level notifications and dialogs. Notifications accept title, description, lifetime, size and scale settings, an optional interaction style, and a callback; returned notification objects can update their text, resize, or cancel. Dialogs accept a title, description, and a collection of named callback buttons; returned dialog objects can update text or cancel. [8] [9]
+
+| Global settings | Notification | Dialog |
+|---|---|---|
+| ![Global settings reference](assets/maclib-docs/adding_a_global_setting-1-482cfbda.png) | ![Notification reference](assets/maclib-docs/displaying_a_notification-1-8c82c17d.png) | ![Dialog reference](assets/maclib-docs/prompting_a_dialog-1-8304c37f.png) |
 
 | Feature | Key capability | Useful object methods |
 |---|---|---|
@@ -106,6 +120,18 @@ The source documentation covers action, text-entry, numeric, boolean, key-bindin
 | `Colorpicker` | `Color3` selection with optional alpha/transparency. | Set color or alpha. |
 | `Dropdown` | Single- or multi-select choices with optional search and required selection. | Update selection; insert, remove, query, or clear options. |
 
+| Button | Input | Slider |
+|---|---|---|
+| ![Button reference](assets/maclib-docs/button-1-6dc62d2c.png) | ![Input reference](assets/maclib-docs/input-1-19e0d685.png) | ![Slider reference](assets/maclib-docs/slider-1-00e710d0.png) |
+
+| Toggle | Keybind | Color picker |
+|---|---|---|
+| ![Toggle reference](assets/maclib-docs/toggle-1-fd8ca6fc.png) | ![Keybind reference](assets/maclib-docs/keybind-1-2221ef8e.png) | ![Color picker reference](assets/maclib-docs/colorpicker-1-bfbe5ee5.png) |
+
+| Dropdown | Header | Paragraph |
+|---|---|---|
+| ![Dropdown reference](assets/maclib-docs/dropdown-1-a4b2b6cb.png) | ![Header reference](assets/maclib-docs/header-1-d83ad2ef.png) | ![Paragraph reference](assets/maclib-docs/paragraph-1-08a4734f.png) |
+
 The library also includes lightweight content and layout elements. Headers, labels, sub-labels, and paragraphs provide presentation text; dividers and spacers structure a section without collecting user input. Their documented APIs support visibility changes, text updates where applicable, and removal for divider or spacer elements. [11]
 
 | Element | Primary use |
@@ -115,6 +141,10 @@ The library also includes lightweight content and layout elements. Headers, labe
 | `Label` / `SubLabel` | Renders standalone primary or secondary text. |
 | `Divider` | Separates neighboring controls visually. |
 | `Spacer` | Adds empty vertical separation. |
+
+| Label | Sub-label | Divider |
+|---|---|---|
+| ![Label reference](assets/maclib-docs/label-1-a995812a.png) | ![Sub-label reference](assets/maclib-docs/sub_label-1-91f9255e.png) | ![Divider reference](assets/maclib-docs/divider-1-fbe76a72.png) |
 
 ## Documentation notation
 
@@ -127,6 +157,18 @@ The original documentation uses a compact type notation. Angle brackets show a p
 | `Value <number or table>` | A value that may be a number or a table. |
 | `Callback <function(): void>` | A callback that returns no value. |
 | `:GetState(: boolean)` | A method that returns a boolean state. |
+
+## Visual asset archive
+
+All **24** source documentation visuals have been copied locally into [`assets/maclib-docs`](./assets/maclib-docs) and are embedded in this README. The accompanying [`SOURCES.md`](./assets/maclib-docs/SOURCES.md) provides a per-file provenance table linking each local image to its documentation page and original media URL.
+
+| Welcome cover | Loading guide | Documentation guide |
+|---|---|---|
+| ![Welcome cover](assets/maclib-docs/welcome-1-c664d6ec.jpg) | ![Loading guide visual](assets/maclib-docs/welcome-3-45c69e32.png) | ![Documentation guide visual](assets/maclib-docs/welcome-4-dffc4c52.png) |
+
+| Reference links | Global settings menu | Interface organization |
+|---|---|---|
+| ![Reference links visual](assets/maclib-docs/welcome-5-da35b7a5.png) | ![Global settings menu reference](assets/maclib-docs/adding_a_global_setting-2-a26c5b74.png) | ![Tab group reference](assets/maclib-docs/creating_a_tab_group-1-3eaf4a69.png) |
 
 ## Attribution and references
 
