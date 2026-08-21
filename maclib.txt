@@ -2290,7 +2290,7 @@ local function BindAutoDPI()
 					slider.BackgroundTransparency = 1
 					slider.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					slider.BorderSizePixel = 0
-					slider.Size = UDim2.new(1, 0, 0, 46)
+					slider.Size = UDim2.new(1, 0, 0, 60)
 					slider.Parent = section
 
 					local sliderName = Instance.new("TextLabel")
@@ -2336,7 +2336,7 @@ local function BindAutoDPI()
 					sliderValue.BorderSizePixel = 0
 					sliderValue.LayoutOrder = 1
 					sliderValue.Position = UDim2.fromScale(-0.0789, 0.171)
-					sliderValue.Size = UDim2.fromOffset(56, 27)
+					sliderValue.Size = UDim2.fromOffset(72, 34)
 					sliderValue.ClipsDescendants = true
 
 					local sliderValueUICorner = Instance.new("UICorner")
@@ -2361,7 +2361,7 @@ local function BindAutoDPI()
 
 					local sliderElementsUIListLayout = Instance.new("UIListLayout")
 					sliderElementsUIListLayout.Name = "SliderElementsUIListLayout"
-					sliderElementsUIListLayout.Padding = UDim.new(0, 14)
+					sliderElementsUIListLayout.Padding = UDim.new(0, 18)
 					sliderElementsUIListLayout.FillDirection = Enum.FillDirection.Horizontal
 					sliderElementsUIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 					sliderElementsUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -2377,7 +2377,7 @@ local function BindAutoDPI()
 					sliderBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					sliderBar.BorderSizePixel = 0
 					sliderBar.Position = UDim2.fromScale(0.219, 0.457)
-					sliderBar.Size = UDim2.fromOffset(123, 4)
+					sliderBar.Size = UDim2.fromOffset(123, 10)
 
 					local sliderHead = Instance.new("ImageButton")
 					sliderHead.Name = "SliderHead"
@@ -2388,15 +2388,27 @@ local function BindAutoDPI()
 					sliderHead.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					sliderHead.BorderSizePixel = 0
 					sliderHead.Position = UDim2.fromScale(1, 0.5)
-					sliderHead.Size = UDim2.fromOffset(14, 14)
+					sliderHead.Size = UDim2.fromOffset(24, 24)
 					sliderHead.Parent = sliderBar
+
+					local sliderHitbox = Instance.new("TextButton")
+					sliderHitbox.Name = "SliderHitbox"
+					sliderHitbox.AnchorPoint = Vector2.new(0.5, 0.5)
+					sliderHitbox.AutoButtonColor = false
+					sliderHitbox.BackgroundTransparency = 1
+					sliderHitbox.BorderSizePixel = 0
+					sliderHitbox.Text = ""
+					sliderHitbox.Position = UDim2.fromScale(0.5, 0.5)
+					sliderHitbox.Size = UDim2.new(1, 0, 0, 34)
+					sliderHitbox.ZIndex = 3
+					sliderHitbox.Parent = sliderBar
 
 					sliderBar.Active = true
 					sliderBar.Parent = sliderElements
 
 					local sliderElementsUIPadding = Instance.new("UIPadding")
 					sliderElementsUIPadding.Name = "SliderElementsUIPadding"
-					sliderElementsUIPadding.PaddingTop = UDim.new(0, 6)
+					sliderElementsUIPadding.PaddingTop = UDim.new(0, 11)
 					sliderElementsUIPadding.Parent = sliderElements
 
 					sliderElements.Parent = slider
@@ -2479,6 +2491,7 @@ local function BindAutoDPI()
 
 					sliderHead.InputBegan:Connect(BeginSliderDrag)
 					sliderBar.InputBegan:Connect(BeginSliderDrag)
+					sliderHitbox.InputBegan:Connect(BeginSliderDrag)
 					UserInputService.InputEnded:Connect(EndSliderDrag)
 
 					sliderValue.FocusLost:Connect(function(enterPressed)
@@ -2513,7 +2526,7 @@ local function BindAutoDPI()
 					local function updateSliderBarSize()
 						local uiScale = math.max(baseUIScale.Scale, 0.01)
 						local reservedWidth = sliderName.AbsoluteSize.X + sliderValue.AbsoluteSize.X + (sliderElementsUIListLayout.Padding.Offset + 20) * uiScale
-						local newBarWidth = math.max(80, (sliderElements.AbsoluteSize.X - reservedWidth) / uiScale)
+						local newBarWidth = math.max(96, (sliderElements.AbsoluteSize.X - reservedWidth) / uiScale)
 						sliderBar.Size = UDim2.fromOffset(newBarWidth, sliderBar.Size.Y.Offset)
 					end
 					updateSliderBarSize()
