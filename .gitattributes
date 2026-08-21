@@ -1,0 +1,2 @@
+# maclib.txt intentionally contains preserved CRLF regions; treat CR at end-of-line as non-whitespace.
+maclib.txt whitespace=cr-at-eol

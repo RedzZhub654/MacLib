@@ -764,6 +764,7 @@ function MacLib:Window(Settings)
 	content.BackgroundTransparency = 1
 	content.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	content.BorderSizePixel = 0
+	content.ClipsDescendants = true
 	content.Position = UDim2.fromScale(1, 4.69e-08)
 	content.Size = UDim2.new(0, (base.AbsoluteSize.X - sidebar.AbsoluteSize.X), 1, 0)
 
@@ -773,53 +774,59 @@ function MacLib:Window(Settings)
 	local snapRange = 20
 	local minSidebarWidth = 107
 	local maxSidebarWidth = base.AbsoluteSize.X - minSidebarWidth
-
 	local TweenSettings = {
 		DefaultTransparency = 0.9,
 		HoverTransparency = 0.85,
-
 		EasingStyle = Enum.EasingStyle.Sine
 	}
+
+	local function SyncContentLayout(requestedSidebarWidth)
+		local baseWidth = math.max(minSidebarWidth * 2, base.AbsoluteSize.X)
+		maxSidebarWidth = math.max(minSidebarWidth, baseWidth - minSidebarWidth)
+		local sidebarWidth = requestedSidebarWidth or sidebar.AbsoluteSize.X
+		sidebarWidth = math.clamp(sidebarWidth, minSidebarWidth, maxSidebarWidth)
+		sidebar.Size = UDim2.new(0, sidebarWidth, 1, 0)
+		content.Size = UDim2.new(0, math.max(minSidebarWidth, baseWidth - sidebarWidth), 1, 0)
+	end
 
 	local function ChangeState(State)
 		Tween(divider, TweenInfo.new(0.2, TweenSettings.EasingStyle), {
 			BackgroundTransparency = State == "Idle" and TweenSettings.DefaultTransparency or TweenSettings.HoverTransparency
-		}):Play()  
+		}):Play()
 	end
-
 	dividerInteract.MouseEnter:Connect(function()
 		ChangeState("Hover")
 	end)
 	dividerInteract.MouseLeave:Connect(function()
 		ChangeState("Idle")
 	end)
-
 	dividerInteract.MouseButton1Down:Connect(function()
 		resizingContent = true
 		initialMouseX = UserInputService:GetMouseLocation().X
 		initialSidebarWidth = sidebar.AbsoluteSize.X
 	end)
-
 	UserInputService.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			resizingContent = false
 		end
 	end)
-
 	UserInputService.InputChanged:Connect(function(input)
 		if resizingContent and input.UserInputType == Enum.UserInputType.MouseMovement then
 			local deltaX = UserInputService:GetMouseLocation().X - initialMouseX
 			local newSidebarWidth = initialSidebarWidth + deltaX
-
 			if math.abs(newSidebarWidth - defaultSidebarWidth) < snapRange then
 				newSidebarWidth = defaultSidebarWidth
-			else
-				newSidebarWidth = math.clamp(newSidebarWidth, minSidebarWidth, maxSidebarWidth)
 			end
-
-			sidebar.Size = UDim2.new(0, newSidebarWidth, 1, 0)
-			content.Size = UDim2.new(0, base.AbsoluteSize.X - newSidebarWidth, 1, 0)
+			SyncContentLayout(newSidebarWidth)
 		end
+	end)
+
+	base:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		SyncContentLayout()
+	end)
+	task.defer(function()
+		defaultSidebarWidth = math.max(minSidebarWidth, sidebar.AbsoluteSize.X)
+		SyncContentLayout(defaultSidebarWidth)
 	end)
 
 	local topbar = Instance.new("Frame")
