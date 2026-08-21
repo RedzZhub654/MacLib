@@ -25,12 +25,17 @@ local created, Window = pcall(function()
         AutoDPIMinScale = 0.35,
         AutoDPIMargin = 32,
 
-        -- Customizable side-and-corner glow.
-        WindowGlowColor = Color3.fromRGB(129, 103, 255),
-        WindowGlowTransparency = 0.955,
-        WindowGlowStrokeTransparency = 0.84,
+        -- White outside glow with independently adjustable intensity.
+        WindowGlowColor = Color3.fromRGB(255, 255, 255),
+        WindowGlowTransparency = 0.97,
+        WindowGlowStrokeTransparency = 0.74,
 
-        -- Fixed mobile button: tap it only to open or close the UI.
+        -- Default textured background and stronger divider contrast.
+        UIBackground = "rbxassetid://100502373939372",
+        UIBackgroundTransparency = 0.86,
+        DividerTransparency = 0.78,
+
+        -- Tap to toggle the UI, or drag this button to reposition it.
         MobileToggleButton = true,
     })
 end)
@@ -50,7 +55,7 @@ local Main = Home:Section({ Side = "Left" })
 Main:Header({ Text = "MacLib is running" })
 Main:Paragraph({
     Header = "Success",
-    Body = "Drag the window from its surface. On touch devices, tap the fixed button to open or close the UI.",
+    Body = "Drag the window from its surface. On touch devices, tap the menu button to toggle the UI or drag it to reposition it.",
 })
 
 Main:Toggle({

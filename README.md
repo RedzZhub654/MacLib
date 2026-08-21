@@ -62,10 +62,15 @@ local Window = MacLib:Window({
     AcrylicBlur = true,
     AutoDPI = true,
 
-    -- Optional custom edge-and-corner glow
-    WindowGlowColor = Color3.fromRGB(129, 103, 255),
-    WindowGlowTransparency = 0.955,
-    WindowGlowStrokeTransparency = 0.84,
+    -- White outside glow; every field remains customizable.
+    WindowGlowColor = Color3.fromRGB(255, 255, 255),
+    WindowGlowTransparency = 0.97,
+    WindowGlowStrokeTransparency = 0.74,
+
+    -- Default textured UI background and stronger dividers.
+    UIBackground = "rbxassetid://100502373939372",
+    UIBackgroundTransparency = 0.86,
+    DividerTransparency = 0.78,
 
     MobileToggleButton = true,
 })
@@ -136,9 +141,9 @@ AutoDPIMargin = 32,
 | `Window:GetAutoDPI()` | Returns the current automatic-scaling state. |
 | `Window:SetScale(number)` | Switches to manual scale control. |
 
-### Fixed mobile UI toggle
+### Draggable mobile UI toggle
 
-On touch-only devices, a circular fixed-position button is available whenever `MobileToggleButton` is enabled, whether the main UI is open or minimized. It stays in the lower-right corner and its **only action** is toggling the main UI open or closed; it has no drag or reposition behavior.
+On touch-only devices, a circular menu button is available whenever `MobileToggleButton` is enabled, whether the main UI is open or minimized. Tap it to toggle the main UI open or closed, or drag it directly to a comfortable on-screen position. Its full circular surface remains inside the active viewport while you move it.
 
 ```lua
 MobileToggleButton = true,
@@ -148,22 +153,42 @@ MobileToggleButton = true,
 
 ## Custom window glow
 
-MacLib adds a compact halo behind the main window, softly illuminating its sides and rounded corners. Set `WindowGlowColor` to any Roblox `Color3` value to match your hub palette. The fill and outline transparencies are independent so you can keep the glow restrained or make it more prominent.
+MacLib adds a soft **white external halo** behind the main window, visibly extending beyond its sides and rounded corners. Set `WindowGlowColor` to any Roblox `Color3` value to match your hub palette. The fill and outline transparencies are independent so you can keep the glow restrained or make it more prominent.
 
 ```lua
 local Window = MacLib:Window({
     Title = "My Hub",
-    WindowGlowColor = Color3.fromRGB(129, 103, 255), -- Custom glow color
-    WindowGlowTransparency = 0.955,                  -- Soft outer halo
-    WindowGlowStrokeTransparency = 0.84,             -- Defined edge
+    WindowGlowColor = Color3.fromRGB(255, 255, 255), -- White outside glow
+    WindowGlowTransparency = 0.97,                   -- Soft outer halo
+    WindowGlowStrokeTransparency = 0.74,             -- Defined edge
 })
 ```
 
 | Option | Default | Purpose |
 |---|---:|---|
-| `WindowGlowColor` | `Color3.fromRGB(92, 164, 255)` | Sets the color used at the window sides and corners. |
-| `WindowGlowTransparency` | `0.955` | Controls the soft halo fill; lower values are brighter. |
-| `WindowGlowStrokeTransparency` | `0.84` | Controls the two-pixel edge stroke; lower values are brighter. |
+| `WindowGlowColor` | White | Sets the external color at the window sides and corners. |
+| `WindowGlowTransparency` | `0.97` | Controls the soft halo fill; lower values are brighter. |
+| `WindowGlowStrokeTransparency` | `0.74` | Controls the two-pixel edge stroke; lower values are brighter. |
+
+---
+
+## Custom UI background and dividers
+
+MacLib uses `rbxassetid://100502373939372` as its default textured UI background. Set `UIBackground` to another Roblox image asset, use `false` to remove the image layer, or adjust its tint and transparency. Dividers use a stronger default contrast and may be softened or brightened globally.
+
+```lua
+UIBackground = "rbxassetid://100502373939372", -- Default background
+UIBackgroundColor = Color3.fromRGB(255, 255, 255),
+UIBackgroundTransparency = 0.86,
+DividerTransparency = 0.78,
+```
+
+| Option | Default | Purpose |
+|---|---:|---|
+| `UIBackground` | `rbxassetid://100502373939372` | Provides the root-window background image; use `false` to disable it. |
+| `UIBackgroundColor` | White | Tints the background image. |
+| `UIBackgroundTransparency` | `0.86` | Controls background-image visibility; lower values are more visible. |
+| `DividerTransparency` | `0.78` | Controls built-in divider and section-line contrast; lower values are stronger. |
 
 ---
 

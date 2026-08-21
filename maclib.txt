@@ -112,6 +112,31 @@ function MacLib:Window(Settings)
 	base.BorderSizePixel = 0
 	base.Position = UDim2.fromScale(0.5, 0.5)
 	base.Size = Settings.Size or UDim2.fromOffset(868, 650)
+	base.ClipsDescendants = false
+
+	local defaultUIBackground = "rbxassetid://100502373939372"
+	local uiBackgroundAsset = Settings.UIBackground
+	if uiBackgroundAsset == nil then
+		uiBackgroundAsset = defaultUIBackground
+	end
+	if type(uiBackgroundAsset) == "string" and uiBackgroundAsset ~= "" then
+		local uiBackground = Instance.new("ImageLabel")
+		uiBackground.Name = "UIBackground"
+		uiBackground.BackgroundTransparency = 1
+		uiBackground.BorderSizePixel = 0
+		uiBackground.Image = uiBackgroundAsset
+		uiBackground.ImageColor3 = Settings.UIBackgroundColor or Color3.fromRGB(255, 255, 255)
+		uiBackground.ImageTransparency = Settings.UIBackgroundTransparency or 0.86
+		uiBackground.ScaleType = Enum.ScaleType.Crop
+		uiBackground.Size = UDim2.fromScale(1, 1)
+		uiBackground.ZIndex = 1
+		uiBackground.Parent = base
+
+		local uiBackgroundCorner = Instance.new("UICorner")
+		uiBackgroundCorner.CornerRadius = UDim.new(0, 10)
+		uiBackgroundCorner.Parent = uiBackground
+	end
+
 
 		local baseUIScale = Instance.new("UIScale")
 		baseUIScale.Name = "BaseUIScale"
@@ -153,29 +178,29 @@ function MacLib:Window(Settings)
 	baseUIStroke.Transparency = 0.9
 	baseUIStroke.Parent = base
 
-	-- A compact, configurable halo extending past the window sides and rounded corners.
+	-- A soft white external halo extending beyond the unclipped window sides and corners.
 	local windowGlow = Instance.new("Frame")
 	windowGlow.Name = "WindowGlow"
 	windowGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-	windowGlow.BackgroundColor3 = Settings.WindowGlowColor or Color3.fromRGB(92, 164, 255)
-	windowGlow.BackgroundTransparency = Settings.WindowGlowTransparency or 0.955
+	windowGlow.BackgroundColor3 = Settings.WindowGlowColor or Color3.fromRGB(255, 255, 255)
+	windowGlow.BackgroundTransparency = Settings.WindowGlowTransparency or 0.97
 	windowGlow.BorderSizePixel = 0
 	windowGlow.Position = UDim2.fromScale(0.5, 0.5)
-	windowGlow.Size = UDim2.new(1, 18, 1, 18)
+	windowGlow.Size = UDim2.new(1, 28, 1, 28)
 	windowGlow.ZIndex = 0
 	windowGlow.Parent = base
 
 	local windowGlowCorner = Instance.new("UICorner")
 	windowGlowCorner.Name = "WindowGlowCorner"
-	windowGlowCorner.CornerRadius = UDim.new(0, 18)
+	windowGlowCorner.CornerRadius = UDim.new(0, 24)
 	windowGlowCorner.Parent = windowGlow
 
 	local windowGlowStroke = Instance.new("UIStroke")
 	windowGlowStroke.Name = "WindowGlowStroke"
 	windowGlowStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	windowGlowStroke.Color = Settings.WindowGlowColor or Color3.fromRGB(92, 164, 255)
+	windowGlowStroke.Color = Settings.WindowGlowColor or Color3.fromRGB(255, 255, 255)
 	windowGlowStroke.Thickness = 2
-	windowGlowStroke.Transparency = Settings.WindowGlowStrokeTransparency or 0.84
+	windowGlowStroke.Transparency = Settings.WindowGlowStrokeTransparency or 0.74
 	windowGlowStroke.Parent = windowGlow
 
 	local sidebar = Instance.new("Frame")
@@ -191,7 +216,7 @@ function MacLib:Window(Settings)
 	divider.Name = "Divider"
 	divider.AnchorPoint = Vector2.new(1, 0)
 	divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	divider.BackgroundTransparency = 0.9
+	divider.BackgroundTransparency = (Settings.DividerTransparency or 0.78)
 	divider.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	divider.BorderSizePixel = 0
 	divider.Position = UDim2.fromScale(1, 0)
@@ -349,7 +374,7 @@ function MacLib:Window(Settings)
 	divider1.Name = "Divider"
 	divider1.AnchorPoint = Vector2.new(0, 1)
 	divider1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	divider1.BackgroundTransparency = 0.9
+	divider1.BackgroundTransparency = (Settings.DividerTransparency or 0.78)
 	divider1.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	divider1.BorderSizePixel = 0
 	divider1.Position = UDim2.fromScale(0, 1)
@@ -371,7 +396,7 @@ function MacLib:Window(Settings)
 	divider2.Name = "Divider"
 	divider2.AnchorPoint = Vector2.new(0, 1)
 	divider2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	divider2.BackgroundTransparency = 0.9
+	divider2.BackgroundTransparency = (Settings.DividerTransparency or 0.78)
 	divider2.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	divider2.BorderSizePixel = 0
 	divider2.Position = UDim2.fromScale(0, 1)
@@ -791,7 +816,7 @@ function MacLib:Window(Settings)
 	divider4.Name = "Divider"
 	divider4.AnchorPoint = Vector2.new(0, 1)
 	divider4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	divider4.BackgroundTransparency = 0.9
+	divider4.BackgroundTransparency = (Settings.DividerTransparency or 0.78)
 	divider4.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	divider4.BorderSizePixel = 0
 	divider4.Position = UDim2.fromScale(0, 1)
@@ -1429,7 +1454,7 @@ local function BindAutoDPI()
 		divider3.Name = "Divider"
 		divider3.AnchorPoint = Vector2.new(0.5, 1)
 		divider3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		divider3.BackgroundTransparency = 0.9
+		divider3.BackgroundTransparency = (Settings.DividerTransparency or 0.78)
 		divider3.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		divider3.BorderSizePixel = 0
 		divider3.Position = UDim2.fromScale(0.5, 1)
@@ -4268,7 +4293,7 @@ local function BindAutoDPI()
 					local line = Instance.new("Frame")
 					line.Name = "Line"
 					line.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					line.BackgroundTransparency = 0.9
+					line.BackgroundTransparency = (Settings.DividerTransparency or 0.78)
 					line.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					line.BorderSizePixel = 0
 					line.LayoutOrder = 1
@@ -4873,7 +4898,7 @@ local function BindAutoDPI()
 					local line = Instance.new("Frame")
 					line.Name = "Line"
 					line.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					line.BackgroundTransparency = 0.9
+					line.BackgroundTransparency = (Settings.DividerTransparency or 0.78)
 					line.BorderColor3 = Color3.fromRGB(0, 0, 0)
 					line.BorderSizePixel = 0
 					line.Size = UDim2.new(1, 0, 0, 1)
@@ -5577,6 +5602,7 @@ local function BindAutoDPI()
 	end
 
 			local mobileToggleButton
+			local mobileToggleInputConnection
 			local mobileToggleEnabled
 		if Settings.MobileToggleButton == nil then
 			mobileToggleEnabled = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
@@ -5601,6 +5627,9 @@ local function BindAutoDPI()
 		if onUnloadCallback then
 			onUnloadCallback()
 		end
+			if mobileToggleInputConnection then
+				mobileToggleInputConnection:Disconnect()
+			end
 			if autoDPIViewportConnection then
 				autoDPIViewportConnection:Disconnect()
 			end
@@ -5632,6 +5661,7 @@ local function BindAutoDPI()
 			mobileToggleButton = Instance.new("TextButton")
 			mobileToggleButton.Name = "MobileToggleButton"
 			mobileToggleButton.AnchorPoint = Vector2.new(1, 1)
+			mobileToggleButton.Active = true
 			mobileToggleButton.BackgroundColor3 = Color3.fromRGB(28, 28, 30)
 			mobileToggleButton.BorderSizePixel = 0
 			mobileToggleButton.Position = UDim2.new(1, -16, 1, -16)
@@ -5654,9 +5684,52 @@ local function BindAutoDPI()
 			mobileToggleStroke.Transparency = 0.78
 			mobileToggleStroke.Parent = mobileToggleButton
 
-			-- This button intentionally only toggles UI visibility; it has no drag behavior.
-			mobileToggleButton.MouseButton1Click:Connect(function()
-				ToggleMenu("mobile")
+			-- Tap to toggle the UI; drag directly to reposition the button inside the viewport.
+			local mobileToggleDragging = false
+			local mobileToggleMoved = false
+			local mobileToggleDragStart
+			local mobileToggleStartPosition
+
+			mobileToggleButton.InputBegan:Connect(function(input)
+				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+				mobileToggleDragging = true
+				mobileToggleMoved = false
+				mobileToggleDragStart = input.Position
+				mobileToggleStartPosition = mobileToggleButton.AbsolutePosition
+
+				input.Changed:Connect(function()
+					if input.UserInputState ~= Enum.UserInputState.End then return end
+					mobileToggleDragging = false
+					if not mobileToggleMoved then
+						ToggleMenu("mobile")
+					end
+				end)
+			end)
+
+			mobileToggleInputConnection = UserInputService.InputChanged:Connect(function(input)
+				if unloaded or not mobileToggleDragging then return end
+				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+
+				local delta = input.Position - mobileToggleDragStart
+				if delta.Magnitude > 6 then
+					mobileToggleMoved = true
+				end
+
+				local camera = workspace.CurrentCamera
+				if not camera then return end
+				local viewport = camera.ViewportSize
+				local size = mobileToggleButton.AbsoluteSize
+				if size.X <= 0 or size.Y <= 0 then
+					size = Vector2.new(48, 48)
+				end
+				local margin = math.min(12, math.max(0, math.min((viewport.X - size.X) / 2, (viewport.Y - size.Y) / 2)))
+				local minLeft = margin
+				local maxLeft = math.max(minLeft, viewport.X - size.X - margin)
+				local minTop = margin
+				local maxTop = math.max(minTop, viewport.Y - size.Y - margin)
+				local left = math.clamp(mobileToggleStartPosition.X + delta.X, minLeft, maxLeft)
+				local top = math.clamp(mobileToggleStartPosition.Y + delta.Y, minTop, maxTop)
+				mobileToggleButton.Position = UDim2.fromOffset(left + size.X, top + size.Y)
 			end)
 		end
 
