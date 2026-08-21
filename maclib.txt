@@ -11,6 +11,7 @@ local TweenService = MacLib.GetService("TweenService")
 local RunService = MacLib.GetService("RunService")
 local HttpService = MacLib.GetService("HttpService")
 local ContentProvider = MacLib.GetService("ContentProvider")
+local Stats = MacLib.GetService("Stats")
 local UserInputService = MacLib.GetService("UserInputService")
 local Lighting = MacLib.GetService("Lighting")
 local Players = MacLib.GetService("Players")
@@ -42,7 +43,11 @@ local assets = {
 	transform = "rbxassetid://90336395745819",
 	dropdown = "rbxassetid://18865373378",
 	sliderbar = "rbxassetid://18772615246",
-	sliderhead = "rbxassetid://18772834246",
+		sliderhead = "rbxassetid://18772834246",
+		statsUserIcon = "rbxassetid://10747373176",
+		statsSignalIcon = "rbxassetid://10734961133",
+		statsGaugeIcon = "rbxassetid://10723395708",
+		statsUsersIcon = "rbxassetid://10747373426",
 }
 
 --// Functions
@@ -923,9 +928,232 @@ function MacLib:Window(Settings)
 	globalSettingsUIScale.Scale = 1e-07
 	globalSettingsUIScale.Parent = globalSettings
 	globalSettings.Parent = base
-	base.Parent = macLib
+		base.Parent = macLib
 
-	function WindowFunctions:UpdateTitle(NewTitle)
+		local playerStatsBar
+		local playerStatsConnection
+		local playerStatsInputConnection
+		local playerStatsEnabled = Settings.PlayerStatsEnabled ~= false
+
+		if playerStatsEnabled then
+			playerStatsBar = Instance.new("Frame")
+			playerStatsBar.Name = "PlayerStatsBar"
+			playerStatsBar.AnchorPoint = Vector2.new(0.5, 0)
+			playerStatsBar.BackgroundColor3 = Color3.fromRGB(21, 20, 23)
+			playerStatsBar.BackgroundTransparency = 0.08
+			playerStatsBar.BorderSizePixel = 0
+			playerStatsBar.Position = Settings.PlayerStatsPosition or UDim2.new(0.5, 0, 0, 16)
+			playerStatsBar.Size = UDim2.fromOffset(620, 68)
+			playerStatsBar.Active = Settings.PlayerStatsDraggable ~= false
+			playerStatsBar.ZIndex = 20
+			playerStatsBar.Parent = macLib
+
+			local playerStatsCorner = Instance.new("UICorner")
+			playerStatsCorner.CornerRadius = UDim.new(0, 22)
+			playerStatsCorner.Parent = playerStatsBar
+
+			local playerStatsStroke = Instance.new("UIStroke")
+			playerStatsStroke.Color = Color3.fromRGB(255, 255, 255)
+			playerStatsStroke.Transparency = 0.82
+			playerStatsStroke.Parent = playerStatsBar
+
+			local playerStatsScale = Instance.new("UIScale")
+			local camera = workspace.CurrentCamera
+			if camera then
+				playerStatsScale.Scale = math.clamp(camera.ViewportSize.X / 680, 0.55, 1)
+			end
+			playerStatsScale.Parent = playerStatsBar
+
+			local playerStatsContent = Instance.new("Frame")
+			playerStatsContent.BackgroundTransparency = 1
+			playerStatsContent.Size = UDim2.fromScale(1, 1)
+			playerStatsContent.ZIndex = 21
+			playerStatsContent.Parent = playerStatsBar
+
+			local playerStatsPadding = Instance.new("UIPadding")
+			playerStatsPadding.PaddingLeft = UDim.new(0, 12)
+			playerStatsPadding.PaddingRight = UDim.new(0, 12)
+			playerStatsPadding.Parent = playerStatsContent
+
+			local playerStatsLayout = Instance.new("UIListLayout")
+			playerStatsLayout.FillDirection = Enum.FillDirection.Horizontal
+			playerStatsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+			playerStatsLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+			playerStatsLayout.Padding = UDim.new(0, 10)
+			playerStatsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+			playerStatsLayout.Parent = playerStatsContent
+
+			local function CreateStatsText(parent, text, size, position, color, textSize, font)
+				local label = Instance.new("TextLabel")
+				label.BackgroundTransparency = 1
+				label.BorderSizePixel = 0
+				label.Position = position
+				label.Size = size
+				label.Font = font or Enum.Font.Gotham
+				label.Text = text
+				label.TextColor3 = color
+				label.TextSize = textSize
+				label.TextXAlignment = Enum.TextXAlignment.Left
+				label.TextYAlignment = Enum.TextYAlignment.Center
+				label.ZIndex = 22
+				label.Parent = parent
+				return label
+			end
+
+			local function CreateStatsDivider()
+				local divider = Instance.new("Frame")
+				divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				divider.BackgroundTransparency = 0.88
+				divider.BorderSizePixel = 0
+				divider.Size = UDim2.fromOffset(1, 34)
+				divider.ZIndex = 21
+				divider.Parent = playerStatsContent
+			end
+
+			local profileSegment = Instance.new("Frame")
+			profileSegment.BackgroundTransparency = 1
+			profileSegment.Size = UDim2.fromOffset(215, 48)
+			profileSegment.ZIndex = 21
+			profileSegment.Parent = playerStatsContent
+
+			local statsAvatar = Instance.new("ImageLabel")
+			statsAvatar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			statsAvatar.BackgroundTransparency = 1
+			statsAvatar.BorderSizePixel = 0
+			statsAvatar.Image = Settings.PlayerStatsAvatar or ((isReady and headshotImage) or "rbxassetid://0")
+			statsAvatar.Position = UDim2.fromOffset(0, 3)
+			statsAvatar.Size = UDim2.fromOffset(42, 42)
+			statsAvatar.ZIndex = 22
+			statsAvatar.Parent = profileSegment
+
+			local statsAvatarCorner = Instance.new("UICorner")
+			statsAvatarCorner.CornerRadius = UDim.new(1, 0)
+			statsAvatarCorner.Parent = statsAvatar
+
+			local statsAvatarStroke = Instance.new("UIStroke")
+			statsAvatarStroke.Color = Color3.fromRGB(255, 255, 255)
+			statsAvatarStroke.Transparency = 0.78
+			statsAvatarStroke.Parent = statsAvatar
+
+			local profileIcon = Instance.new("ImageLabel")
+			profileIcon.BackgroundTransparency = 1
+			profileIcon.BorderSizePixel = 0
+			profileIcon.Image = assets.statsUserIcon
+			profileIcon.ImageColor3 = Color3.fromRGB(215, 211, 220)
+			profileIcon.Position = UDim2.fromOffset(54, 14)
+			profileIcon.Size = UDim2.fromOffset(20, 20)
+			profileIcon.ZIndex = 22
+			profileIcon.Parent = profileSegment
+
+			local showPlayerStatsBadge = Settings.PlayerStatsBadge ~= false
+			local displayNameWidth = showPlayerStatsBadge and 78 or 130
+			local statsDisplayName = CreateStatsText(profileSegment, LocalPlayer.DisplayName, UDim2.fromOffset(displayNameWidth, 48), UDim2.fromOffset(82, 0), Color3.fromRGB(245, 243, 247), 16, Enum.Font.GothamBold)
+			statsDisplayName.TextTruncate = Enum.TextTruncate.AtEnd
+
+			if showPlayerStatsBadge then
+				local badge = CreateStatsText(profileSegment, Settings.PlayerStatsBadge or "BETA", UDim2.fromOffset(44, 28), UDim2.fromOffset(168, 10), Color3.fromRGB(255, 165, 165), 13, Enum.Font.GothamBold)
+				badge.BackgroundColor3 = Color3.fromRGB(112, 42, 49)
+				badge.BackgroundTransparency = 0.25
+				badge.TextXAlignment = Enum.TextXAlignment.Center
+
+				local badgeCorner = Instance.new("UICorner")
+				badgeCorner.CornerRadius = UDim.new(0, 8)
+				badgeCorner.Parent = badge
+			end
+
+			CreateStatsDivider()
+
+			local function CreateMetric(icon, unit)
+				local segment = Instance.new("Frame")
+				segment.BackgroundTransparency = 1
+				segment.Size = UDim2.fromOffset(95, 48)
+				segment.ZIndex = 21
+				segment.Parent = playerStatsContent
+
+				local metricIcon = Instance.new("ImageLabel")
+				metricIcon.BackgroundTransparency = 1
+				metricIcon.BorderSizePixel = 0
+				metricIcon.Image = icon
+				metricIcon.ImageColor3 = Color3.fromRGB(244, 101, 92)
+				metricIcon.Position = UDim2.fromOffset(0, 14)
+				metricIcon.Size = UDim2.fromOffset(20, 20)
+				metricIcon.ZIndex = 22
+				metricIcon.Parent = segment
+
+				local value = CreateStatsText(segment, "--", UDim2.fromOffset(44, 48), UDim2.fromOffset(28, 0), Color3.fromRGB(245, 243, 247), 18, Enum.Font.GothamBold)
+				CreateStatsText(segment, unit, UDim2.fromOffset(25, 48), UDim2.fromOffset(68, 0), Color3.fromRGB(145, 140, 151), 13, Enum.Font.Gotham)
+				return value
+			end
+
+			local pingValue = CreateMetric(assets.statsSignalIcon, "ms")
+			CreateStatsDivider()
+			local fpsValue = CreateMetric(assets.statsGaugeIcon, "fps")
+			CreateStatsDivider()
+			local playersValue = CreateMetric(assets.statsUsersIcon, "players")
+
+			local playerStatsElapsed = 0
+			local playerStatsFrames = 0
+			playerStatsConnection = RunService.RenderStepped:Connect(function(delta)
+				if unloaded or not playerStatsBar.Parent then return end
+				playerStatsElapsed = playerStatsElapsed + delta
+				playerStatsFrames = playerStatsFrames + 1
+				if playerStatsElapsed < 0.5 then return end
+
+				fpsValue.Text = tostring(math.floor((playerStatsFrames / playerStatsElapsed) + 0.5))
+				playersValue.Text = tostring(#Players:GetPlayers())
+
+				local ping = 0
+				local success, pingValueResult = pcall(function()
+					return Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
+				end)
+				if success and type(pingValueResult) == "number" then
+					ping = math.floor(pingValueResult + 0.5)
+				end
+				pingValue.Text = tostring(ping)
+
+				playerStatsElapsed = 0
+				playerStatsFrames = 0
+			end)
+
+			if Settings.PlayerStatsDraggable ~= false then
+				local playerStatsDragging = false
+				local playerStatsDragStart
+				local playerStatsStartPosition
+				local playerStatsDragInput
+
+				playerStatsBar.InputBegan:Connect(function(input)
+					if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+					playerStatsDragging = true
+					playerStatsDragStart = input.Position
+					playerStatsStartPosition = playerStatsBar.Position
+
+					input.Changed:Connect(function()
+						if input.UserInputState == Enum.UserInputState.End then
+							playerStatsDragging = false
+						end
+					end)
+				end)
+
+				playerStatsBar.InputChanged:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+						playerStatsDragInput = input
+					end
+				end)
+
+				playerStatsInputConnection = UserInputService.InputChanged:Connect(function(input)
+					if unloaded or input ~= playerStatsDragInput or not playerStatsDragging then return end
+					local delta = input.Position - playerStatsDragStart
+					playerStatsBar.Position = UDim2.new(
+						playerStatsStartPosition.X.Scale,
+						playerStatsStartPosition.X.Offset + delta.X,
+						playerStatsStartPosition.Y.Scale,
+						playerStatsStartPosition.Y.Offset + delta.Y
+					)
+				end)
+			end
+		end
+
+		function WindowFunctions:UpdateTitle(NewTitle)
 		title.Text = NewTitle
 	end
 
@@ -5277,7 +5505,13 @@ function MacLib:Window(Settings)
 
 	function WindowFunctions:Unload()
 		if onUnloadCallback then
-			onUnloadCallback()  
+			onUnloadCallback()
+		end
+		if playerStatsConnection then
+			playerStatsConnection:Disconnect()
+		end
+		if playerStatsInputConnection then
+			playerStatsInputConnection:Disconnect()
 		end
 		macLib:Destroy()
 		unloaded = true

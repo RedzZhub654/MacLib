@@ -74,6 +74,34 @@ local Window = MacLib:Window({
 | `MobileFloatButton` | `boolean` | Enabled on touch-only devices | Creates the draggable button used to restore a minimized window. |
 | `MobileFloatButtonPosition` | `UDim2` | `UDim2.new(1, -24, 1, -24)` | Controls the initial on-screen placement of that button. |
 
+### Floating player-stats bar
+
+MacLib now includes a separate, floating player-stats bar modeled on the supplied reference. It uses the local player’s Roblox avatar thumbnail and display name rather than a hard-coded username. The bar remains visible when the main UI is minimized, updates live ping, FPS, and player count approximately twice per second, and uses the supplied user, signal, gauge, and users icon assets. It is also draggable by default on touch and desktop input.
+
+```lua
+local Window = MacLib:Window({
+    Title = "My Project",
+    Subtitle = "Live status UI",
+    Size = UDim2.fromOffset(868, 650),
+
+    PlayerStatsEnabled = true,
+    PlayerStatsBadge = "BETA", -- Set to false to hide the badge.
+    PlayerStatsPosition = UDim2.new(0.5, 0, 0, 16),
+    PlayerStatsDraggable = true,
+
+    -- Optional: use a custom Roblox image asset instead of the local player avatar.
+    -- PlayerStatsAvatar = "rbxassetid://YOUR_IMAGE_ID",
+})
+```
+
+| Setting | Type | Default | Effect |
+|---|---|---|---|
+| `PlayerStatsEnabled` | `boolean` | `true` | Creates the independent floating player-stats overlay. |
+| `PlayerStatsBadge` | `string` or `false` | `"BETA"` | Sets the short badge shown beside the display name, or hides it when `false`. |
+| `PlayerStatsPosition` | `UDim2` | `UDim2.new(0.5, 0, 0, 16)` | Sets the initial top-center placement of the bar. |
+| `PlayerStatsDraggable` | `boolean` | `true` | Lets the user drag the status bar to a preferred screen position. |
+| `PlayerStatsAvatar` | `string` | Local player’s Roblox avatar | Overrides the automatically fetched Roblox avatar with an image asset URL. |
+
 ## Library lifecycle and configuration
 
 The documented library-level API includes a demo window and configuration management. You can choose a configuration folder, save a flagged control state, load it later, list saved configurations, and load a configuration selected for automatic use. Configuration-aware controls expose a flag parameter and can opt out through `IgnoreConfig`. [4]
