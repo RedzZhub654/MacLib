@@ -160,12 +160,22 @@ MobileToggleButton = true,
 
 ## Executor profile card
 
-The executor profile area in the lower-left sidebar now uses a restrained slate outline and a comfortable full-width, 68-pixel dark card. It uses a 34-pixel avatar, compact text spacing, and a 12-pixel lift above the bottom edge so the card fits naturally without looking detached or cramped. The display name, Roblox username, executor name, and ping value use larger, readable type. Beneath the display name and Roblox username, the compact status row shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available, plus a live **`Ping: <ms> ms`** readout refreshed once per second. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor and ping values follow the existing profile privacy state and are redacted when user information is hidden.
+The executor profile area in the lower-left sidebar now uses a restrained slate outline and a comfortable full-width, 68-pixel dark card. It uses a 34-pixel avatar, compact text spacing, and a 12-pixel lift above the bottom edge so the card fits naturally without looking detached or cramped. The display name, Roblox username, executor name, and ping value use larger, readable type. Beneath the display name and Roblox username, the compact status row shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available, plus a live **`Ping: <ms> ms`** readout refreshed every 0.25 seconds by default. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor and ping values follow the existing profile privacy state and are redacted when user information is hidden.
+
+| Ping color | Latency range | Meaning |
+|---|---:|---|
+| Green | `0–80 ms` | Good connection |
+| Yellow | `81–150 ms` | Moderate latency |
+| Red | `151 ms+` | High latency |
+| Gray | Unavailable or hidden | Ping cannot be displayed |
+
+Set `PingRefreshInterval` to a custom number of seconds when required. The value is clamped to a minimum of `0.1` seconds.
 
 By default, the card uses the local player’s Roblox avatar thumbnail. Supply any valid Roblox image string—such as an `rbxassetid://` image asset or an `rbxthumb://` thumbnail—to replace it.
 
 ```lua
 ProfileAvatar = "rbxassetid://YOUR_AVATAR_OR_THUMBNAIL",
+PingRefreshInterval = 0.25, -- Optional; 0.1 seconds minimum
 -- ProfileThumbnail = "rbxassetid://YOUR_IMAGE", -- Supported alias
 -- ProfileImage = "rbxassetid://YOUR_IMAGE",     -- Supported alias
 ```

@@ -704,6 +704,14 @@ function MacLib:Window(Settings)
 	executorLabel.Size = UDim2.new(0.62, 0, 1, 0)
 	executorLabel.Parent = statusRow
 
+	local latencyRefreshInterval = math.max(0.1, tonumber(Settings.PingRefreshInterval) or 0.25)
+	local latencyColors = {
+		Good = Color3.fromRGB(151, 211, 168),
+		Moderate = Color3.fromRGB(241, 196, 107),
+		High = Color3.fromRGB(239, 110, 110),
+		Unknown = Color3.fromRGB(175, 182, 198),
+	}
+
 	local latencyLabel = Instance.new("TextLabel")
 	latencyLabel.Name = "Latency"
 	latencyLabel.AnchorPoint = Vector2.new(1, 0)
@@ -749,10 +757,23 @@ function MacLib:Window(Settings)
 	local function UpdateLatency()
 		if not showUserInfo then
 			latencyLabel.Text = "Ping: -- ms"
+			latencyLabel.TextColor3 = latencyColors.Unknown
 			return
 		end
 		local milliseconds = GetLatencyMilliseconds()
-		latencyLabel.Text = milliseconds and string.format("Ping: %d ms", milliseconds) or "Ping: -- ms"
+		if not milliseconds then
+			latencyLabel.Text = "Ping: -- ms"
+			latencyLabel.TextColor3 = latencyColors.Unknown
+			return
+		end
+		latencyLabel.Text = string.format("Ping: %d ms", milliseconds)
+		if milliseconds <= 80 then
+			latencyLabel.TextColor3 = latencyColors.Good
+		elseif milliseconds <= 150 then
+			latencyLabel.TextColor3 = latencyColors.Moderate
+		else
+			latencyLabel.TextColor3 = latencyColors.High
+		end
 	end
 
 	userAndDisplayFrame.Parent = informationGroup
@@ -5886,7 +5907,7 @@ local function BindAutoDPI()
 	task.spawn(function()
 		while not unloaded and latencyLabel.Parent do
 			UpdateLatency()
-			task.wait(1)
+			task.wait(latencyRefreshInterval)
 		end
 	end)
 
