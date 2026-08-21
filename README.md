@@ -1,24 +1,33 @@
 # MacLib
 
-> A macOS-inspired Roblox UI library for creating windows, organized navigation, configurable controls, notifications, and dialogs.
-
-**MacLib** is a Lua UI library distributed in this repository as [`maclib.txt`](./maclib.txt). This README is an original repository guide based on the public MacLib documentation, with the library link updated to this repository. The upstream documentation describes a modern, customizable interface and a broad set of UI controls. For the complete API reference, consult the [official documentation hub][1].
-
-| Resource | Location |
-|---|---|
-| **Repository** | [github.com/RedzZhub654/MacLib](https://github.com/RedzZhub654/MacLib) |
-| **Library file** | [`maclib.txt`](./maclib.txt) |
-| **Load URL** | `https://raw.githubusercontent.com/RedzZhub654/MacLib/main/maclib.txt` |
-| **Original documentation** | [MacLib UI Library][1] |
-| **Original project** | [biggaboy212/Maclib][2] |
-
-The images used below are stored in this repository under [`assets/maclib-docs`](./assets/maclib-docs), so the README does not depend on the external documentation site for its visual examples. Each asset’s original source page is recorded in [`SOURCES.md`](./assets/maclib-docs/SOURCES.md).
+> A macOS-inspired Roblox UI library with responsive windows, configurable controls, a mobile recovery button, and a floating live player-stats bar.
 
 ![MacLib interface preview](assets/maclib-docs/welcome-2-5cc22d84.png)
 
-## Getting started
+MacLib ships as a single Lua file and is designed to make feature-rich Roblox interfaces quick to assemble. It supports organized tabs and sections, configuration-aware controls, notifications, dialogs, a mobile-friendly floating window toggle, and a live overlay that displays the local player’s avatar, ping, FPS, and server population.
 
-MacLib is loaded as a Lua module and then used to create a window. The loader below has been changed from the documentation’s original upstream URL so that it retrieves the `maclib.txt` file in **this** repository. Before executing remotely fetched code, inspect the revision you intend to use and consider pinning the URL to a commit SHA for reproducible builds.
+| Project resource | Link |
+|---|---|
+| **Repository** | [RedzZhub654/MacLib](https://github.com/RedzZhub654/MacLib) |
+| **Library source** | [`maclib.txt`](./maclib.txt) |
+| **Ready-to-run test UI** | [`examples/test.lua`](./examples/test.lua) |
+| **Local visual assets** | [`assets/maclib-docs`](./assets/maclib-docs) |
+| **Image-source manifest** | [`assets/maclib-docs/SOURCES.md`](./assets/maclib-docs/SOURCES.md) |
+| **Original documentation** | [MacLib UI Library][1] |
+| **Original project** | [biggaboy212/Maclib][2] |
+
+## Guide map
+
+| Start here | Build features | Reference |
+|---|---|---|
+| [Load MacLib](#load-maclib) | [Create a window](#create-a-window) | [Window options](#window-options) |
+| [Run the test UI](#run-the-test-ui) | [Build a layout](#build-a-layout) | [Control reference](#control-reference) |
+| [Use mobile support](#mobile-window-toggle) | [Show feedback](#notifications-and-dialogs) | [Window and configuration methods](#window-and-configuration-methods) |
+| [Use player stats](#floating-player-stats-bar) | [Visual reference](#visual-reference) | [Credits and sources](#credits-and-sources) |
+
+## Load MacLib
+
+MacLib is published in this repository as [`maclib.txt`](./maclib.txt). The following loader points to this repository’s main branch. For production use, review the code you run and consider pinning the URL to a specific commit so that your build stays reproducible.
 
 ```lua
 local MacLib = loadstring(game:HttpGet(
@@ -26,148 +35,235 @@ local MacLib = loadstring(game:HttpGet(
 ))()
 ```
 
-Once loaded, construct a window and populate it with tab groups, tabs, sections, and controls. The public guide documents options for a title, subtitle, size, dragging behavior, control visibility, user details, hotkeys, and acrylic blur. It also provides methods for updating window state, notifications, blur, user-info visibility, keybindings, size, scale, and display text. [3]
+## Run the test UI
+
+The fastest way to confirm a working installation is to run [`examples/test.lua`](./examples/test.lua). It opens a complete test interface with a floating player-stats bar, mobile recovery button, global setting, notification, dialog, toggle, slider, input, dropdown, color picker, keybind, and action buttons.
+
+```lua
+loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/examples/test.lua"
+))()
+```
+
+> **What the test script proves:** it validates the main window lifecycle, interactive callbacks, visible state changes, player-stats updates, and desktop or touch dragging. Use it as a known-good starting point, then replace the callbacks with your own application logic.
+
+| Test area | Included behavior |
+|---|---|
+| Core window | Title, subtitle, keybind, drag behavior, acrylic blur, and close flow. |
+| Mobile support | A floating circular button restores a minimized window on touch-only devices. |
+| Player stats | Local avatar, display name, ping, FPS, player count, badge, and drag support. |
+| Inputs | Toggle, slider, text input, dropdown, color picker, and keybind callbacks. |
+| Feedback | Notification and confirmation-dialog examples. |
+
+## Create a window
+
+A window is the root of every MacLib interface. Configure only the options your project needs; omitted options use the library’s defaults.
 
 ```lua
 local Window = MacLib:Window({
     Title = "My Project",
-    Subtitle = "MacLib",
-    Size = UDim2.fromOffset(868, 650),
+    Subtitle = "Interface ready",
+    Size = UDim2.fromOffset(900, 650),
     DragStyle = 1,
     DisabledWindowControls = {},
     ShowUserInfo = true,
     Keybind = Enum.KeyCode.RightControl,
     AcrylicBlur = true,
-})
-```
 
-![Tab group reference](assets/maclib-docs/creating_a_tab_group-1-3eaf4a69.png)
-
-| Window option | Purpose |
-|---|---|
-| `Title`, `Subtitle` | Set the primary and supporting text displayed in the interface. |
-| `Size` | Supplies the initial `UDim2` dimensions of the window. |
-| `DragStyle` | Chooses icon-based dragging or whole-window dragging for different input contexts. |
-| `DisabledWindowControls` | Disables named controls such as exit or minimize. |
-| `ShowUserInfo` | Displays or redacts user details in the UI. |
-| `Keybind` | Selects the key used to toggle window visibility. |
-| `AcrylicBlur` | Enables or disables the window blur treatment. |
-| `MobileFloatButton` | Enables or disables the mobile floating toggle; on touch-only devices, it is enabled automatically unless explicitly set. |
-| `MobileFloatButtonPosition` | Sets the initial `UDim2` position of the floating toggle; it defaults to the lower-right corner. |
-
-### Mobile floating button
-
-When MacLib is minimized on a touch-only device, a circular floating menu button appears above the game UI. A short tap restores the window, while dragging the button repositions it for a more comfortable thumb reach. The button is hidden while the window is open and is removed automatically with the rest of the interface when `Window:Unload()` is called.
-
-```lua
-local Window = MacLib:Window({
-    Title = "My Project",
-    Subtitle = "Mobile-ready UI",
-    Size = UDim2.fromOffset(868, 650),
     MobileFloatButton = true,
-    MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
-})
-```
-
-| Setting | Type | Default | Effect |
-|---|---|---|---|
-| `MobileFloatButton` | `boolean` | Enabled on touch-only devices | Creates the draggable button used to restore a minimized window. |
-| `MobileFloatButtonPosition` | `UDim2` | `UDim2.new(1, -24, 1, -24)` | Controls the initial on-screen placement of that button. |
-
-### Floating player-stats bar
-
-MacLib now includes a separate, floating player-stats bar modeled on the supplied reference. It uses the local player’s Roblox avatar thumbnail and display name rather than a hard-coded username. The bar remains visible when the main UI is minimized, updates live ping, FPS, and player count approximately twice per second, and uses the supplied user, signal, gauge, and users icon assets. It is also draggable by default on touch and desktop input.
-
-```lua
-local Window = MacLib:Window({
-    Title = "My Project",
-    Subtitle = "Live status UI",
-    Size = UDim2.fromOffset(868, 650),
-
     PlayerStatsEnabled = true,
-    PlayerStatsBadge = "BETA", -- Set to false to hide the badge.
-    PlayerStatsPosition = UDim2.new(0.5, 0, 0, 16),
-    PlayerStatsDraggable = true,
-
-    -- Optional: use a custom Roblox image asset instead of the local player avatar.
-    -- PlayerStatsAvatar = "rbxassetid://YOUR_IMAGE_ID",
+    PlayerStatsBadge = "BETA",
 })
 ```
 
-| Setting | Type | Default | Effect |
+### Window options
+
+| Option | Type | Default behavior | Purpose |
 |---|---|---|---|
-| `PlayerStatsEnabled` | `boolean` | `true` | Creates the independent floating player-stats overlay. |
-| `PlayerStatsBadge` | `string` or `false` | `"BETA"` | Sets the short badge shown beside the display name, or hides it when `false`. |
-| `PlayerStatsPosition` | `UDim2` | `UDim2.new(0.5, 0, 0, 16)` | Sets the initial top-center placement of the bar. |
-| `PlayerStatsDraggable` | `boolean` | `true` | Lets the user drag the status bar to a preferred screen position. |
-| `PlayerStatsAvatar` | `string` | Local player’s Roblox avatar | Overrides the automatically fetched Roblox avatar with an image asset URL. |
+| `Title` | `string` | Required display text | Sets the main title. |
+| `Subtitle` | `string` | Optional | Adds supporting text below the title. |
+| `Size` | `UDim2` | `UDim2.fromOffset(868, 650)` | Sets the initial window dimensions. |
+| `DragStyle` | `number` | `1` | Uses the move icon (`1`) or full UI surface (`2`) for dragging. |
+| `DisabledWindowControls` | `table` | `{}` | Disables named controls such as `"Exit"` or `"Minimize"`. |
+| `ShowUserInfo` | `boolean` | `true` | Shows the local-player block in the window sidebar. |
+| `Keybind` | `Enum.KeyCode` | `RightControl` | Toggles the window’s visible state. |
+| `AcrylicBlur` | `boolean` | `true` | Enables the blur treatment behind the interface. |
+| `MobileFloatButton` | `boolean` | Auto-enabled on touch-only devices | Controls the minimized-window recovery button. |
+| `MobileFloatButtonPosition` | `UDim2` | Bottom-right | Sets the floating recovery button’s initial position. |
+| `PlayerStatsEnabled` | `boolean` | `true` | Creates the independent floating player-stats bar. |
+| `PlayerStatsBadge` | `string` or `false` | `"BETA"` | Sets the badge next to the display name, or removes it with `false`. |
+| `PlayerStatsPosition` | `UDim2` | Top-center | Sets the stats bar’s initial position. |
+| `PlayerStatsDraggable` | `boolean` | `true` | Enables touch and mouse dragging for the stats bar. |
+| `PlayerStatsAvatar` | `string` | Local player’s Roblox avatar | Overrides the automatically retrieved avatar thumbnail. |
 
-## Library lifecycle and configuration
+## Build a layout
 
-The documented library-level API includes a demo window and configuration management. You can choose a configuration folder, save a flagged control state, load it later, list saved configurations, and load a configuration selected for automatic use. Configuration-aware controls expose a flag parameter and can opt out through `IgnoreConfig`. [4]
-
-| Method | Role |
-|---|---|
-| `MacLib:Demo()` | Opens the library’s demonstration window. |
-| `MacLib:SetFolder(folder)` | Sets the folder used to store configurations. |
-| `MacLib:SaveConfig(path)` | Saves tracked element values to a configuration file. |
-| `MacLib:LoadConfig(path)` | Restores a saved configuration. |
-| `MacLib:RefreshConfigList()` | Returns the available configuration names. |
-| `MacLib:LoadAutoLoadConfig()` | Loads the selected automatic configuration. |
-| `Window:Unload()` | Destroys the UI window. |
-| `Window.onUnloaded(callback)` | Registers work to perform immediately before unload. |
-
-## Organizing the interface
-
-The documented hierarchy is **Window → Tab Group → Tab → Section → Control**. A tab group separates tabs visually, a tab supplies its name and optional small image, and a section places controls on the left or right side. Tabs can be selected programmatically and can host a configuration section. [5] [6] [7]
+MacLib uses a predictable hierarchy: **Window → Tab Group → Tab → Section → Control**. Tab groups organize navigation; tabs define pages; sections place controls in the left or right column. [3] [4] [5]
 
 ```lua
-local Group = Window:TabGroup()
-local Tab = Group:Tab({
+local TabGroup = Window:TabGroup()
+
+local MainTab = TabGroup:Tab({
     Name = "Main",
-    Image = "rbxassetid://0",
+    Image = "rbxassetid://10723426393",
 })
-local Section = Tab:Section({ Side = "Left" })
+
+local Left = MainTab:Section({ Side = "Left" })
+local Right = MainTab:Section({ Side = "Right" })
+
+Left:Header({ Text = "Controls" })
+Left:Paragraph({
+    Header = "Welcome",
+    Body = "Place your controls below this text.",
+})
+
+MainTab:Select()
 ```
 
 | Tab layout | Section layout |
 |---|---|
 | ![Tab layout reference](assets/maclib-docs/adding_tabs-1-0ef57fa5.png) | ![Section layout reference](assets/maclib-docs/adding_sections-1-4cb01cdc.png) |
 
-| Layer | Creation method | Main responsibility |
+## Mobile window toggle
+
+When a MacLib window is minimized on a touch-only device, the library can display a circular floating menu button. A tap restores the window; dragging moves the button to a comfortable on-screen position. The control is hidden while the main UI is open and is cleaned up when `Window:Unload()` runs.
+
+```lua
+local Window = MacLib:Window({
+    Title = "Mobile-ready UI",
+    Size = UDim2.fromOffset(868, 650),
+    MobileFloatButton = true,
+    MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
+})
+```
+
+## Floating player-stats bar
+
+The player-stats bar is a separate overlay, so it remains available even when the main window is minimized. It uses the local player’s **Roblox avatar** and **display name** rather than a hard-coded username, and refreshes ping, FPS, and player count at a short interval. The user, signal, gauge, and users icons are sourced from the icon set supplied with this project.
+
+```lua
+local Window = MacLib:Window({
+    Title = "Status overlay demo",
+    Size = UDim2.fromOffset(868, 650),
+
+    PlayerStatsEnabled = true,
+    PlayerStatsBadge = "TEST",
+    PlayerStatsPosition = UDim2.new(0.5, 0, 0, 16),
+    PlayerStatsDraggable = true,
+
+    -- Optional custom profile image:
+    -- PlayerStatsAvatar = "rbxassetid://YOUR_IMAGE_ID",
+})
+```
+
+| Live value | Source | Display behavior |
 |---|---|---|
-| Tab group | `Window:TabGroup()` | Visually groups related tabs. |
-| Tab | `Group:Tab({...})` | Names a workspace and may show a compact image. |
-| Section | `Tab:Section({...})` | Places controls in the `Left` or `Right` column. |
-| Global setting | `Window:GlobalSetting({...})` | Adds a boolean option to the window-level settings area. |
-
-## Interaction feedback
-
-MacLib provides UI-level notifications and dialogs. Notifications accept title, description, lifetime, size and scale settings, an optional interaction style, and a callback; returned notification objects can update their text, resize, or cancel. Dialogs accept a title, description, and a collection of named callback buttons; returned dialog objects can update text or cancel. [8] [9]
-
-| Global settings | Notification | Dialog |
-|---|---|---|
-| ![Global settings reference](assets/maclib-docs/adding_a_global_setting-1-482cfbda.png) | ![Notification reference](assets/maclib-docs/displaying_a_notification-1-8c82c17d.png) | ![Dialog reference](assets/maclib-docs/prompting_a_dialog-1-8304c37f.png) |
-
-| Feature | Key capability | Useful object methods |
-|---|---|---|
-| Global setting | A boolean setting available from the window’s global-settings menu. | Uses a callback to receive the new state. |
-| Notification | A transient alert with optional confirm or cancel affordance. | `UpdateTitle`, `UpdateDescription`, `Resize`, `Cancel` |
-| Dialog | A named-button prompt for a user decision. | `UpdateTitle`, `UpdateDescription`, `Cancel` |
+| Avatar and name | Local Roblox player | Automatically fetched avatar thumbnail and display name; an image asset can override the avatar. |
+| Ping | Roblox `Stats` service | Displayed in milliseconds; falls back safely when unavailable. |
+| FPS | Render-step measurement | Calculated from rendered frames over the refresh interval. |
+| Players | `Players:GetPlayers()` | Shows the current population of the active server. |
 
 ## Controls
 
-The source documentation covers action, text-entry, numeric, boolean, key-binding, color, and choice controls. These controls typically accept an optional flag for configuration persistence; interactive controls expose a value or state and can be hidden or renamed after creation. [10]
+Interactive controls can receive an optional **flag** as their second argument. Flags allow values to participate in MacLib’s configuration system. The original API reference documents the complete option fields and object methods. [6]
 
-| Control | What it provides | Notable update or query operations |
+| Control | Typical use | Key capabilities |
 |---|---|---|
-| `Button` | Named action that invokes a callback. | Rename; toggle visibility. |
-| `Input` | Text entry with built-in or custom character filtering. | Read or replace input text; change placeholder. |
-| `Slider` | Numeric value between a minimum and maximum with display formatting. | Update or retrieve value. |
-| `Toggle` | Boolean state control. | Update or retrieve state. |
-| `Keybind` | User-selectable Roblox enum key with optional blacklist and hold handling. | Bind, unbind, or retrieve the key. |
-| `Colorpicker` | `Color3` selection with optional alpha/transparency. | Set color or alpha. |
-| `Dropdown` | Single- or multi-select choices with optional search and required selection. | Update selection; insert, remove, query, or clear options. |
+| `Section:Button` | Run an action | Invokes a callback. |
+| `Section:Toggle` | Store a boolean state | Get or update the state. |
+| `Section:Slider` | Choose a number in a range | Get or update the value; customize formatting and precision. |
+| `Section:Input` | Capture text | Read or replace text; use built-in or custom filters. |
+| `Section:Dropdown` | Choose one or many values | Search, require a selection, and update options dynamically. |
+| `Section:Keybind` | Bind a Roblox input | Bind, unbind, and retrieve the active input. |
+| `Section:Colorpicker` | Choose a color and alpha | Update color or transparency programmatically. |
+| `Section:Header` | Add a section heading | Update text or visibility. |
+| `Section:Paragraph` | Add explanatory content | Update its header and body text. |
+| `Section:Label` / `SubLabel` | Add lightweight text | Update text or visibility. |
+| `Section:Divider` / `Spacer` | Separate controls | Hide or remove the divider, or create spacing. |
+
+```lua
+local Enabled = Left:Toggle({
+    Name = "Enable feature",
+    Default = false,
+    Callback = function(value)
+        print("Feature enabled:", value)
+    end,
+}, "FeatureEnabled")
+
+local Amount = Left:Slider({
+    Name = "Amount",
+    Default = 50,
+    Minimum = 0,
+    Maximum = 100,
+    DisplayMethod = "Percent",
+    Precision = 0,
+    Callback = function(value)
+        print("Amount:", value)
+    end,
+}, "Amount")
+
+Left:Button({
+    Name = "Show values",
+    Callback = function()
+        print(Enabled:GetState(), Amount:GetValue())
+    end,
+})
+```
+
+## Notifications and dialogs
+
+Use notifications for transient feedback and dialogs when the user must make a choice. Both return objects that can be updated or canceled after creation. [7] [8]
+
+```lua
+Window:Notify({
+    Title = "Saved",
+    Description = "Your settings were saved successfully.",
+    Lifetime = 3,
+})
+
+Window:Dialog({
+    Title = "Reset settings?",
+    Description = "This example shows a confirmation flow.",
+    Buttons = {
+        {
+            Name = "Confirm",
+            Callback = function()
+                print("Confirmed")
+            end,
+        },
+        { Name = "Cancel" },
+    },
+})
+```
+
+## Window and configuration methods
+
+| Method | Purpose |
+|---|---|
+| `Window:SetState(boolean)` | Shows or hides the main window. |
+| `Window:GetState()` | Returns whether the main window is visible. |
+| `Window:SetNotificationsState(boolean)` | Shows or hides the notification area. |
+| `Window:GetNotificationsState()` | Returns notification visibility. |
+| `Window:SetAcrylicBlurState(boolean)` | Enables or disables acrylic blur. |
+| `Window:GetAcrylicBlurState()` | Returns the blur state. |
+| `Window:SetUserInfoState(boolean)` | Shows or redacts sidebar user information. |
+| `Window:SetSize(UDim2)` / `Window:GetSize()` | Updates or retrieves the window size. |
+| `Window:SetScale(number)` / `Window:GetScale()` | Updates or retrieves UI scale. |
+| `Window:UpdateTitle(string)` / `Window:UpdateSubtitle(string)` | Changes window text after creation. |
+| `Window:Unload()` | Cleans up the entire interface, including floating overlays. |
+| `MacLib:SetFolder(string)` | Chooses the configuration folder. |
+| `MacLib:SaveConfig(string)` / `MacLib:LoadConfig(string)` | Saves or restores flagged control values. |
+| `MacLib:RefreshConfigList()` | Lists available configuration names. |
+| `MacLib:LoadAutoLoadConfig()` | Loads the selected automatic configuration. |
+| `MacLib:Demo()` | Opens the built-in library demonstration. |
+
+## Visual reference
+
+All visual references are stored locally under [`assets/maclib-docs`](./assets/maclib-docs), and the image provenance is recorded in [`SOURCES.md`](./assets/maclib-docs/SOURCES.md). The gallery below keeps the primary component examples in the repository so this guide does not depend on the external documentation site.
+
+| Global setting | Notification | Dialog |
+|---|---|---|
+| ![Global setting reference](assets/maclib-docs/adding_a_global_setting-1-482cfbda.png) | ![Notification reference](assets/maclib-docs/displaying_a_notification-1-8c82c17d.png) | ![Dialog reference](assets/maclib-docs/prompting_a_dialog-1-8304c37f.png) |
 
 | Button | Input | Slider |
 |---|---|---|
@@ -181,58 +277,20 @@ The source documentation covers action, text-entry, numeric, boolean, key-bindin
 |---|---|---|
 | ![Dropdown reference](assets/maclib-docs/dropdown-1-a4b2b6cb.png) | ![Header reference](assets/maclib-docs/header-1-d83ad2ef.png) | ![Paragraph reference](assets/maclib-docs/paragraph-1-08a4734f.png) |
 
-The library also includes lightweight content and layout elements. Headers, labels, sub-labels, and paragraphs provide presentation text; dividers and spacers structure a section without collecting user input. Their documented APIs support visibility changes, text updates where applicable, and removal for divider or spacer elements. [11]
-
-| Element | Primary use |
-|---|---|
-| `Header` | Renders a prominent text heading. |
-| `Paragraph` | Renders a header paired with explanatory body text. |
-| `Label` / `SubLabel` | Renders standalone primary or secondary text. |
-| `Divider` | Separates neighboring controls visually. |
-| `Spacer` | Adds empty vertical separation. |
-
 | Label | Sub-label | Divider |
 |---|---|---|
 | ![Label reference](assets/maclib-docs/label-1-a995812a.png) | ![Sub-label reference](assets/maclib-docs/sub_label-1-91f9255e.png) | ![Divider reference](assets/maclib-docs/divider-1-fbe76a72.png) |
 
-## Documentation notation
+## Credits and sources
 
-The original documentation uses a compact type notation. Angle brackets show a parameter’s expected type, an ellipsis denotes a variable-length collection, and `or` indicates alternate accepted types. Method signatures that include a trailing type describe a return value, while `void` means no value is returned. [12]
-
-| Notation | Meaning |
-|---|---|
-| `Name <string>` | A parameter named `Name` that accepts text. |
-| `Items <...table: fieldA, fieldB>` | A variable-length set of tables containing the listed fields. |
-| `Value <number or table>` | A value that may be a number or a table. |
-| `Callback <function(): void>` | A callback that returns no value. |
-| `:GetState(: boolean)` | A method that returns a boolean state. |
-
-## Visual asset archive
-
-All **24** source documentation visuals have been copied locally into [`assets/maclib-docs`](./assets/maclib-docs) and are embedded in this README. The accompanying [`SOURCES.md`](./assets/maclib-docs/SOURCES.md) provides a per-file provenance table linking each local image to its documentation page and original media URL.
-
-| Welcome cover | Loading guide | Documentation guide |
-|---|---|---|
-| ![Welcome cover](assets/maclib-docs/welcome-1-c664d6ec.jpg) | ![Loading guide visual](assets/maclib-docs/welcome-3-45c69e32.png) | ![Documentation guide visual](assets/maclib-docs/welcome-4-dffc4c52.png) |
-
-| Reference links | Global settings menu | Interface organization |
-|---|---|---|
-| ![Reference links visual](assets/maclib-docs/welcome-5-da35b7a5.png) | ![Global settings menu reference](assets/maclib-docs/adding_a_global_setting-2-a26c5b74.png) | ![Tab group reference](assets/maclib-docs/creating_a_tab_group-1-3eaf4a69.png) |
-
-## Attribution and references
-
-This repository README was written as a practical guide rather than a verbatim copy of the public docs. It preserves attribution to the original project and directs readers to the official documentation for full, current API details. The documentation credits **biggaboy212** as the UI designer, lead developer, and programmer. [13]
+This README is an original repository guide and retains attribution to the original MacLib project. The public documentation credits **biggaboy212** as UI designer, lead developer, and programmer. [9]
 
 [1]: https://brady-xyz.gitbook.io/maclib-ui-library "MacLib UI Library documentation"
 [2]: https://github.com/biggaboy212/Maclib/tree/main "Original MacLib repository"
-[3]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window "Creating a window"
-[4]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib "Loading MacLib"
-[5]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/creating-a-tab-group "Creating a tab group"
-[6]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/creating-a-tab-group/adding-tabs "Adding tabs"
-[7]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/creating-a-tab-group/adding-tabs/adding-sections "Adding sections"
-[8]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/adding-a-global-setting "Adding a global setting"
-[9]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/displaying-a-notification "Displaying a notification"
-[10]: https://brady-xyz.gitbook.io/maclib-ui-library/llms.txt "MacLib documentation index"
-[11]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/creating-a-tab-group/adding-tabs/adding-sections/paragraph "Paragraph control"
-[12]: https://brady-xyz.gitbook.io/maclib-ui-library/information/documentation-formatting "Documentation formatting"
-[13]: https://brady-xyz.gitbook.io/maclib-ui-library/information/miscellaneous "MacLib credits and links"
+[3]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/creating-a-tab-group "Creating a tab group"
+[4]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/creating-a-tab-group/adding-tabs "Adding tabs"
+[5]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/creating-a-tab-group/adding-tabs/adding-sections "Adding sections"
+[6]: https://brady-xyz.gitbook.io/maclib-ui-library/llms.txt "MacLib documentation index"
+[7]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/displaying-a-notification "Displaying a notification"
+[8]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/prompting-a-dialog "Prompting a dialog"
+[9]: https://brady-xyz.gitbook.io/maclib-ui-library/information/miscellaneous "MacLib credits and links"
