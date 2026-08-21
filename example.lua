@@ -2,6 +2,7 @@
 -- Run this file directly, or use the one-line loader in the README.
 
 local SOURCE_URL = "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/maclib.txt"
+local HUB_LOGO = "rbxassetid://137471163061841"
 
 local loaded, MacLib = pcall(function()
     return loadstring(game:HttpGet(SOURCE_URL))()
@@ -25,22 +26,14 @@ local created, Window = pcall(function()
         AutoDPIMinScale = 0.35,
         AutoDPIMargin = 32,
 
-        -- Layered white outline and outer fade.
-        WindowGlowColor = Color3.fromRGB(255, 255, 255),
-        WindowGlowTransparency = 0.97,
-        WindowGlowStrokeTransparency = 0.74,
-        WindowGlowFadeTransparency = 0.93,
-        WindowOutlineTransparency = 0.72,
-
         -- Fully visible default background and stronger dividers.
         UIBackground = "rbxassetid://100502373939372",
         UIBackgroundContrast = 1,
         DividerTransparency = 0.78,
 
-        -- Uses the configured hub logo; tap toggles and drag stays attached to your input.
+        HubLogo = HUB_LOGO,
+        -- Uses the hub logo; tap toggles and drag stays attached to your input.
         MobileToggleButton = true,
-        InterfaceOverlay = true,
-        InterfaceOverlayButton = true,
     })
 end)
 
@@ -60,6 +53,20 @@ Main:Header({ Text = "MacLib is running" })
 Main:Paragraph({
     Header = "Success",
     Body = "Drag the window from its surface. On touch devices, tap the hub-logo button to toggle the UI or drag it without losing control.",
+})
+
+Home:CreateDiscordInvite({
+    Title = "Enzo Hub",
+    Description = "Join the Enzo Hub community.",
+    Icon = HUB_LOGO,
+    Banner = HUB_LOGO,
+    Link = "https://discord.gg/HfeN8GKgpV",
+    Button = "Copy Invite",
+    Side = "Right",
+    RefreshInterval = 5,
+    OnCopy = function(link, copied)
+        print("[MacLib] Discord invite:", link, "Copied:", copied)
+    end,
 })
 
 Main:Toggle({

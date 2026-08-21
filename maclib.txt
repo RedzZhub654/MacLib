@@ -176,61 +176,6 @@ function MacLib:Window(Settings)
 	baseUICorner.CornerRadius = UDim.new(0, 10)
 	baseUICorner.Parent = base
 
-	local baseUIStroke = Instance.new("UIStroke")
-	baseUIStroke.Name = "BaseUIStroke"
-	baseUIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	baseUIStroke.Color = Color3.fromRGB(255, 255, 255)
-	baseUIStroke.Transparency = Settings.WindowOutlineTransparency or 0.72
-	baseUIStroke.Parent = base
-
-	-- A soft white external halo extending beyond the unclipped window sides and corners.
-	local windowGlow = Instance.new("Frame")
-	windowGlow.Name = "WindowGlow"
-	windowGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-	windowGlow.BackgroundColor3 = Settings.WindowGlowColor or Color3.fromRGB(255, 255, 255)
-	windowGlow.BackgroundTransparency = Settings.WindowGlowTransparency or 0.97
-	windowGlow.BorderSizePixel = 0
-	windowGlow.Position = UDim2.fromScale(0.5, 0.5)
-	windowGlow.Size = UDim2.new(1, 28, 1, 28)
-	windowGlow.ZIndex = 0
-	windowGlow.Parent = base
-
-	local windowGlowCorner = Instance.new("UICorner")
-	windowGlowCorner.Name = "WindowGlowCorner"
-	windowGlowCorner.CornerRadius = UDim.new(0, 24)
-	windowGlowCorner.Parent = windowGlow
-
-	local windowGlowStroke = Instance.new("UIStroke")
-	windowGlowStroke.Name = "WindowGlowStroke"
-	windowGlowStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	windowGlowStroke.Color = Settings.WindowGlowColor or Color3.fromRGB(255, 255, 255)
-	windowGlowStroke.Thickness = 2
-	windowGlowStroke.Transparency = Settings.WindowGlowStrokeTransparency or 0.74
-	windowGlowStroke.Parent = windowGlow
-
-	local windowGlowFalloff = Instance.new("Frame")
-	windowGlowFalloff.Name = "WindowGlowFalloff"
-	windowGlowFalloff.AnchorPoint = Vector2.new(0.5, 0.5)
-	windowGlowFalloff.BackgroundTransparency = 1
-	windowGlowFalloff.BorderSizePixel = 0
-	windowGlowFalloff.Position = UDim2.fromScale(0.5, 0.5)
-	windowGlowFalloff.Size = UDim2.new(1, 56, 1, 56)
-	windowGlowFalloff.ZIndex = 0
-	windowGlowFalloff.Parent = base
-
-	local windowGlowFalloffCorner = Instance.new("UICorner")
-	windowGlowFalloffCorner.Name = "WindowGlowFalloffCorner"
-	windowGlowFalloffCorner.CornerRadius = UDim.new(0, 38)
-	windowGlowFalloffCorner.Parent = windowGlowFalloff
-
-	local windowGlowFalloffStroke = Instance.new("UIStroke")
-	windowGlowFalloffStroke.Name = "WindowGlowFalloffStroke"
-	windowGlowFalloffStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	windowGlowFalloffStroke.Color = Settings.WindowGlowColor or Color3.fromRGB(255, 255, 255)
-	windowGlowFalloffStroke.Thickness = 3
-	windowGlowFalloffStroke.Transparency = Settings.WindowGlowFadeTransparency or 0.93
-	windowGlowFalloffStroke.Parent = windowGlowFalloff
-
 	local sidebar = Instance.new("Frame")
 	sidebar.Name = "Sidebar"
 	sidebar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -460,33 +405,6 @@ function MacLib:Window(Settings)
 	globalSettingsButton.Size = UDim2.fromOffset(16,16)
 	globalSettingsButton.Parent = informationHolder
 
-	local interfaceOverlayButton
-	if Settings.InterfaceOverlayButton ~= false then
-		interfaceOverlayButton = Instance.new("TextButton")
-		interfaceOverlayButton.Name = "InterfaceOverlayButton"
-		interfaceOverlayButton.AnchorPoint = Vector2.new(1, 0.5)
-		interfaceOverlayButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		interfaceOverlayButton.BackgroundTransparency = 0.92
-		interfaceOverlayButton.BorderSizePixel = 0
-		interfaceOverlayButton.Font = Enum.Font.GothamMedium
-		interfaceOverlayButton.Position = UDim2.new(1, -28, 0.5, 0)
-		interfaceOverlayButton.Size = UDim2.fromOffset(92, 24)
-		interfaceOverlayButton.Text = "Interface"
-		interfaceOverlayButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-		interfaceOverlayButton.TextSize = 11
-		interfaceOverlayButton.TextTransparency = 0.25
-		interfaceOverlayButton.Parent = informationHolder
-
-		local interfaceOverlayCorner = Instance.new("UICorner")
-		interfaceOverlayCorner.CornerRadius = UDim.new(0, 12)
-		interfaceOverlayCorner.Parent = interfaceOverlayButton
-
-		local interfaceOverlayStroke = Instance.new("UIStroke")
-		interfaceOverlayStroke.Color = Color3.fromRGB(255, 255, 255)
-		interfaceOverlayStroke.Transparency = 0.75
-		interfaceOverlayStroke.Parent = interfaceOverlayButton
-	end
-
 	local function ChangeGlobalSettingsButtonState(State)
 		if State == "Default" then
 			Tween(globalSettingsButton, TweenInfo.new(0.2, Enum.EasingStyle.Sine), {
@@ -537,8 +455,7 @@ function MacLib:Window(Settings)
 		titleFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		titleFrame.BorderSizePixel = 0
 		titleFrame.Position = hasHubLogo and UDim2.fromOffset(38, 0) or UDim2.new()
-		local titleRightInset = interfaceOverlayButton and 152 or 58
-	titleFrame.Size = hasHubLogo and UDim2.new(1, -titleRightInset, 1, 0) or UDim2.new(1, -titleRightInset, 1, 0)
+		titleFrame.Size = hasHubLogo and UDim2.new(1, -58, 1, 0) or UDim2.fromScale(1, 1)
 
 	local title = Instance.new("TextLabel")
 	title.Name = "Title"
@@ -627,6 +544,19 @@ function MacLib:Window(Settings)
 	informationGroup.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	informationGroup.BorderSizePixel = 0
 	informationGroup.Size = UDim2.fromScale(1, 1)
+	informationGroup.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+	informationGroup.BackgroundTransparency = 0.28
+
+	local informationGroupCorner = Instance.new("UICorner")
+	informationGroupCorner.CornerRadius = UDim.new(0, 10)
+	informationGroupCorner.Parent = informationGroup
+
+	local informationGroupStroke = Instance.new("UIStroke")
+	informationGroupStroke.Name = "ExecutorProfileOutline"
+	informationGroupStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	informationGroupStroke.Color = Color3.fromRGB(112, 118, 132)
+	informationGroupStroke.Transparency = 0.48
+	informationGroupStroke.Parent = informationGroup
 
 	local informationGroupUIPadding = Instance.new("UIPadding")
 	informationGroupUIPadding.Name = "InformationGroupUIPadding"
@@ -659,13 +589,6 @@ function MacLib:Window(Settings)
 	uICorner3.Name = "UICorner"
 	uICorner3.CornerRadius = UDim.new(1, 0)
 	uICorner3.Parent = headshot
-
-	local baseUIStroke2 = Instance.new("UIStroke")
-	baseUIStroke2.Name = "BaseUIStroke"
-	baseUIStroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	baseUIStroke2.Color = Color3.fromRGB(255, 255, 255)
-	baseUIStroke2.Transparency = 0.9
-	baseUIStroke2.Parent = headshot
 
 	headshot.Parent = informationGroup
 
@@ -1111,12 +1034,6 @@ local function BindAutoDPI()
 		if not hasGlobalSetting then return end
 		toggle()
 	end)
-	if interfaceOverlayButton then
-		interfaceOverlayButton.MouseButton1Click:Connect(function()
-			if not hasGlobalSetting then return end
-			toggle()
-		end)
-	end
 	globalSettings.MouseEnter:Connect(function()
 		hovering = true
 	end)
@@ -1498,50 +1415,6 @@ local function BindAutoDPI()
 		end
 
 		return GlobalSettingFunctions
-	end
-
-	if Settings.InterfaceOverlay ~= false then
-		local interfaceOverlayHeader = Instance.new("TextLabel")
-		interfaceOverlayHeader.Name = "InterfaceOverlayHeader"
-		interfaceOverlayHeader.BackgroundTransparency = 1
-		interfaceOverlayHeader.BorderSizePixel = 0
-		interfaceOverlayHeader.Font = Enum.Font.GothamSemibold
-		interfaceOverlayHeader.LayoutOrder = -1
-		interfaceOverlayHeader.Size = UDim2.fromOffset(200, 24)
-		interfaceOverlayHeader.Text = "Interface"
-		interfaceOverlayHeader.TextColor3 = Color3.fromRGB(255, 255, 255)
-		interfaceOverlayHeader.TextSize = 15
-		interfaceOverlayHeader.TextXAlignment = Enum.TextXAlignment.Left
-		interfaceOverlayHeader.Parent = globalSettings
-
-		WindowFunctions:GlobalSetting({
-			Name = "Blur Background",
-			Default = acrylicBlur,
-			Callback = function(value)
-				WindowFunctions:SetAcrylicBlurState(value)
-			end,
-		})
-		WindowFunctions:GlobalSetting({
-			Name = "Background FX",
-			Default = uiBackground ~= nil and uiBackground.Visible,
-			Callback = function(value)
-				if uiBackground then uiBackground.Visible = value end
-			end,
-		})
-		WindowFunctions:GlobalSetting({
-			Name = "Overlay FX",
-			Default = true,
-			Callback = function(value)
-				windowGlow.Visible = value
-			end,
-		})
-		WindowFunctions:GlobalSetting({
-			Name = "White Outline",
-			Default = true,
-			Callback = function(value)
-				baseUIStroke.Enabled = value
-			end,
-		})
 	end
 
 	function WindowFunctions:TabGroup()

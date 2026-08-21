@@ -62,21 +62,12 @@ local Window = MacLib:Window({
     AcrylicBlur = true,
     AutoDPI = true,
 
-    -- Layered white outside glow that softly fades outward.
-    WindowGlowColor = Color3.fromRGB(255, 255, 255),
-    WindowGlowTransparency = 0.97,
-    WindowGlowStrokeTransparency = 0.74,
-    WindowGlowFadeTransparency = 0.93,
-    WindowOutlineTransparency = 0.72,
-
     -- Default textured UI background at full image contrast.
     UIBackground = "rbxassetid://100502373939372",
     UIBackgroundContrast = 1,
     DividerTransparency = 0.78,
 
     MobileToggleButton = true,
-    InterfaceOverlay = true,
-    InterfaceOverlayButton = true,
 })
 ```
 
@@ -156,46 +147,9 @@ MobileToggleButton = true,
 
 ---
 
-## Custom window glow
+## Executor profile card
 
-MacLib adds a layered **white external halo** behind the main window. A defined inner white outline transitions through a softer outer stroke, creating a visible fade as the glow extends beyond the sides and rounded corners. Set `WindowGlowColor` to any Roblox `Color3` value to match your hub palette.
-
-```lua
-local Window = MacLib:Window({
-    Title = "My Hub",
-    WindowGlowColor = Color3.fromRGB(255, 255, 255), -- White outside glow
-    WindowGlowTransparency = 0.97,                   -- Soft outer halo
-    WindowGlowStrokeTransparency = 0.74,             -- Defined inner edge
-    WindowGlowFadeTransparency = 0.93,                -- Soft fading outer edge
-    WindowOutlineTransparency = 0.72,                 -- White window outline
-})
-```
-
-| Option | Default | Purpose |
-|---|---:|---|
-| `WindowGlowColor` | White | Sets the external color at the window sides and corners. |
-| `WindowGlowTransparency` | `0.97` | Controls the soft halo fill; lower values are brighter. |
-| `WindowGlowStrokeTransparency` | `0.74` | Controls the defined inner glow edge; lower values are brighter. |
-| `WindowGlowFadeTransparency` | `0.93` | Controls the softer outer glow layer that fades into the scene. |
-| `WindowOutlineTransparency` | `0.72` | Controls the white border directly around the window. |
-
----
-
-## Interface overlay controls
-
-A title-area **Interface** pill appears beside the title by default. While the UI is open, select it to open a compact overlay panel inspired by the referenced interface. The panel includes working controls for **Blur Background**, **Background FX**, **Overlay FX**, and the **White Outline**. The globe icon beside it opens the same panel.
-
-```lua
-InterfaceOverlay = true,       -- Adds the working Interface controls
-InterfaceOverlayButton = true, -- Shows the title-area Interface pill
-```
-
-| Interface control | Runtime effect |
-|---|---|
-| `Blur Background` | Toggles MacLib acrylic blur. |
-| `Background FX` | Shows or hides the configured UI background image. |
-| `Overlay FX` | Shows or hides the outer glow layers. |
-| `White Outline` | Shows or hides the primary window outline. |
+The executor profile area in the lower-left sidebar now uses a restrained slate outline and a dark card surface. This highlights the local-player information without adding a white border or a window-wide overlay effect.
 
 ---
 
@@ -351,19 +305,21 @@ Window:Dialog({
 
 ## Discord invite widget
 
-`Tab:CreateDiscordInvite(config)` creates a community card in either tab column. It supports optional Roblox icon and banner assets, copy-link feedback, and live online and total member counts. The widget uses Discord’s public invite endpoint with `with_counts=true`, which returns the approximate presence and member count fields. [10]
+`Tab:CreateDiscordInvite(config)` creates a community card in either tab column. It supports optional Roblox icon and banner assets, copy-link feedback, and live online and total member counts. The example below uses the verified **Enzo Hub** invite with the default hub logo as both its card icon and banner. The widget uses Discord’s public invite endpoint with `with_counts=true`, which returns the approximate presence and member count fields. [10]
 
 ```lua
-local Card = MainTab:CreateDiscordInvite({
-    Title = "Discord Developers",
-    Description = "A live public invite example.",
+local HUB_LOGO = "rbxassetid://137471163061841"
 
-    Icon = "rbxassetid://YOUR_SERVER_ICON",     -- Optional
-    Banner = "rbxassetid://YOUR_SERVER_BANNER", -- Optional
-    Link = "https://discord.gg/discord-developers",
+local Card = MainTab:CreateDiscordInvite({
+    Title = "Enzo Hub",
+    Description = "Join the Enzo Hub community.",
+
+    Icon = HUB_LOGO,
+    Banner = HUB_LOGO,
+    Link = "https://discord.gg/HfeN8GKgpV",
 
     Button = "Copy Invite",
-    Side = 2,
+    Side = "Right",
     RefreshInterval = 5,
 
     OnCopy = function(link, copied)
@@ -378,7 +334,7 @@ local Card = MainTab:CreateDiscordInvite({
 |---|---|---|
 | `Title` | `"Discord Server"` | Uses the returned server name when omitted and available. |
 | `Description` | Empty | Uses the returned server description when omitted and available. |
-| `Icon`, `Banner` | Empty | Optional Roblox asset IDs; a gradient fills the banner space when omitted. |
+| `Icon`, `Banner` | Empty | Optional Roblox asset IDs; the Enzo Hub example uses the default hub logo for both. |
 | `Link` | Empty | Full Discord URL or invite code. |
 | `Button` | `"Join Server"` | Copy-action label. |
 | `Side` | `1` | Use `1` or `"Left"`; use `2` or `"Right"` for the other column. |
@@ -412,7 +368,7 @@ local Card = MainTab:CreateDiscordInvite({
 | `Window:SetScale(number)` / `Window:GetScale()` | Uses or reads a manual scale. |
 | `Window:UpdateTitle(string)` | Changes the title after creation. |
 | `Window:UpdateSubtitle(string)` | Changes the subtitle after creation. |
-| `Window:Unload()` | Cleans up the full interface and floating overlays. |
+| `Window:Unload()` | Cleans up the full interface and floating controls. |
 | `MacLib:SetFolder(string)` | Chooses the configuration folder. |
 | `MacLib:SaveConfig(path)` / `MacLib:LoadConfig(path)` | Saves or restores flagged controls. |
 | `MacLib:RefreshConfigList()` | Lists available configuration names. |
