@@ -69,7 +69,7 @@ local Window = MacLib:Window({
 
     -- Default textured UI background and stronger dividers.
     UIBackground = "rbxassetid://100502373939372",
-    UIBackgroundTransparency = 0.86,
+    UIBackgroundTransparency = 0.68,
     DividerTransparency = 0.78,
 
     MobileToggleButton = true,
@@ -179,7 +179,7 @@ MacLib uses `rbxassetid://100502373939372` as its default textured UI background
 ```lua
 UIBackground = "rbxassetid://100502373939372", -- Default background
 UIBackgroundColor = Color3.fromRGB(255, 255, 255),
-UIBackgroundTransparency = 0.86,
+UIBackgroundTransparency = 0.68,
 DividerTransparency = 0.78,
 ```
 
@@ -187,7 +187,7 @@ DividerTransparency = 0.78,
 |---|---:|---|
 | `UIBackground` | `rbxassetid://100502373939372` | Provides the root-window background image; use `false` to disable it. |
 | `UIBackgroundColor` | White | Tints the background image. |
-| `UIBackgroundTransparency` | `0.86` | Controls background-image visibility; lower values are more visible. |
+| `UIBackgroundTransparency` | `0.68` | Controls background-image visibility; lower values are more visible. |
 | `DividerTransparency` | `0.78` | Controls built-in divider and section-line contrast; lower values are stronger. |
 
 ---

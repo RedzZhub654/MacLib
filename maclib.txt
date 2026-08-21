@@ -126,7 +126,7 @@ function MacLib:Window(Settings)
 		uiBackground.BorderSizePixel = 0
 		uiBackground.Image = uiBackgroundAsset
 		uiBackground.ImageColor3 = Settings.UIBackgroundColor or Color3.fromRGB(255, 255, 255)
-		uiBackground.ImageTransparency = Settings.UIBackgroundTransparency or 0.86
+		uiBackground.ImageTransparency = Settings.UIBackgroundTransparency or 0.68
 		uiBackground.ScaleType = Enum.ScaleType.Crop
 		uiBackground.Size = UDim2.fromScale(1, 1)
 		uiBackground.ZIndex = 1

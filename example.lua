@@ -32,7 +32,7 @@ local created, Window = pcall(function()
 
         -- Default textured background and stronger divider contrast.
         UIBackground = "rbxassetid://100502373939372",
-        UIBackgroundTransparency = 0.86,
+        UIBackgroundTransparency = 0.68,
         DividerTransparency = 0.78,
 
         -- Tap to toggle the UI, or drag this button freely beyond screen edges.
