@@ -67,7 +67,7 @@ local Window = MacLib:Window({
     WindowGlowTransparency = 0.955,
     WindowGlowStrokeTransparency = 0.84,
 
-    MobileFloatButton = true,
+    MobileToggleButton = true,
 })
 ```
 
@@ -119,7 +119,7 @@ MainTab:Select()
 
 ### Automatic DPI scaling
 
-MacLib automatically adapts the main window to the active camera viewport. It recalculates after a resize, device rotation, or camera change. The mobile quick-access button is clamped fully inside the visible screen during dragging and whenever the viewport changes.
+MacLib automatically adapts the main window to the active camera viewport. It recalculates after a resize, device rotation, or camera change.
 
 ```lua
 AutoDPI = true,
@@ -136,13 +136,12 @@ AutoDPIMargin = 32,
 | `Window:GetAutoDPI()` | Returns the current automatic-scaling state. |
 | `Window:SetScale(number)` | Switches to manual scale control. |
 
-### Mobile quick-access button
+### Fixed mobile UI toggle
 
-On touch-only devices, a circular menu button remains available whenever `MobileFloatButton` is enabled, whether the main UI is open or minimized. Tap it to toggle the window, or use the standard direct drag gesture to reposition it. The full button remains inside the active viewport while dragging and after a resize or orientation change.
+On touch-only devices, a circular fixed-position button is available whenever `MobileToggleButton` is enabled, whether the main UI is open or minimized. It stays in the lower-right corner and its **only action** is toggling the main UI open or closed; it has no drag or reposition behavior.
 
 ```lua
-MobileFloatButton = true,
-MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
+MobileToggleButton = true,
 ```
 
 ---

@@ -30,9 +30,8 @@ local created, Window = pcall(function()
         WindowGlowTransparency = 0.955,
         WindowGlowStrokeTransparency = 0.84,
 
-        -- Remains available on touch devices while the window is open or minimized.
-        -- Dragging keeps the entire button inside the viewport.
-        MobileFloatButton = true,
+        -- Fixed mobile button: tap it only to open or close the UI.
+        MobileToggleButton = true,
     })
 end)
 
@@ -51,7 +50,7 @@ local Main = Home:Section({ Side = "Left" })
 Main:Header({ Text = "MacLib is running" })
 Main:Paragraph({
     Header = "Success",
-    Body = "Drag the window from its surface. On touch devices, drag the floating button or tap it to toggle the window.",
+    Body = "Drag the window from its surface. On touch devices, tap the fixed button to open or close the UI.",
 })
 
 Main:Toggle({

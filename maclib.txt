@@ -122,7 +122,6 @@ function MacLib:Window(Settings)
 		local autoDPIMargin = Settings.AutoDPIMargin or 32
 		local autoDPIViewportConnection
 		local autoDPICameraConnection
-		local mobileFloatClampCallback
 
 		local function GetAutoDPIScale()
 			local camera = workspace.CurrentCamera
@@ -978,9 +977,6 @@ local function UpdateAutoDPI()
 	if unloaded then return end
 	if autoDPIEnabled then
 		UpdateWindowDPI()
-	end
-	if mobileFloatClampCallback then
-		task.defer(mobileFloatClampCallback)
 	end
 end
 
@@ -5580,28 +5576,21 @@ local function BindAutoDPI()
 		return notifications.Visible
 	end
 
-			local mobileFloatButton
-			local mobileFloatInputConnection
-			local ClampMobileFloatPosition
-			local mobileFloatEnabled
-		if Settings.MobileFloatButton == nil then
-			mobileFloatEnabled = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+			local mobileToggleButton
+			local mobileToggleEnabled
+		if Settings.MobileToggleButton == nil then
+			mobileToggleEnabled = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 		else
-			mobileFloatEnabled = Settings.MobileFloatButton
+			mobileToggleEnabled = Settings.MobileToggleButton
 		end
-
 		function WindowFunctions:SetState(State)
 			windowState = State
 			base.Visible = State
-				if mobileFloatButton then
-					-- Keep the mobile quick-access control available while the UI is open or minimized.
-					mobileFloatButton.Visible = mobileFloatEnabled
-					if ClampMobileFloatPosition then
-						task.defer(ClampMobileFloatPosition)
-					end
-				end
+			if mobileToggleButton then
+				-- The fixed toggle stays available so it can always open or close the UI.
+				mobileToggleButton.Visible = mobileToggleEnabled
+			end
 		end
-
 	function WindowFunctions:GetState()
 		return windowState
 	end
@@ -5612,9 +5601,6 @@ local function BindAutoDPI()
 		if onUnloadCallback then
 			onUnloadCallback()
 		end
-			if mobileFloatInputConnection then
-				mobileFloatInputConnection:Disconnect()
-			end
 			if autoDPIViewportConnection then
 				autoDPIViewportConnection:Disconnect()
 			end
@@ -5634,7 +5620,7 @@ local function BindAutoDPI()
 		local function ToggleMenu(source)
 			local state = not WindowFunctions:GetState()
 			WindowFunctions:SetState(state)
-			local hint = source == "mobile" and "The floating button toggled the menu." or "Use " .. tostring(MenuKeybind.Name) .. " to toggle it."
+			local hint = source == "mobile" and "The mobile toggle button changed the menu visibility." or "Use " .. tostring(MenuKeybind.Name) .. " to toggle it."
 			WindowFunctions:Notify({
 				Title = Settings.Title,
 				Description = (state and "Maximized " or "Minimized ") .. "the menu. " .. hint,
@@ -5642,108 +5628,37 @@ local function BindAutoDPI()
 			})
 		end
 
-		if mobileFloatEnabled then
-			mobileFloatButton = Instance.new("TextButton")
-			mobileFloatButton.Name = "MobileFloatButton"
-			mobileFloatButton.AnchorPoint = Vector2.new(1, 1)
-			mobileFloatButton.BackgroundColor3 = Color3.fromRGB(28, 28, 30)
-			mobileFloatButton.BorderSizePixel = 0
-			mobileFloatButton.Position = Settings.MobileFloatButtonPosition or UDim2.new(1, -24, 1, -24)
-			mobileFloatButton.Size = UDim2.fromOffset(52, 52)
-			mobileFloatButton.Text = "☰"
-			mobileFloatButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-			mobileFloatButton.TextSize = 26
-			mobileFloatButton.Font = Enum.Font.GothamBold
-			mobileFloatButton.AutoButtonColor = false
-				mobileFloatButton.Visible = mobileFloatEnabled
-				mobileFloatButton.ZIndex = 10
-			mobileFloatButton.Parent = macLib
+		if mobileToggleEnabled then
+			mobileToggleButton = Instance.new("TextButton")
+			mobileToggleButton.Name = "MobileToggleButton"
+			mobileToggleButton.AnchorPoint = Vector2.new(1, 1)
+			mobileToggleButton.BackgroundColor3 = Color3.fromRGB(28, 28, 30)
+			mobileToggleButton.BorderSizePixel = 0
+			mobileToggleButton.Position = UDim2.new(1, -16, 1, -16)
+			mobileToggleButton.Size = UDim2.fromOffset(48, 48)
+			mobileToggleButton.Text = "☰"
+			mobileToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+			mobileToggleButton.TextSize = 24
+			mobileToggleButton.Font = Enum.Font.GothamBold
+			mobileToggleButton.AutoButtonColor = false
+			mobileToggleButton.Visible = mobileToggleEnabled
+			mobileToggleButton.ZIndex = 10
+			mobileToggleButton.Parent = macLib
 
-			local mobileFloatCorner = Instance.new("UICorner")
-			mobileFloatCorner.CornerRadius = UDim.new(1, 0)
-			mobileFloatCorner.Parent = mobileFloatButton
+			local mobileToggleCorner = Instance.new("UICorner")
+			mobileToggleCorner.CornerRadius = UDim.new(1, 0)
+			mobileToggleCorner.Parent = mobileToggleButton
 
-			local mobileFloatStroke = Instance.new("UIStroke")
-			mobileFloatStroke.Color = Color3.fromRGB(255, 255, 255)
-				mobileFloatStroke.Transparency = 0.78
-				mobileFloatStroke.Parent = mobileFloatButton
+			local mobileToggleStroke = Instance.new("UIStroke")
+			mobileToggleStroke.Color = Color3.fromRGB(255, 255, 255)
+			mobileToggleStroke.Transparency = 0.78
+			mobileToggleStroke.Parent = mobileToggleButton
 
-				ClampMobileFloatPosition = function()
-					local camera = workspace.CurrentCamera
-					if not camera or not mobileFloatButton or not mobileFloatButton.Parent then return end
-
-					local viewport = camera.ViewportSize
-					local size = mobileFloatButton.AbsoluteSize
-					if size.X <= 0 or size.Y <= 0 then
-						size = Vector2.new(52, 52)
-					end
-
-					local margin = math.min(12, math.max(0, math.min((viewport.X - size.X) / 2, (viewport.Y - size.Y) / 2)))
-					local minLeft = margin
-					local maxLeft = math.max(minLeft, viewport.X - size.X - margin)
-					local minTop = margin
-					local maxTop = math.max(minTop, viewport.Y - size.Y - margin)
-					local left = math.clamp(mobileFloatButton.AbsolutePosition.X, minLeft, maxLeft)
-					local top = math.clamp(mobileFloatButton.AbsolutePosition.Y, minTop, maxTop)
-					mobileFloatButton.Position = UDim2.fromOffset(left + size.X, top + size.Y)
-				end
-				mobileFloatClampCallback = ClampMobileFloatPosition
-
-			-- A conventional direct drag: tap toggles the UI and movement repositions the button.
-			local mobileFloatDragging = false
-			local mobileFloatMoved = false
-			local mobileFloatDragStart
-			local mobileFloatStartPosition
-
-			mobileFloatButton.InputBegan:Connect(function(input)
-				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-				mobileFloatDragging = true
-				mobileFloatMoved = false
-				mobileFloatDragStart = input.Position
-				mobileFloatStartPosition = mobileFloatButton.AbsolutePosition
-
-				input.Changed:Connect(function()
-					if input.UserInputState ~= Enum.UserInputState.End then return end
-					mobileFloatDragging = false
-					if not mobileFloatMoved then
-						ToggleMenu("mobile")
-					end
-				end)
+			-- This button intentionally only toggles UI visibility; it has no drag behavior.
+			mobileToggleButton.MouseButton1Click:Connect(function()
+				ToggleMenu("mobile")
 			end)
-
-			mobileFloatInputConnection = UserInputService.InputChanged:Connect(function(input)
-				if unloaded or not mobileFloatDragging then return end
-				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
-
-				local delta = input.Position - mobileFloatDragStart
-				if delta.Magnitude > 6 then
-					mobileFloatMoved = true
-				end
-
-				local camera = workspace.CurrentCamera
-				local size = mobileFloatButton.AbsoluteSize
-				if size.X <= 0 or size.Y <= 0 then
-					size = Vector2.new(52, 52)
-				end
-				if camera then
-					local viewport = camera.ViewportSize
-					local margin = math.min(12, math.max(0, math.min((viewport.X - size.X) / 2, (viewport.Y - size.Y) / 2)))
-					local minLeft = margin
-					local maxLeft = math.max(minLeft, viewport.X - size.X - margin)
-					local minTop = margin
-					local maxTop = math.max(minTop, viewport.Y - size.Y - margin)
-					local left = math.clamp(mobileFloatStartPosition.X + delta.X, minLeft, maxLeft)
-					local top = math.clamp(mobileFloatStartPosition.Y + delta.Y, minTop, maxTop)
-					mobileFloatButton.Position = UDim2.fromOffset(left + size.X, top + size.Y)
-				else
-					mobileFloatButton.Position = UDim2.fromOffset(
-						mobileFloatStartPosition.X + delta.X + size.X,
-						mobileFloatStartPosition.Y + delta.Y + size.Y
-					)
-				end
-			end)
-			task.defer(ClampMobileFloatPosition)
-			end
+		end
 
 			UserInputService.InputEnded:Connect(function(inp, gpe)
 		if gpe then return end
