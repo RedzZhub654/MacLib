@@ -22,7 +22,7 @@ MacLib ships as a single Lua file and is designed to make feature-rich Roblox in
 |---|---|---|
 | [Load MacLib](#load-maclib) | [Create a window](#create-a-window) | [Window options](#window-options) |
 | [Run the test UI](#run-the-test-ui) | [Build a layout](#build-a-layout) | [Controls](#controls) |
-| [Use mobile support](#mobile-window-toggle) | [Show feedback](#notifications-and-dialogs) | [Window and configuration methods](#window-and-configuration-methods) |
+| [Use mobile support](#mobile-window-toggle) | [Automatic DPI](#automatic-dpi-scaling) | [Window and configuration methods](#window-and-configuration-methods) |
 | [Use player stats](#floating-player-stats-bar) | [Customize themes](#theme-customization) | [Credits and sources](#credits-and-sources) |
 
 ## Load MacLib
@@ -100,6 +100,9 @@ local Window = MacLib:Window({
 | `ShowUserInfo` | `boolean` | `true` | Shows the local-player block in the window sidebar. |
 | `Keybind` | `Enum.KeyCode` | `RightControl` | Toggles the window’s visible state. |
 | `AcrylicBlur` | `boolean` | `true` | Enables the blur treatment behind the interface. |
+| `AutoDPI` | `boolean` | `true` | Automatically scales the main window and player-stats bar to fit the active viewport. |
+| `AutoDPIMinScale` | `number` | `0.35` | Sets the smallest scale that automatic DPI scaling can apply. |
+| `AutoDPIMargin` | `number` | `32` | Reserves edge space, in pixels, when calculating the responsive scale. |
 | `MobileFloatButton` | `boolean` | Auto-enabled on touch-only devices | Controls the minimized-window recovery button. |
 | `MobileFloatButtonPosition` | `UDim2` | Bottom-right | Sets the floating recovery button’s initial position. |
 | `PlayerStatsEnabled` | `boolean` | `true` | Creates the independent floating player-stats bar. |
@@ -148,6 +151,32 @@ local Window = MacLib:Window({
     MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
 })
 ```
+
+## Automatic DPI scaling
+
+MacLib now scales itself against the active camera viewport by default. The main window is reduced only when needed to respect the configured edge margin, while the floating player-stats bar scales by width for compact displays. The calculation re-runs when the viewport changes, including device rotation and window resizing.
+
+```lua
+local Window = MacLib:Window({
+    Title = "Responsive UI",
+    Size = UDim2.fromOffset(900, 650),
+
+    AutoDPI = true,
+    AutoDPIMinScale = 0.35,
+    AutoDPIMargin = 32,
+})
+```
+
+| Method or setting | Purpose |
+|---|---|
+| `AutoDPI = true` | Enables responsive viewport scaling at window creation. |
+| `AutoDPIMinScale = 0.35` | Prevents the main window from shrinking below the selected minimum scale. |
+| `AutoDPIMargin = 32` | Leaves a 32-pixel border around the scaled main window when space permits. |
+| `Window:SetAutoDPI(boolean)` | Enables or disables future automatic scale updates at runtime. |
+| `Window:GetAutoDPI()` | Returns whether automatic DPI scaling is active. |
+| `Window:SetScale(number)` | Applies a manual scale and turns automatic DPI scaling off, giving manual control precedence. |
+
+The test script includes an **Automatic DPI** toggle under **Settings → Window actions**. Use it while resizing a desktop viewport or rotating a device to verify the responsive behavior.
 
 ## Floating player-stats bar
 

@@ -46,6 +46,11 @@ local Window = MacLib:Window({
     Keybind = Enum.KeyCode.RightControl,
     AcrylicBlur = true,
 
+    -- Automatic DPI-aware viewport scaling
+    AutoDPI = true,
+    AutoDPIMinScale = 0.35,
+    AutoDPIMargin = 32,
+
     -- Mobile accessibility
     MobileFloatButton = true,
     MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
@@ -199,6 +204,19 @@ MainRight:Keybind({
 }, "QuickNotification")
 
 SettingsLeft:Header({ Text = "Window actions" })
+SettingsLeft:Toggle({
+    Name = "Automatic DPI",
+    Default = Window:GetAutoDPI(),
+    Callback = function(enabled)
+        Window:SetAutoDPI(enabled)
+        Window:Notify({
+            Title = "Automatic DPI",
+            Description = enabled and "Viewport scaling enabled." or "Viewport scaling disabled.",
+            Lifetime = 3,
+        })
+    end,
+}, "AutomaticDPI")
+
 SettingsLeft:Button({
     Name = "Open confirmation dialog",
     Callback = function()

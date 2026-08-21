@@ -118,9 +118,33 @@ function MacLib:Window(Settings)
 	base.Position = UDim2.fromScale(0.5, 0.5)
 	base.Size = Settings.Size or UDim2.fromOffset(868, 650)
 
-	local baseUIScale = Instance.new("UIScale")
-	baseUIScale.Name = "BaseUIScale"
-	baseUIScale.Parent = base
+		local baseUIScale = Instance.new("UIScale")
+		baseUIScale.Name = "BaseUIScale"
+		baseUIScale.Parent = base
+
+		local autoDPIEnabled = Settings.AutoDPI ~= false
+		local autoDPIMinScale = Settings.AutoDPIMinScale or 0.35
+		local autoDPIMargin = Settings.AutoDPIMargin or 32
+		local autoDPIViewportConnection
+		local autoDPICameraConnection
+
+		local function GetAutoDPIScale()
+			local camera = workspace.CurrentCamera
+			if not camera then return 1 end
+
+			local viewport = camera.ViewportSize
+			local width = math.max(1, (base.Size.X.Scale * viewport.X) + base.Size.X.Offset)
+			local height = math.max(1, (base.Size.Y.Scale * viewport.Y) + base.Size.Y.Offset)
+			local widthScale = math.max(0, viewport.X - (autoDPIMargin * 2)) / width
+			local heightScale = math.max(0, viewport.Y - (autoDPIMargin * 2)) / height
+			return math.clamp(math.min(widthScale, heightScale, 1), autoDPIMinScale, 1)
+		end
+
+		local function UpdateWindowDPI()
+			if autoDPIEnabled then
+				baseUIScale.Scale = GetAutoDPIScale()
+			end
+		end
 
 	local baseUICorner = Instance.new("UICorner")
 	baseUICorner.Name = "BaseUICorner"
@@ -931,6 +955,7 @@ function MacLib:Window(Settings)
 		base.Parent = macLib
 
 		local playerStatsBar
+		local playerStatsScale
 		local playerStatsConnection
 		local playerStatsInputConnection
 		local playerStatsEnabled = Settings.PlayerStatsEnabled ~= false
@@ -957,10 +982,10 @@ function MacLib:Window(Settings)
 			playerStatsStroke.Transparency = 0.82
 			playerStatsStroke.Parent = playerStatsBar
 
-			local playerStatsScale = Instance.new("UIScale")
+			playerStatsScale = Instance.new("UIScale")
 			local camera = workspace.CurrentCamera
-			if camera then
-				playerStatsScale.Scale = math.clamp(camera.ViewportSize.X / 680, 0.55, 1)
+			if autoDPIEnabled and camera then
+				playerStatsScale.Scale = math.clamp((camera.ViewportSize.X - (autoDPIMargin * 2)) / 620, 0.5, 1)
 			end
 			playerStatsScale.Parent = playerStatsBar
 
@@ -1152,6 +1177,36 @@ function MacLib:Window(Settings)
 				end)
 			end
 		end
+
+		local function UpdateAutoDPI()
+			if unloaded or not autoDPIEnabled then return end
+			UpdateWindowDPI()
+			if playerStatsScale then
+				local camera = workspace.CurrentCamera
+				if camera then
+					playerStatsScale.Scale = math.clamp((camera.ViewportSize.X - (autoDPIMargin * 2)) / 620, 0.5, 1)
+				end
+			end
+		end
+
+		local function BindAutoDPI()
+			if autoDPIViewportConnection then
+				autoDPIViewportConnection:Disconnect()
+				autoDPIViewportConnection = nil
+			end
+
+			local camera = workspace.CurrentCamera
+			if camera then
+				autoDPIViewportConnection = camera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdateAutoDPI)
+			end
+		end
+
+		autoDPICameraConnection = workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+			BindAutoDPI()
+			UpdateAutoDPI()
+		end)
+		BindAutoDPI()
+		UpdateAutoDPI()
 
 		function WindowFunctions:UpdateTitle(NewTitle)
 		title.Text = NewTitle
@@ -5510,10 +5565,16 @@ function MacLib:Window(Settings)
 		if playerStatsConnection then
 			playerStatsConnection:Disconnect()
 		end
-		if playerStatsInputConnection then
-			playerStatsInputConnection:Disconnect()
-		end
-		macLib:Destroy()
+			if playerStatsInputConnection then
+				playerStatsInputConnection:Disconnect()
+			end
+			if autoDPIViewportConnection then
+				autoDPIViewportConnection:Disconnect()
+			end
+			if autoDPICameraConnection then
+				autoDPICameraConnection:Disconnect()
+			end
+			macLib:Destroy()
 		unloaded = true
 	end
 
@@ -5672,19 +5733,32 @@ function MacLib:Window(Settings)
 		return showUserInfo
 	end
 
-	function WindowFunctions:SetSize(Size)
-		base.Size = Size
-	end
-	function WindowFunctions:GetSize(Size)
-		return base.Size
-	end
+		function WindowFunctions:SetSize(Size)
+			base.Size = Size
+			UpdateAutoDPI()
+		end
+		function WindowFunctions:GetSize(Size)
+			return base.Size
+		end
 
-	function WindowFunctions:SetScale(Scale)
-		baseUIScale.Scale = Scale
-	end
-	function WindowFunctions:GetScale()
-		return baseUIScale.Scale
-	end
+		function WindowFunctions:SetAutoDPI(State)
+			autoDPIEnabled = State
+			if autoDPIEnabled then
+				BindAutoDPI()
+				UpdateAutoDPI()
+			end
+		end
+		function WindowFunctions:GetAutoDPI()
+			return autoDPIEnabled
+		end
+
+		function WindowFunctions:SetScale(Scale)
+			autoDPIEnabled = false
+			baseUIScale.Scale = Scale
+		end
+		function WindowFunctions:GetScale()
+			return baseUIScale.Scale
+		end
 
 	local ClassParser = {
 		["Toggle"] = {
