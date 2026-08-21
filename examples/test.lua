@@ -86,6 +86,18 @@ local MainLeft = MainTab:Section({ Side = "Left" })
 local MainRight = MainTab:Section({ Side = "Right" })
 local SettingsLeft = SettingsTab:Section({ Side = "Left" })
 
+local DiscordInvite = MainTab:CreateDiscordInvite({
+    Title = "Discord Developers",
+    Description = "Official Discord community for people building with Discord APIs.",
+    Link = "https://discord.gg/discord-developers",
+    Button = "Copy Invite",
+    Side = 2,
+    RefreshInterval = 5,
+    OnCopy = function(link, copied)
+        print("Discord invite copy requested:", link, "Copied:", copied)
+    end,
+})
+
 MainLeft:Header({ Text = "Interactive controls" })
 MainLeft:Paragraph({
     Header = "Test Lab",

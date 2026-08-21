@@ -1903,9 +1903,258 @@ function MacLib:Window(Settings)
 
 			right.Parent = elementsScrolling
 
-			elementsScrolling.Parent = elements1
+				elementsScrolling.Parent = elements1
 
-			function TabFunctions:Section(Settings)
+				function TabFunctions:CreateDiscordInvite(Config)
+					Config = Config or {}
+					local DiscordInviteFunctions = {Settings = Config}
+					local widgetDestroyed = false
+					local refreshInterval = math.max(5, tonumber(Config.RefreshInterval) or 5)
+					local inviteLink = tostring(Config.Link or "")
+					local hasCustomTitle = Config.Title ~= nil
+					local hasCustomDescription = Config.Description ~= nil
+					local hasBanner = type(Config.Banner) == "string" and Config.Banner ~= ""
+
+					local function GetInviteCode(link)
+						local value = tostring(link or "")
+						value = value:gsub("^https?://", "")
+						value = value:gsub("^www%.", "")
+
+						local code = value:match("discord%.gg/([^%?/%s]+)")
+							or value:match("discord%.com/invite/([^%?/%s]+)")
+							or value:match("discordapp%.com/invite/([^%?/%s]+)")
+							or value:match("^([^%?/%s]+)")
+						return code and code:gsub("[?#].*$", "") or ""
+					end
+
+					local widget = Instance.new("Frame")
+					widget.Name = "DiscordInvite"
+					widget.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
+					widget.BorderSizePixel = 0
+					widget.Size = UDim2.new(1, 0, 0, 166)
+					widget.ClipsDescendants = true
+					widget.Parent = (Config.Side == 2 or Config.Side == "Right") and right or left
+
+					local widgetCorner = Instance.new("UICorner")
+					widgetCorner.CornerRadius = UDim.new(0, 10)
+					widgetCorner.Parent = widget
+
+					local widgetStroke = Instance.new("UIStroke")
+					widgetStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+					widgetStroke.Color = Color3.fromRGB(255, 255, 255)
+					widgetStroke.Transparency = 0.9
+					widgetStroke.Parent = widget
+
+					local banner = Instance.new("ImageLabel")
+					banner.Name = "Banner"
+					banner.BackgroundColor3 = Color3.fromRGB(48, 64, 96)
+					banner.BackgroundTransparency = hasBanner and 0 or 0.2
+					banner.BorderSizePixel = 0
+					banner.Image = hasBanner and Config.Banner or ""
+					banner.ScaleType = Enum.ScaleType.Crop
+					banner.Size = UDim2.new(1, 0, 0, 58)
+					banner.Parent = widget
+
+					local bannerGradient = Instance.new("UIGradient")
+					bannerGradient.Color = ColorSequence.new({
+						ColorSequenceKeypoint.new(0, Color3.fromRGB(91, 112, 214)),
+						ColorSequenceKeypoint.new(1, Color3.fromRGB(47, 56, 90)),
+					})
+					bannerGradient.Enabled = not hasBanner
+					bannerGradient.Parent = banner
+
+					local icon = Instance.new("ImageLabel")
+					icon.Name = "Icon"
+					icon.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+					icon.BorderSizePixel = 0
+					icon.Image = Config.Icon or ""
+					icon.Position = UDim2.fromOffset(14, 38)
+					icon.Size = UDim2.fromOffset(44, 44)
+					icon.ZIndex = 2
+					icon.Parent = widget
+
+					local iconCorner = Instance.new("UICorner")
+					iconCorner.CornerRadius = UDim.new(0, 11)
+					iconCorner.Parent = icon
+
+					local iconStroke = Instance.new("UIStroke")
+					iconStroke.Color = Color3.fromRGB(255, 255, 255)
+					iconStroke.Transparency = 0.75
+					iconStroke.Parent = icon
+
+					local title = Instance.new("TextLabel")
+					title.Name = "Title"
+					title.BackgroundTransparency = 1
+					title.Font = Enum.Font.GothamBold
+					title.Text = Config.Title or "Discord Server"
+					title.TextColor3 = Color3.fromRGB(255, 255, 255)
+					title.TextSize = 16
+					title.TextTruncate = Enum.TextTruncate.AtEnd
+					title.TextXAlignment = Enum.TextXAlignment.Left
+					title.Position = UDim2.fromOffset(68, 63)
+					title.Size = UDim2.new(1, -82, 0, 21)
+					title.ZIndex = 2
+					title.Parent = widget
+
+					local description = Instance.new("TextLabel")
+					description.Name = "Description"
+					description.BackgroundTransparency = 1
+					description.Font = Enum.Font.Gotham
+					description.Text = Config.Description or ""
+					description.TextColor3 = Color3.fromRGB(190, 190, 198)
+					description.TextSize = 12
+					description.TextTruncate = Enum.TextTruncate.AtEnd
+					description.TextWrapped = true
+					description.TextXAlignment = Enum.TextXAlignment.Left
+					description.TextYAlignment = Enum.TextYAlignment.Top
+					description.Position = UDim2.fromOffset(14, 94)
+					description.Size = UDim2.new(1, -28, 0, 30)
+					description.ZIndex = 2
+					description.Parent = widget
+
+					local memberStats = Instance.new("TextLabel")
+					memberStats.Name = "MemberStats"
+					memberStats.BackgroundTransparency = 1
+					memberStats.Font = Enum.Font.GothamMedium
+					memberStats.Text = "●  Live stats unavailable"
+					memberStats.TextColor3 = Color3.fromRGB(137, 201, 151)
+					memberStats.TextSize = 11
+					memberStats.TextTruncate = Enum.TextTruncate.AtEnd
+					memberStats.TextXAlignment = Enum.TextXAlignment.Left
+					memberStats.Position = UDim2.fromOffset(14, 137)
+					memberStats.Size = UDim2.new(1, -134, 0, 16)
+					memberStats.ZIndex = 2
+					memberStats.Parent = widget
+
+					local copyButton = Instance.new("TextButton")
+					copyButton.Name = "CopyLink"
+					copyButton.AnchorPoint = Vector2.new(1, 1)
+					copyButton.AutoButtonColor = false
+					copyButton.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+					copyButton.BorderSizePixel = 0
+					copyButton.Font = Enum.Font.GothamBold
+					copyButton.Text = Config.Button or "Join Server"
+					copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+					copyButton.TextSize = 11
+					copyButton.Position = UDim2.new(1, -14, 1, -13)
+					copyButton.Size = UDim2.fromOffset(105, 28)
+					copyButton.ZIndex = 2
+					copyButton.Parent = widget
+
+					local copyButtonCorner = Instance.new("UICorner")
+					copyButtonCorner.CornerRadius = UDim.new(0, 7)
+					copyButtonCorner.Parent = copyButton
+
+					local defaultButtonText = copyButton.Text
+					local function SetCopyFeedback(text, color)
+						if widgetDestroyed or not copyButton.Parent then return end
+						copyButton.Text = text
+						copyButton.BackgroundColor3 = color
+						task.delay(2, function()
+							if not widgetDestroyed and copyButton.Parent then
+								copyButton.Text = defaultButtonText
+								copyButton.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+							end
+						end)
+					end
+
+					copyButton.MouseButton1Click:Connect(function()
+						if inviteLink == "" then
+							SetCopyFeedback("No Link", Color3.fromRGB(160, 76, 76))
+							return
+						end
+
+						local copied = false
+						if type(setclipboard) == "function" then
+							copied = pcall(setclipboard, inviteLink)
+						elseif type(toclipboard) == "function" then
+							copied = pcall(toclipboard, inviteLink)
+						end
+
+						SetCopyFeedback(copied and "Copied!" or "Link Ready", copied and Color3.fromRGB(79, 150, 98) or Color3.fromRGB(113, 125, 184))
+						if type(Config.OnCopy) == "function" then
+							pcall(Config.OnCopy, inviteLink, copied)
+						end
+					end)
+
+					function DiscordInviteFunctions:GetFrame()
+						return widget
+					end
+
+					function DiscordInviteFunctions:SetTitle(value)
+						hasCustomTitle = true
+						title.Text = tostring(value or "Discord Server")
+					end
+
+					function DiscordInviteFunctions:SetDescription(value)
+						hasCustomDescription = true
+						description.Text = tostring(value or "")
+					end
+
+					function DiscordInviteFunctions:SetLink(value)
+						inviteLink = tostring(value or "")
+						DiscordInviteFunctions:Refresh()
+					end
+
+					function DiscordInviteFunctions:Refresh()
+						local inviteCode = GetInviteCode(inviteLink)
+						if inviteCode == "" then
+							memberStats.Text = "●  Live stats unavailable"
+							return false
+						end
+
+						memberStats.Text = "●  Refreshing live stats..."
+						local success, response = pcall(function()
+							return game:HttpGet("https://discord.com/api/v10/invites/" .. HttpService:UrlEncode(inviteCode) .. "?with_counts=true")
+						end)
+						if not success or type(response) ~= "string" then
+							memberStats.Text = "●  Live stats unavailable"
+							return false
+						end
+
+						local decoded, invite = pcall(function()
+							return HttpService:JSONDecode(response)
+						end)
+						if not decoded or type(invite) ~= "table" then
+							memberStats.Text = "●  Live stats unavailable"
+							return false
+						end
+
+						local online = tonumber(invite.approximate_presence_count)
+						local total = tonumber(invite.approximate_member_count)
+						if online and total then
+							memberStats.Text = string.format("●  %s online  •  %s members", tostring(online), tostring(total))
+						else
+							memberStats.Text = "●  Live stats unavailable"
+						end
+
+						if invite.guild then
+							if not hasCustomTitle and type(invite.guild.name) == "string" then
+								title.Text = invite.guild.name
+							end
+							if not hasCustomDescription and type(invite.guild.description) == "string" then
+								description.Text = invite.guild.description
+							end
+						end
+						return online ~= nil and total ~= nil
+					end
+
+					function DiscordInviteFunctions:Destroy()
+						widgetDestroyed = true
+						widget:Destroy()
+					end
+
+					task.spawn(function()
+						while not widgetDestroyed and widget.Parent do
+							DiscordInviteFunctions:Refresh()
+							task.wait(refreshInterval)
+						end
+					end)
+
+					return DiscordInviteFunctions
+				end
+
+				function TabFunctions:Section(Settings)
 				local SectionFunctions = {}
 				local section = Instance.new("Frame")
 				section.Name = "Section"

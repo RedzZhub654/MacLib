@@ -23,7 +23,7 @@ MacLib ships as a single Lua file and is designed to make feature-rich Roblox in
 | [Load MacLib](#load-maclib) | [Create a window](#create-a-window) | [Window options](#window-options) |
 | [Run the test UI](#run-the-test-ui) | [Build a layout](#build-a-layout) | [Controls](#controls) |
 | [Use mobile support](#mobile-window-toggle) | [Automatic DPI](#automatic-dpi-scaling) | [Window and configuration methods](#window-and-configuration-methods) |
-| [Use player stats](#floating-player-stats-bar) | [Customize themes](#theme-customization) | [Credits and sources](#credits-and-sources) |
+| [Use player stats](#floating-player-stats-bar) | [Discord invite widget](#discord-invite-widget) | [Credits and sources](#credits-and-sources) |
 
 ## Load MacLib
 
@@ -340,6 +340,50 @@ Window:Dialog({
 })
 ```
 
+## Discord invite widget
+
+`Tab:CreateDiscordInvite(config)` creates a Discord server invite card in a tab column. The card supports optional Roblox asset images, a copy-link button, and live online and total member counts. It calls Discord’s public `GET /invites/{code}?with_counts=true` endpoint without storing credentials; Discord documents that this response provides `approximate_presence_count` and `approximate_member_count`. [10]
+
+```lua
+local DiscordCard = MainTab:CreateDiscordInvite({
+    Title = "Discord Developers",
+    Description = "A live Discord invite example.",
+    Icon = "rbxassetid://YOUR_SERVER_ICON",       -- Optional
+    Banner = "rbxassetid://YOUR_SERVER_BANNER",   -- Optional
+    Link = "https://discord.gg/discord-developers",
+    Button = "Copy Invite",
+    Side = 2,
+    RefreshInterval = 5,
+
+    OnCopy = function(link, copied)
+        print("Invite:", link, "Copied:", copied)
+    end,
+})
+```
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `Title` | `string` | `"Discord Server"` | Card title. If omitted, a server name returned by the public invite response is used when available. |
+| `Description` | `string` | Empty | Supporting card text. If omitted, an invite-response description is used when available. |
+| `Icon` | `string` | Empty | Optional Roblox asset ID for the server icon. |
+| `Banner` | `string` | Empty | Optional Roblox asset ID for the banner image. A Discord-inspired gradient is used when omitted. |
+| `Link` | `string` | Empty | Full Discord invite URL or an invite code, such as `discord.gg/example`. |
+| `Button` | `string` | `"Join Server"` | Label for the copy-link action. |
+| `Side` | `number` or `string` | `1` | Tab column: `1` or `"Left"`; use `2` or `"Right"` for the other column. |
+| `RefreshInterval` | `number` | `5` seconds | Live-stat refresh cadence; values lower than five seconds are raised to five seconds. |
+| `OnCopy` | `function(link, copied)` | None | Optional callback after the copy-link attempt. |
+
+Clicking the action button attempts to copy the configured link with the host environment’s clipboard function. If clipboard access is unavailable, the card provides **Link Ready** feedback instead. Live counts are best-effort: an invalid or expired invite, blocked HTTP access, or a rate-limited response leaves the card in an unavailable state rather than interrupting the rest of the interface.
+
+| Returned method | Purpose |
+|---|---|
+| `DiscordCard:GetFrame()` | Returns the widget frame for advanced local customization. |
+| `DiscordCard:SetTitle(value)` | Updates the visible title. |
+| `DiscordCard:SetDescription(value)` | Updates the supporting text. |
+| `DiscordCard:SetLink(value)` | Changes the invite link and requests a refresh. |
+| `DiscordCard:Refresh()` | Immediately requests the latest public approximate counts. |
+| `DiscordCard:Destroy()` | Stops future refreshes and destroys the card. |
+
 ## Window and configuration methods
 
 | Method | Purpose |
@@ -399,3 +443,4 @@ This README is an original repository guide and retains attribution to the origi
 [7]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/displaying-a-notification "Displaying a notification"
 [8]: https://brady-xyz.gitbook.io/maclib-ui-library/getting-started/loading-maclib/creating-a-window/prompting-a-dialog "Prompting a dialog"
 [9]: https://brady-xyz.gitbook.io/maclib-ui-library/information/miscellaneous "MacLib credits and links"
+[10]: https://docs.discord.com/developers/resources/invite "Discord Invite Resource"
