@@ -127,6 +127,7 @@ function MacLib:Window(Settings)
 		local autoDPIMargin = Settings.AutoDPIMargin or 32
 		local autoDPIViewportConnection
 		local autoDPICameraConnection
+		local mobileFloatClampCallback
 
 		local function GetAutoDPIScale()
 			local camera = workspace.CurrentCamera
@@ -406,13 +407,33 @@ function MacLib:Window(Settings)
 		ChangeGlobalSettingsButtonState("Default")
 	end)
 
-	local titleFrame = Instance.new("Frame")
-	titleFrame.Name = "TitleFrame"
-	titleFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	titleFrame.BackgroundTransparency = 1
-	titleFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	titleFrame.BorderSizePixel = 0
-	titleFrame.Size = UDim2.fromScale(1, 1)
+		local hasHubLogo = type(Settings.HubLogo) == "string" and Settings.HubLogo ~= ""
+		if hasHubLogo then
+			local hubLogo = Instance.new("ImageLabel")
+			hubLogo.Name = "HubLogo"
+			hubLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			hubLogo.BackgroundTransparency = 1
+			hubLogo.BorderSizePixel = 0
+			hubLogo.Image = Settings.HubLogo
+			hubLogo.ImageColor3 = Settings.HubLogoColor or Color3.fromRGB(255, 255, 255)
+			hubLogo.ScaleType = Enum.ScaleType.Fit
+			hubLogo.Position = UDim2.fromOffset(0, 11)
+			hubLogo.Size = UDim2.fromOffset(28, 28)
+			hubLogo.Parent = informationHolder
+
+			local hubLogoCorner = Instance.new("UICorner")
+			hubLogoCorner.CornerRadius = UDim.new(0, 7)
+			hubLogoCorner.Parent = hubLogo
+		end
+
+		local titleFrame = Instance.new("Frame")
+		titleFrame.Name = "TitleFrame"
+		titleFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		titleFrame.BackgroundTransparency = 1
+		titleFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		titleFrame.BorderSizePixel = 0
+		titleFrame.Position = hasHubLogo and UDim2.fromOffset(38, 0) or UDim2.new()
+		titleFrame.Size = hasHubLogo and UDim2.new(1, -58, 1, 0) or UDim2.fromScale(1, 1)
 
 	local title = Instance.new("TextLabel")
 	title.Name = "Title"
@@ -954,9 +975,10 @@ function MacLib:Window(Settings)
 	globalSettings.Parent = base
 		base.Parent = macLib
 
-		local playerStatsBar
-		local playerStatsScale
-		local playerStatsConnection
+			local playerStatsBar
+			local playerStatsScale
+			local ClampPlayerStatsPosition
+			local playerStatsConnection
 		local playerStatsInputConnection
 		local playerStatsEnabled = Settings.PlayerStatsEnabled ~= false
 
@@ -985,9 +1007,34 @@ function MacLib:Window(Settings)
 			playerStatsScale = Instance.new("UIScale")
 			local camera = workspace.CurrentCamera
 			if autoDPIEnabled and camera then
-				playerStatsScale.Scale = math.clamp((camera.ViewportSize.X - (autoDPIMargin * 2)) / 620, 0.5, 1)
+				playerStatsScale.Scale = math.clamp(math.min(
+					(camera.ViewportSize.X - (autoDPIMargin * 2)) / 620,
+					(camera.ViewportSize.Y - (autoDPIMargin * 2)) / 68,
+					1
+				), 0.1, 1)
 			end
 			playerStatsScale.Parent = playerStatsBar
+
+			ClampPlayerStatsPosition = function()
+				local activeCamera = workspace.CurrentCamera
+				if not activeCamera or not playerStatsBar or not playerStatsBar.Parent then return end
+
+				local viewport = activeCamera.ViewportSize
+				local size = playerStatsBar.AbsoluteSize
+				if size.X <= 0 or size.Y <= 0 then
+					size = Vector2.new(620, 68)
+				end
+
+				local margin = math.min(autoDPIMargin, math.max(0, math.min((viewport.X - size.X) / 2, (viewport.Y - size.Y) / 2)))
+				local minLeft = margin
+				local maxLeft = math.max(minLeft, viewport.X - size.X - margin)
+				local minTop = margin
+				local maxTop = math.max(minTop, viewport.Y - size.Y - margin)
+				local left = math.clamp(playerStatsBar.AbsolutePosition.X, minLeft, maxLeft)
+				local top = math.clamp(playerStatsBar.AbsolutePosition.Y, minTop, maxTop)
+				playerStatsBar.Position = UDim2.fromOffset(left + (size.X / 2), top)
+			end
+			task.defer(ClampPlayerStatsPosition)
 
 			local playerStatsContent = Instance.new("Frame")
 			playerStatsContent.BackgroundTransparency = 1
@@ -1150,7 +1197,7 @@ function MacLib:Window(Settings)
 					if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
 					playerStatsDragging = true
 					playerStatsDragStart = input.Position
-					playerStatsStartPosition = playerStatsBar.Position
+					playerStatsStartPosition = playerStatsBar.AbsolutePosition
 
 					input.Changed:Connect(function()
 						if input.UserInputState == Enum.UserInputState.End then
@@ -1168,24 +1215,36 @@ function MacLib:Window(Settings)
 				playerStatsInputConnection = UserInputService.InputChanged:Connect(function(input)
 					if unloaded or input ~= playerStatsDragInput or not playerStatsDragging then return end
 					local delta = input.Position - playerStatsDragStart
-					playerStatsBar.Position = UDim2.new(
-						playerStatsStartPosition.X.Scale,
-						playerStatsStartPosition.X.Offset + delta.X,
-						playerStatsStartPosition.Y.Scale,
-						playerStatsStartPosition.Y.Offset + delta.Y
+					local size = playerStatsBar.AbsoluteSize
+					playerStatsBar.Position = UDim2.fromOffset(
+						playerStatsStartPosition.X + delta.X + (size.X / 2),
+						playerStatsStartPosition.Y + delta.Y
 					)
+					ClampPlayerStatsPosition()
 				end)
 			end
 		end
 
 		local function UpdateAutoDPI()
-			if unloaded or not autoDPIEnabled then return end
-			UpdateWindowDPI()
-			if playerStatsScale then
-				local camera = workspace.CurrentCamera
-				if camera then
-					playerStatsScale.Scale = math.clamp((camera.ViewportSize.X - (autoDPIMargin * 2)) / 620, 0.5, 1)
+			if unloaded then return end
+			if autoDPIEnabled then
+				UpdateWindowDPI()
+				if playerStatsScale then
+					local camera = workspace.CurrentCamera
+					if camera then
+						playerStatsScale.Scale = math.clamp(math.min(
+							(camera.ViewportSize.X - (autoDPIMargin * 2)) / 620,
+							(camera.ViewportSize.Y - (autoDPIMargin * 2)) / 68,
+							1
+						), 0.1, 1)
+					end
 				end
+			end
+			if ClampPlayerStatsPosition then
+				task.defer(ClampPlayerStatsPosition)
+			end
+			if mobileFloatClampCallback then
+				task.defer(mobileFloatClampCallback)
 			end
 		end
 
@@ -5536,8 +5595,9 @@ function MacLib:Window(Settings)
 		return notifications.Visible
 	end
 
-		local mobileFloatButton
-		local mobileFloatEnabled
+			local mobileFloatButton
+			local ClampMobileFloatPosition
+			local mobileFloatEnabled
 		if Settings.MobileFloatButton == nil then
 			mobileFloatEnabled = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 		else
@@ -5547,9 +5607,12 @@ function MacLib:Window(Settings)
 		function WindowFunctions:SetState(State)
 			windowState = State
 			base.Visible = State
-			if mobileFloatButton then
-				mobileFloatButton.Visible = mobileFloatEnabled and not State
-			end
+				if mobileFloatButton then
+					mobileFloatButton.Visible = mobileFloatEnabled and not State
+					if mobileFloatButton.Visible and ClampMobileFloatPosition then
+						task.defer(ClampMobileFloatPosition)
+					end
+				end
 		end
 
 	function WindowFunctions:GetState()
@@ -5618,10 +5681,31 @@ function MacLib:Window(Settings)
 
 			local mobileFloatStroke = Instance.new("UIStroke")
 			mobileFloatStroke.Color = Color3.fromRGB(255, 255, 255)
-			mobileFloatStroke.Transparency = 0.78
-			mobileFloatStroke.Parent = mobileFloatButton
+				mobileFloatStroke.Transparency = 0.78
+				mobileFloatStroke.Parent = mobileFloatButton
 
-			local mobileFloatDragging = false
+				ClampMobileFloatPosition = function()
+					local camera = workspace.CurrentCamera
+					if not camera or not mobileFloatButton or not mobileFloatButton.Parent then return end
+
+					local viewport = camera.ViewportSize
+					local size = mobileFloatButton.AbsoluteSize
+					if size.X <= 0 or size.Y <= 0 then
+						size = Vector2.new(52, 52)
+					end
+
+					local margin = math.min(12, math.max(0, math.min((viewport.X - size.X) / 2, (viewport.Y - size.Y) / 2)))
+					local minLeft = margin
+					local maxLeft = math.max(minLeft, viewport.X - size.X - margin)
+					local minTop = margin
+					local maxTop = math.max(minTop, viewport.Y - size.Y - margin)
+					local left = math.clamp(mobileFloatButton.AbsolutePosition.X, minLeft, maxLeft)
+					local top = math.clamp(mobileFloatButton.AbsolutePosition.Y, minTop, maxTop)
+					mobileFloatButton.Position = UDim2.fromOffset(left + size.X, top + size.Y)
+				end
+				mobileFloatClampCallback = ClampMobileFloatPosition
+
+				local mobileFloatDragging = false
 			local mobileFloatMoved = false
 			local mobileFloatDragStart
 			local mobileFloatStartPosition
@@ -5631,8 +5715,8 @@ function MacLib:Window(Settings)
 				if input.UserInputType ~= Enum.UserInputType.Touch then return end
 				mobileFloatDragging = true
 				mobileFloatMoved = false
-				mobileFloatDragStart = input.Position
-				mobileFloatStartPosition = mobileFloatButton.Position
+					mobileFloatDragStart = input.Position
+					mobileFloatStartPosition = mobileFloatButton.AbsolutePosition
 
 				input.Changed:Connect(function()
 					if input.UserInputState ~= Enum.UserInputState.End then return end
@@ -5655,16 +5739,17 @@ function MacLib:Window(Settings)
 				if delta.Magnitude > 6 then
 					mobileFloatMoved = true
 				end
-				mobileFloatButton.Position = UDim2.new(
-					mobileFloatStartPosition.X.Scale,
-					mobileFloatStartPosition.X.Offset + delta.X,
-					mobileFloatStartPosition.Y.Scale,
-					mobileFloatStartPosition.Y.Offset + delta.Y
-				)
-			end)
-		end
+					local size = mobileFloatButton.AbsoluteSize
+					mobileFloatButton.Position = UDim2.fromOffset(
+						mobileFloatStartPosition.X + delta.X + size.X,
+						mobileFloatStartPosition.Y + delta.Y + size.Y
+					)
+					ClampMobileFloatPosition()
+				end)
+				task.defer(ClampMobileFloatPosition)
+			end
 
-		UserInputService.InputEnded:Connect(function(inp, gpe)
+			UserInputService.InputEnded:Connect(function(inp, gpe)
 		if gpe then return end
 		if inp.KeyCode == MenuKeybind then
 			ToggleMenu()

@@ -94,6 +94,8 @@ local Window = MacLib:Window({
 |---|---|---|---|
 | `Title` | `string` | Required display text | Sets the main title. |
 | `Subtitle` | `string` | Optional | Adds supporting text below the title. |
+| `HubLogo` | `string` | None | Displays a Roblox image asset beside the window title. |
+| `HubLogoColor` | `Color3` | White | Applies an optional tint to the hub logo. |
 | `Size` | `UDim2` | `UDim2.fromOffset(868, 650)` | Sets the initial window dimensions. |
 | `DragStyle` | `number` | `1` | Uses the move icon (`1`) or full UI surface (`2`) for dragging. |
 | `DisabledWindowControls` | `table` | `{}` | Disables named controls such as `"Exit"` or `"Minimize"`. |
@@ -110,6 +112,20 @@ local Window = MacLib:Window({
 | `PlayerStatsPosition` | `UDim2` | Top-center | Sets the stats bar’s initial position. |
 | `PlayerStatsDraggable` | `boolean` | `true` | Enables touch and mouse dragging for the stats bar. |
 | `PlayerStatsAvatar` | `string` | Local player’s Roblox avatar | Overrides the automatically retrieved avatar thumbnail. |
+
+## Hub logo beside the title
+
+Set `HubLogo` to a Roblox image asset to place branding immediately beside the window title. The title and subtitle automatically reserve space for the logo and the global-settings button. Use `HubLogoColor` only when the source image is a monochrome or tintable asset.
+
+```lua
+local Window = MacLib:Window({
+    Title = "My Hub",
+    Subtitle = "Branded interface",
+    HubLogo = "rbxassetid://10723425615",
+    HubLogoColor = Color3.fromRGB(255, 255, 255),
+    Size = UDim2.fromOffset(868, 650),
+})
+```
 
 ## Build a layout
 
@@ -141,7 +157,7 @@ MainTab:Select()
 
 ## Mobile window toggle
 
-When a MacLib window is minimized on a touch-only device, the library can display a circular floating menu button. A tap restores the window; dragging moves the button to a comfortable on-screen position. The control is hidden while the main UI is open and is cleaned up when `Window:Unload()` runs.
+When a MacLib window is minimized on a touch-only device, the library can display a circular floating menu button. A tap restores the window; dragging moves the button to a comfortable on-screen position. The button position is clamped to the active viewport, so it cannot be dragged off-screen. The control is hidden while the main UI is open and is cleaned up when `Window:Unload()` runs.
 
 ```lua
 local Window = MacLib:Window({
@@ -154,7 +170,7 @@ local Window = MacLib:Window({
 
 ## Automatic DPI scaling
 
-MacLib now scales itself against the active camera viewport by default. The main window is reduced only when needed to respect the configured edge margin, while the floating player-stats bar scales by width for compact displays. The calculation re-runs when the viewport changes, including device rotation and window resizing.
+MacLib now scales itself against the active camera viewport by default. The main window is reduced only when needed to respect the configured edge margin, while the floating player-stats bar scales against both viewport width and height for compact displays. The calculation re-runs when the viewport changes, including device rotation and window resizing; both floating controls are then kept inside the visible screen area.
 
 ```lua
 local Window = MacLib:Window({
@@ -336,6 +352,7 @@ Window:Dialog({
 | `Window:SetScale(number)` / `Window:GetScale()` | Updates or retrieves UI scale. |
 | `Window:UpdateTitle(string)` / `Window:UpdateSubtitle(string)` | Changes window text after creation. |
 | `Window:Unload()` | Cleans up the entire interface, including floating overlays. |
+| `HubLogo` / `HubLogoColor` | Adds an optional branded image beside the title and applies an optional tint. |
 | `MacLib:SetFolder(string)` | Chooses the configuration folder. |
 | `MacLib:SaveConfig(string)` / `MacLib:LoadConfig(string)` | Saves or restores flagged control values. |
 | `MacLib:RefreshConfigList()` | Lists available configuration names. |
