@@ -143,7 +143,7 @@ AutoDPIMargin = 32,
 
 ### Draggable mobile UI toggle
 
-On touch-only devices, a circular menu button is available whenever `MobileToggleButton` is enabled, whether the main UI is open or minimized. Tap it to toggle the main UI open or closed, or drag it directly to a comfortable on-screen position. Its full circular surface remains inside the active viewport while you move it.
+On touch-only devices, a circular menu button is available whenever `MobileToggleButton` is enabled, whether the main UI is open or minimized. Tap it to toggle the main UI open or closed, or drag it freely to any position. The library intentionally does **not** clamp it to the viewport, so it can be moved beyond any screen edge.
 
 ```lua
 MobileToggleButton = true,

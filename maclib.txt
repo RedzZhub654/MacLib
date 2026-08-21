@@ -5715,21 +5715,15 @@ local function BindAutoDPI()
 					mobileToggleMoved = true
 				end
 
-				local camera = workspace.CurrentCamera
-				if not camera then return end
-				local viewport = camera.ViewportSize
+				-- Intentionally unrestricted: the toggle can be moved beyond every screen edge.
 				local size = mobileToggleButton.AbsoluteSize
 				if size.X <= 0 or size.Y <= 0 then
 					size = Vector2.new(48, 48)
 				end
-				local margin = math.min(12, math.max(0, math.min((viewport.X - size.X) / 2, (viewport.Y - size.Y) / 2)))
-				local minLeft = margin
-				local maxLeft = math.max(minLeft, viewport.X - size.X - margin)
-				local minTop = margin
-				local maxTop = math.max(minTop, viewport.Y - size.Y - margin)
-				local left = math.clamp(mobileToggleStartPosition.X + delta.X, minLeft, maxLeft)
-				local top = math.clamp(mobileToggleStartPosition.Y + delta.Y, minTop, maxTop)
-				mobileToggleButton.Position = UDim2.fromOffset(left + size.X, top + size.Y)
+				mobileToggleButton.Position = UDim2.fromOffset(
+					mobileToggleStartPosition.X + delta.X + size.X,
+					mobileToggleStartPosition.Y + delta.Y + size.Y
+				)
 			end)
 		end
 

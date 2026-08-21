@@ -35,7 +35,7 @@ local created, Window = pcall(function()
         UIBackgroundTransparency = 0.86,
         DividerTransparency = 0.78,
 
-        -- Tap to toggle the UI, or drag this button to reposition it.
+        -- Tap to toggle the UI, or drag this button freely beyond screen edges.
         MobileToggleButton = true,
     })
 end)
@@ -55,7 +55,7 @@ local Main = Home:Section({ Side = "Left" })
 Main:Header({ Text = "MacLib is running" })
 Main:Paragraph({
     Header = "Success",
-    Body = "Drag the window from its surface. On touch devices, tap the menu button to toggle the UI or drag it to reposition it.",
+    Body = "Drag the window from its surface. On touch devices, tap the menu button to toggle the UI or drag it freely beyond the screen edges.",
 })
 
 Main:Toggle({
