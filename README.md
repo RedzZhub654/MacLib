@@ -151,6 +151,21 @@ MobileToggleButton = true,
 
 The executor profile area in the lower-left sidebar now uses a restrained slate outline and a dark card surface. Beneath the display name and Roblox username, it shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor line follows the existing profile privacy state and is redacted when user information is hidden.
 
+By default, the card uses the local player’s Roblox avatar thumbnail. Supply any valid Roblox image string—such as an `rbxassetid://` image asset or an `rbxthumb://` thumbnail—to replace it.
+
+```lua
+ProfileAvatar = "rbxassetid://YOUR_AVATAR_OR_THUMBNAIL",
+-- ProfileThumbnail = "rbxassetid://YOUR_IMAGE", -- Supported alias
+-- ProfileImage = "rbxassetid://YOUR_IMAGE",     -- Supported alias
+```
+
+| Option or method | Purpose |
+|---|---|
+| `ProfileAvatar` | Primary custom profile-card image. |
+| `ProfileThumbnail`, `ProfileImage` | Equivalent configuration aliases. |
+| `Window:SetProfileAvatar(image)` | Changes the image at runtime; pass `nil` or an empty value to restore the local player thumbnail. |
+| `Window:GetProfileAvatar()` | Returns the active custom image, or `nil` when using the default thumbnail. |
+
 ---
 
 ## Custom UI background and dividers
@@ -364,6 +379,7 @@ local Card = MainTab:CreateDiscordInvite({
 | `Window:SetNotificationsState(boolean)` | Shows or hides the notification area. |
 | `Window:SetAcrylicBlurState(boolean)` | Changes the blur state. |
 | `Window:SetUserInfoState(boolean)` | Shows or redacts sidebar user information. |
+| `Window:SetProfileAvatar(image)` / `Window:GetProfileAvatar()` | Changes or reads the custom image used in the executor profile card. |
 | `Window:SetSize(UDim2)` / `Window:GetSize()` | Changes or reads window dimensions. |
 | `Window:SetScale(number)` / `Window:GetScale()` | Uses or reads a manual scale. |
 | `Window:UpdateTitle(string)` | Changes the title after creation. |

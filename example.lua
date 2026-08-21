@@ -32,6 +32,9 @@ local created, Window = pcall(function()
         DividerTransparency = 0.78,
 
         HubLogo = HUB_LOGO,
+        -- Optional custom profile image; omit this line to use the local player thumbnail.
+        -- ProfileAvatar = "rbxassetid://YOUR_AVATAR_OR_THUMBNAIL",
+
         -- Uses the hub logo; tap toggles and drag stays attached to your input.
         MobileToggleButton = true,
     })

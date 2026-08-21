@@ -575,6 +575,13 @@ function MacLib:Window(Settings)
 	local thumbType = Enum.ThumbnailType.AvatarBust
 	local thumbSize = Enum.ThumbnailSize.Size48x48
 	local headshotImage, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+	local profileAvatarImage = Settings.ProfileAvatar or Settings.ProfileThumbnail or Settings.ProfileImage
+	if type(profileAvatarImage) ~= "string" or profileAvatarImage == "" then
+		profileAvatarImage = nil
+	end
+	local function GetProfileAvatarImage()
+		return profileAvatarImage or ((isReady and headshotImage) or "rbxassetid://0")
+	end
 
 	local headshot = Instance.new("ImageLabel")
 	headshot.Name = "Headshot"
@@ -583,7 +590,7 @@ function MacLib:Window(Settings)
 	headshot.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	headshot.BorderSizePixel = 0
 	headshot.Size = UDim2.fromOffset(32, 32)
-	headshot.Image = (isReady and headshotImage) or "rbxassetid://0"
+	headshot.Image = GetProfileAvatarImage()
 
 	local uICorner3 = Instance.new("UICorner")
 	uICorner3.Name = "UICorner"
@@ -5787,7 +5794,7 @@ local function BindAutoDPI()
 
 	local function _SetUserInfoState(State)
 		if State then
-			headshot.Image = (isReady and headshotImage) or "rbxassetid://0"
+			headshot.Image = GetProfileAvatarImage()
 			username.Text = "@" .. LocalPlayer.Name
 			displayName.Text = LocalPlayer.DisplayName
 			executorLabel.Text = "Executor: " .. executorName
@@ -5815,6 +5822,19 @@ local function BindAutoDPI()
 	end
 	function WindowFunctions:GetUserInfoState(State)
 		return showUserInfo
+	end
+	function WindowFunctions:SetProfileAvatar(Image)
+		if type(Image) == "string" and Image ~= "" then
+			profileAvatarImage = Image
+		else
+			profileAvatarImage = nil
+		end
+		if showUserInfo then
+			headshot.Image = GetProfileAvatarImage()
+		end
+	end
+	function WindowFunctions:GetProfileAvatar()
+		return profileAvatarImage
 	end
 
 		function WindowFunctions:SetSize(Size)
