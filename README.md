@@ -21,9 +21,9 @@ MacLib ships as a single Lua file and is designed to make feature-rich Roblox in
 | Start here | Build features | Reference |
 |---|---|---|
 | [Load MacLib](#load-maclib) | [Create a window](#create-a-window) | [Window options](#window-options) |
-| [Run the test UI](#run-the-test-ui) | [Build a layout](#build-a-layout) | [Control reference](#control-reference) |
+| [Run the test UI](#run-the-test-ui) | [Build a layout](#build-a-layout) | [Controls](#controls) |
 | [Use mobile support](#mobile-window-toggle) | [Show feedback](#notifications-and-dialogs) | [Window and configuration methods](#window-and-configuration-methods) |
-| [Use player stats](#floating-player-stats-bar) | [Visual reference](#visual-reference) | [Credits and sources](#credits-and-sources) |
+| [Use player stats](#floating-player-stats-bar) | [Customize themes](#theme-customization) | [Credits and sources](#credits-and-sources) |
 
 ## Load MacLib
 
@@ -162,6 +162,50 @@ local Window = MacLib:Window({
 | Ping | Roblox `Stats` service | Displayed in milliseconds; falls back safely when unavailable. |
 | FPS | Render-step measurement | Calculated from rendered frames over the refresh interval. |
 | Players | `Players:GetPlayers()` | Shows the current population of the active server. |
+
+## Theme customization
+
+A practical theme workflow keeps your color decisions in a single palette table and passes those tokens into your own callbacks, custom instances, and MacLib color controls. The included [`examples/test.lua`](./examples/test.lua) now contains four ready-to-test palettes: **Sunset**, **Ocean**, **Forest**, and **Lavender**. Choosing a palette updates the example’s accent color picker and palette description so you can verify the selected values immediately.
+
+> **Scope:** MacLib currently keeps its core window styling internally consistent. Palette tokens are intended for the visual behavior you add around MacLib—such as feature highlights, custom instances, notifications you manage, and color-picker defaults—rather than a global runtime restyle of every built-in component.
+
+```lua
+local Palettes = {
+    Ocean = {
+        Accent = Color3.fromRGB(74, 166, 255),
+        Background = Color3.fromRGB(19, 30, 46),
+        Surface = Color3.fromRGB(31, 60, 88),
+        Text = Color3.fromRGB(235, 247, 255),
+    },
+    Forest = {
+        Accent = Color3.fromRGB(105, 196, 132),
+        Background = Color3.fromRGB(22, 34, 27),
+        Surface = Color3.fromRGB(39, 71, 49),
+        Text = Color3.fromRGB(238, 255, 241),
+    },
+}
+
+local ActivePalette = Palettes.Ocean
+
+Section:Colorpicker({
+    Name = "Accent color",
+    Default = ActivePalette.Accent,
+    Alpha = 0,
+    Callback = function(color)
+        -- Apply `color` to the custom visuals in your own feature.
+        print("New accent:", color)
+    end,
+})
+```
+
+| Palette | Accent | Background | Surface | Text |
+|---|---:|---:|---:|---:|
+| **Sunset** | `244, 101, 92` | `30, 24, 28` | `58, 37, 43` | `255, 240, 239` |
+| **Ocean** | `74, 166, 255` | `19, 30, 46` | `31, 60, 88` | `235, 247, 255` |
+| **Forest** | `105, 196, 132` | `22, 34, 27` | `39, 71, 49` | `238, 255, 241` |
+| **Lavender** | `173, 134, 255` | `33, 27, 47` | `63, 48, 91` | `247, 242, 255` |
+
+The test script’s `ApplyPalette` function is a compact pattern for palette selection. It updates the accent picker, refreshes the on-screen palette details, and exposes the active `Background`, `Surface`, and `Text` tokens for use in your own UI behavior.
 
 ## Controls
 

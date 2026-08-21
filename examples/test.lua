@@ -5,6 +5,37 @@ local MacLib = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/maclib.txt"
 ))()
 
+-- Keep visual decisions in one table so your own UI callbacks can reuse them.
+local Palettes = {
+    Sunset = {
+        Accent = Color3.fromRGB(244, 101, 92),
+        Background = Color3.fromRGB(30, 24, 28),
+        Surface = Color3.fromRGB(58, 37, 43),
+        Text = Color3.fromRGB(255, 240, 239),
+    },
+    Ocean = {
+        Accent = Color3.fromRGB(74, 166, 255),
+        Background = Color3.fromRGB(19, 30, 46),
+        Surface = Color3.fromRGB(31, 60, 88),
+        Text = Color3.fromRGB(235, 247, 255),
+    },
+    Forest = {
+        Accent = Color3.fromRGB(105, 196, 132),
+        Background = Color3.fromRGB(22, 34, 27),
+        Surface = Color3.fromRGB(39, 71, 49),
+        Text = Color3.fromRGB(238, 255, 241),
+    },
+    Lavender = {
+        Accent = Color3.fromRGB(173, 134, 255),
+        Background = Color3.fromRGB(33, 27, 47),
+        Surface = Color3.fromRGB(63, 48, 91),
+        Text = Color3.fromRGB(247, 242, 255),
+    },
+}
+
+local ActivePaletteName = "Sunset"
+local ActivePalette = Palettes[ActivePaletteName]
+
 local Window = MacLib:Window({
     Title = "MacLib Test Lab",
     Subtitle = "Interactive component showcase",
@@ -21,7 +52,7 @@ local Window = MacLib:Window({
 
     -- Floating player status bar
     PlayerStatsEnabled = true,
-    PlayerStatsBadge = "TEST",
+    PlayerStatsBadge = "THEME",
     PlayerStatsPosition = UDim2.new(0.5, 0, 0, 16),
     PlayerStatsDraggable = true,
 })
@@ -106,27 +137,54 @@ MainLeft:Button({
     end,
 })
 
-MainRight:Header({ Text = "Selections" })
+MainRight:Header({ Text = "Theme playground" })
+
+local PaletteInfo = MainRight:Paragraph({
+    Header = "Sunset palette",
+    Body = "Choose a palette to update the accent preview and inspect reusable color tokens.",
+})
+
+local AccentColor = MainRight:Colorpicker({
+    Name = "Accent color",
+    Default = ActivePalette.Accent,
+    Alpha = 0,
+    Callback = function(color, alpha)
+        print("Custom accent:", color, "Alpha:", alpha)
+    end,
+}, "AccentColor")
+
+local function ApplyPalette(name)
+    local palette = Palettes[name]
+    if not palette then return end
+
+    ActivePaletteName = name
+    ActivePalette = palette
+    AccentColor:SetColor(palette.Accent)
+    AccentColor:SetAlpha(0)
+    PaletteInfo:UpdateHeader(name .. " palette")
+    PaletteInfo:UpdateBody(string.format(
+        "Accent: %d, %d, %d | Reuse Background, Surface, and Text tokens in your own callbacks.",
+        math.floor(palette.Accent.R * 255),
+        math.floor(palette.Accent.G * 255),
+        math.floor(palette.Accent.B * 255)
+    ))
+
+    Window:Notify({
+        Title = "Palette applied",
+        Description = name .. " is now the active test palette.",
+        Lifetime = 3,
+    })
+end
+
 MainRight:Dropdown({
-    Name = "Theme",
+    Name = "Color palette",
     Search = true,
     Multi = false,
     Required = true,
-    Options = { "Dark", "Light", "System" },
+    Options = { "Sunset", "Ocean", "Forest", "Lavender" },
     Default = 1,
-    Callback = function(value)
-        print("Selected theme:", value)
-    end,
-}, "Theme")
-
-MainRight:Colorpicker({
-    Name = "Accent color",
-    Default = Color3.fromRGB(244, 101, 92),
-    Alpha = 0,
-    Callback = function(color, alpha)
-        print("Accent color:", color, "Alpha:", alpha)
-    end,
-}, "AccentColor")
+    Callback = ApplyPalette,
+}, "ColorPalette")
 
 MainRight:Keybind({
     Name = "Quick notification",
