@@ -2391,6 +2391,7 @@ local function BindAutoDPI()
 					sliderHead.Size = UDim2.fromOffset(14, 14)
 					sliderHead.Parent = sliderBar
 
+					sliderBar.Active = true
 					sliderBar.Parent = sliderElements
 
 					local sliderElementsUIPadding = Instance.new("UIPadding")
@@ -2433,29 +2434,26 @@ local function BindAutoDPI()
 					local finalValue
 
 					local function SetValue(val, ignorecallback)
+						local minimum = SliderFunctions.Settings.Minimum
+						local maximum = SliderFunctions.Settings.Maximum
+						local range = maximum - minimum
 						local posXScale
 
-						if typeof(val) == "Instance" then
-							local input = val
-							posXScale = math.clamp((input.Position.X - sliderBar.AbsolutePosition.X) / sliderBar.AbsoluteSize.X, 0, 1)
+						if typeof(val) == "InputObject" then
+							if sliderBar.AbsoluteSize.X <= 0 then return end
+							posXScale = math.clamp((val.Position.X - sliderBar.AbsolutePosition.X) / sliderBar.AbsoluteSize.X, 0, 1)
+						elseif type(val) == "number" then
+							posXScale = range == 0 and 0 or math.clamp((val - minimum) / range, 0, 1)
 						else
-							local value = val
-							posXScale = (value - SliderFunctions.Settings.Minimum) / (SliderFunctions.Settings.Maximum - SliderFunctions.Settings.Minimum)
+							return
 						end
 
-						local pos = UDim2.new(posXScale, 0, 0.5, 0)
-						sliderHead.Position = pos
+						sliderHead.Position = UDim2.new(posXScale, 0, 0.5, 0)
+						finalValue = posXScale * range + minimum
+						sliderValue.Text = (SliderFunctions.Settings.Prefix or "") .. ValueDisplayMethod(finalValue, SliderFunctions.Settings.Precision) .. (SliderFunctions.Settings.Suffix or "")
 
-						finalValue = posXScale * (SliderFunctions.Settings.Maximum - SliderFunctions.Settings.Minimum) + SliderFunctions.Settings.Minimum
-
-						sliderValue.Text = (Settings.Prefix or "") .. ValueDisplayMethod(finalValue, SliderFunctions.Settings.Precision) .. (Settings.Suffix or "")
-
-						if not ignorecallback then
-							task.spawn(function()
-								if SliderFunctions.Settings.Callback then
-									SliderFunctions.Settings.Callback(finalValue)
-								end
-							end)
+						if not ignorecallback and SliderFunctions.Settings.Callback then
+							task.spawn(SliderFunctions.Settings.Callback, finalValue)
 						end
 
 						SliderFunctions.Value = finalValue
@@ -2463,21 +2461,25 @@ local function BindAutoDPI()
 
 					SetValue(SliderFunctions.Settings.Default, true)
 
-					sliderHead.InputBegan:Connect(function(input)
+					local function BeginSliderDrag(input)
 						if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 							dragging = true
 							SetValue(input)
 						end
-					end)
+					end
 
-					sliderHead.InputEnded:Connect(function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					local function EndSliderDrag(input)
+						if dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
 							dragging = false
 							if SliderFunctions.Settings.onInputComplete then
 								SliderFunctions.Settings.onInputComplete(finalValue)
 							end
 						end
-					end)
+					end
+
+					sliderHead.InputBegan:Connect(BeginSliderDrag)
+					sliderBar.InputBegan:Connect(BeginSliderDrag)
+					UserInputService.InputEnded:Connect(EndSliderDrag)
 
 					sliderValue.FocusLost:Connect(function(enterPressed)
 						local inputText = sliderValue.Text
@@ -2494,7 +2496,7 @@ local function BindAutoDPI()
 							local newValue = math.clamp(value, SliderFunctions.Settings.Minimum, SliderFunctions.Settings.Maximum)
 							SetValue(newValue)
 						else
-							sliderValue.Text = ValueDisplayMethod(sliderValue)
+							sliderValue.Text = ValueDisplayMethod(finalValue, SliderFunctions.Settings.Precision)
 						end
 
 						if SliderFunctions.Settings.onInputComplete then
@@ -2509,22 +2511,21 @@ local function BindAutoDPI()
 					end)
 
 					local function updateSliderBarSize()
-						local padding = sliderElementsUIListLayout.Padding.Offset
-						local sliderValueWidth = sliderValue.AbsoluteSize.X
-						local sliderNameWidth = sliderName.AbsoluteSize.X
-						local totalWidth = sliderElements.AbsoluteSize.X
-
-						local newBarWidth = (totalWidth - (padding + sliderValueWidth + sliderNameWidth + 20)) / baseUIScale.Scale
-						sliderBar.Size = UDim2.new(sliderBar.Size.X.Scale, newBarWidth, sliderBar.Size.Y.Scale, sliderBar.Size.Y.Offset)
+						local uiScale = math.max(baseUIScale.Scale, 0.01)
+						local reservedWidth = sliderName.AbsoluteSize.X + sliderValue.AbsoluteSize.X + (sliderElementsUIListLayout.Padding.Offset + 20) * uiScale
+						local newBarWidth = math.max(80, (sliderElements.AbsoluteSize.X - reservedWidth) / uiScale)
+						sliderBar.Size = UDim2.fromOffset(newBarWidth, sliderBar.Size.Y.Offset)
 					end
-
 					updateSliderBarSize()
-
+					task.defer(updateSliderBarSize)
 					sliderName:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateSliderBarSize)
+					sliderValue:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateSliderBarSize)
+					sliderElements:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateSliderBarSize)
 					section:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateSliderBarSize)
+					baseUIScale:GetPropertyChangedSignal("Scale"):Connect(updateSliderBarSize)
 
 					function SliderFunctions:UpdateName(Name)
-						sliderName = Name
+						sliderName.Text = Name
 					end
 					function SliderFunctions:SetVisibility(State)
 						slider.Visible = State
