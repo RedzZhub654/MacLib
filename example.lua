@@ -24,15 +24,8 @@ local created, Window = pcall(function()
         AutoDPIMinScale = 0.35,
         AutoDPIMargin = 32,
 
-        -- Remains visible while the window is open or minimized on touch devices.
+        -- Appears as a recovery button only after a touch user minimizes the window.
         MobileFloatButton = true,
-
-        -- Resizes independently on small screens.
-        PlayerStatsEnabled = true,
-        PlayerStatsAutoDPI = true,
-        PlayerStatsMargin = 16,
-        PlayerStatsDraggable = true,
-        PlayerStatsBadge = "LIVE",
     })
 end)
 
@@ -51,7 +44,7 @@ local Main = Home:Section({ Side = "Left" })
 Main:Header({ Text = "MacLib is running" })
 Main:Paragraph({
     Header = "Success",
-    Body = "This is the repository's only example.lua. The window, mobile float, and player stats are active.",
+    Body = "This is the repository's only example.lua. Minimize the window on a touch device to test the recovery button.",
 })
 
 Main:Toggle({

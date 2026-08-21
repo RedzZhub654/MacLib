@@ -63,8 +63,6 @@ local Window = MacLib:Window({
     AutoDPI = true,
 
     MobileFloatButton = true,
-    PlayerStatsEnabled = true,
-    PlayerStatsBadge = "LIVE",
 })
 ```
 
@@ -116,7 +114,7 @@ MainTab:Select()
 
 ### Automatic DPI scaling
 
-MacLib automatically adapts the main window to the active camera viewport. It recalculates after a resize, device rotation, or camera change. The player-stats card now also resizes its **frame and internal content** independently against both viewport width and height, so it remains compact even when main-window DPI scaling is disabled. Floating controls are clamped to the visible screen.
+MacLib automatically adapts the main window to the active camera viewport. It recalculates after a resize, device rotation, or camera change. The minimized-window recovery button is clamped to the visible screen whenever it is shown.
 
 ```lua
 AutoDPI = true,
@@ -135,41 +133,12 @@ AutoDPIMargin = 32,
 
 ### Mobile recovery button
 
-On touch-only devices, a circular menu button is displayed whenever `MobileFloatButton` is enabled. It remains visible while the main UI is open **and** when it is minimized; a tap toggles the window, while a drag repositions the button. The button is kept inside the active viewport, even after a resize or orientation change.
+On touch-only devices, a circular menu button appears when a `MobileFloatButton` window is **minimized**. Tap the button to restore the window, or drag it to a comfortable on-screen position. The button hides again as soon as the main UI reopens and is kept inside the active viewport after a resize or orientation change.
 
 ```lua
 MobileFloatButton = true,
 MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
 ```
-
-### Floating player stats
-
-The player-stats overlay stays visible while the main interface is minimized. It displays the local Roblox avatar and display name, plus live ping, FPS, and server population. Dragging now starts from a full-card transparent handle, so labels, icons, and avatar images cannot block a mouse or touch drag. On compact viewports, the card frame and its authored content shrink together.
-
-```lua
-PlayerStatsEnabled = true,
-PlayerStatsAutoDPI = true,
-PlayerStatsMargin = 16,
-PlayerStatsBadge = "LIVE",
-PlayerStatsPosition = UDim2.new(0.5, 0, 0, 16),
-PlayerStatsDraggable = true,
-
--- Optional override:
--- PlayerStatsAvatar = "rbxassetid://YOUR_IMAGE_ID",
-```
-
-| Value | Source |
-|---|---|
-| **Avatar and name** | Local Roblox player; the avatar can be overridden. |
-| **Ping** | Roblox `Stats` service, with a safe unavailable fallback. |
-| **FPS** | Render-step measurement. |
-| **Players** | `Players:GetPlayers()` in the active server. |
-
-| Player-stats setting | Purpose |
-|---|---|
-| `PlayerStatsAutoDPI` | Enables independent responsive sizing for the card and its content. It is enabled by default. |
-| `PlayerStatsMargin` | Sets the viewport edge space used when calculating player-stats size; defaults to `16`. |
-| `PlayerStatsDraggable` | Enables full-card mouse and touch dragging. It is enabled by default. |
 
 ---
 
