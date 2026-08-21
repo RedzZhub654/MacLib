@@ -40,6 +40,7 @@ local assets = {
 	grid = "rbxassetid://121484455191370",
 	globe = "rbxassetid://108952102602834",
 	transform = "rbxassetid://90336395745819",
+	resizeGrip = "rbxassetid://10734899164",
 	dropdown = "rbxassetid://18865373378",
 	sliderbar = "rbxassetid://18772615246",
 		sliderhead = "rbxassetid://18772834246",
@@ -902,6 +903,29 @@ function MacLib:Window(Settings)
 		ChangemoveIconState("Default")
 	end)
 
+	local resizeGrip = Instance.new("ImageButton")
+	resizeGrip.Name = "ResizeGrip"
+	resizeGrip.Image = assets.resizeGrip
+	resizeGrip.ImageColor3 = Color3.fromRGB(255, 255, 255)
+	resizeGrip.ImageTransparency = 0.42
+	resizeGrip.AnchorPoint = Vector2.new(1, 1)
+	resizeGrip.BackgroundTransparency = 1
+	resizeGrip.BorderSizePixel = 0
+	resizeGrip.AutoButtonColor = false
+	resizeGrip.Position = UDim2.new(1, -8, 1, -8)
+	resizeGrip.Size = UDim2.fromOffset(18, 18)
+	resizeGrip.ZIndex = 20
+	resizeGrip.Parent = base
+
+	local resizableEnabled = Settings.Resizable ~= false
+	local minimumSize = Settings.MinimumSize or UDim2.fromOffset(620, 460)
+	resizeGrip.Visible = resizableEnabled
+	local resizing = false
+	local resizeDragInput
+	local resizeStart
+	local resizeStartSize
+	local resizeStartScale
+
 	local dragging_ = false
 	local dragInput
 	local dragStart
@@ -932,19 +956,53 @@ function MacLib:Window(Settings)
 		end
 	end
 
+	resizeGrip.InputBegan:Connect(function(input)
+		if not resizableEnabled then return end
+		if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+		resizing = true
+		dragging_ = false
+		resizeDragInput = input
+		resizeStart = input.Position
+		resizeStartSize = base.Size
+		resizeStartScale = math.max(baseUIScale.Scale, 0.001)
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				resizing = false
+				resizeDragInput = nil
+			end
+		end)
+	end)
+	resizeGrip.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			resizeDragInput = input
+		end
+	end)
+
+	local function updateResize(input)
+		local delta = (input.Position - resizeStart) / resizeStartScale
+		local width = math.max(minimumSize.X.Offset, resizeStartSize.X.Offset + delta.X)
+		local height = math.max(minimumSize.Y.Offset, resizeStartSize.Y.Offset + delta.Y)
+		base.Size = UDim2.new(resizeStartSize.X.Scale, width, resizeStartSize.Y.Scale, height)
+		UpdateAutoDPI()
+	end
+
 	-- Drag the whole window by default; DragStyle = 1 retains the compact drag-icon target.
 	local dragTarget = Settings.DragStyle == 1 and interact or base
 	dragTarget.Active = true
 	dragTarget.InputBegan:Connect(onDragStart)
 	dragTarget.InputChanged:Connect(onDragUpdate)
 	UserInputService.InputChanged:Connect(function(input)
-		if input == dragInput and dragging_ then
+		if resizing and input == resizeDragInput then
+			updateResize(input)
+		elseif input == dragInput and dragging_ then
 			update(input)
 		end
 	end)
 	UserInputService.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging_ = false
+			resizing = false
+			resizeDragInput = nil
 		end
 	end)
 
@@ -5776,6 +5834,21 @@ local function BindAutoDPI()
 		end
 		function WindowFunctions:GetSize(Size)
 			return base.Size
+		end
+		function WindowFunctions:SetResizable(State)
+			resizableEnabled = State ~= false
+			resizeGrip.Visible = resizableEnabled
+		end
+		function WindowFunctions:GetResizable()
+			return resizableEnabled
+		end
+		function WindowFunctions:SetMinimumSize(Size)
+			if typeof(Size) == "UDim2" then
+				minimumSize = Size
+			end
+		end
+		function WindowFunctions:GetMinimumSize()
+			return minimumSize
 		end
 
 		function WindowFunctions:SetAutoDPI(State)

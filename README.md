@@ -79,6 +79,8 @@ local Window = MacLib:Window({
 | `Size` | Sets initial window dimensions; defaults to `868 × 650`. |
 | `Keybind` | Toggles the visible state; defaults to `RightControl`. |
 | `DragStyle` | Drags from the full window by default. Set to `1` to use only the compact drag icon instead. |
+| `Resizable` | Defaults to `true`. Set to `false` to hide the bottom-right resize grip. |
+| `MinimumSize` | Minimum `UDim2` dimensions enforced while dragging the resize grip; defaults to `620 × 460`. |
 | `ShowUserInfo` | Displays the local-player block in the sidebar. |
 | `AcrylicBlur` | Controls the background blur treatment. |
 | `DisabledWindowControls` | Disables named controls such as `"Exit"` or `"Minimize"`. |
@@ -116,6 +118,15 @@ MainTab:Select()
 ---
 
 ## Responsive experience
+
+### Bottom-right resizing
+
+MacLib includes a subtle **diagonal resize grip** in the lower-right corner, using the supplied `movediagonal` icon. Drag it with a mouse or touch input to resize the window. The control respects the current automatic-DPI scale and will not reduce the window below `MinimumSize`.
+
+```lua
+Resizable = true,
+MinimumSize = UDim2.fromOffset(700, 500),
+```
 
 ### Automatic DPI scaling
 
@@ -381,6 +392,8 @@ local Card = MainTab:CreateDiscordInvite({
 | `Window:SetUserInfoState(boolean)` | Shows or redacts sidebar user information. |
 | `Window:SetProfileAvatar(image)` / `Window:GetProfileAvatar()` | Changes or reads the custom image used in the executor profile card. |
 | `Window:SetSize(UDim2)` / `Window:GetSize()` | Changes or reads window dimensions. |
+| `Window:SetResizable(boolean)` / `Window:GetResizable()` | Shows or hides the bottom-right resize grip. |
+| `Window:SetMinimumSize(UDim2)` / `Window:GetMinimumSize()` | Changes or reads the enforced minimum resize dimensions. |
 | `Window:SetScale(number)` / `Window:GetScale()` | Uses or reads a manual scale. |
 | `Window:UpdateTitle(string)` | Changes the title after creation. |
 | `Window:UpdateSubtitle(string)` | Changes the subtitle after creation. |
