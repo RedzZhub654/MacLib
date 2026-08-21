@@ -121,7 +121,7 @@ MainTab:Select()
 
 ### Bottom-right resizing
 
-MacLib includes a subtle **diagonal resize grip** in the lower-right corner, using the supplied `movediagonal` icon. Drag it with a mouse or touch input to resize the window. The control respects the current automatic-DPI scale and will not reduce the window below `MinimumSize`. During every resize, the sidebar and content region are synchronized and the content region clips its children, keeping the vertical sidebar divider and top header line aligned without stray lines crossing the page.
+MacLib includes a subtle **diagonal resize grip** in the lower-right corner, using the supplied `movediagonal` icon. Drag it with a mouse or touch input to resize the window. The control respects the current automatic-DPI scale and will not reduce the window below `MinimumSize`. The initial sidebar remains proportional to the window, while a manually resized sidebar uses DPI-aware logical sizing. This keeps the sidebar divider and content header aligned through both window resizing and divider dragging without compressing the interface.
 
 ```lua
 Resizable = true,

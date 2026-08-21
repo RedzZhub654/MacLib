@@ -764,29 +764,39 @@ function MacLib:Window(Settings)
 	content.BackgroundTransparency = 1
 	content.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	content.BorderSizePixel = 0
-	content.ClipsDescendants = true
 	content.Position = UDim2.fromScale(1, 4.69e-08)
-	content.Size = UDim2.new(0, (base.AbsoluteSize.X - sidebar.AbsoluteSize.X), 1, 0)
+	content.Size = UDim2.new(1 - sidebar.Size.X.Scale, -sidebar.Size.X.Offset, 1, 0)
 
 	local resizingContent = false
-	local defaultSidebarWidth = sidebar.AbsoluteSize.X
+	local defaultSidebarWidth
 	local initialMouseX, initialSidebarWidth
 	local snapRange = 20
 	local minSidebarWidth = 107
-	local maxSidebarWidth = base.AbsoluteSize.X - minSidebarWidth
+	local maxSidebarWidth = 107
 	local TweenSettings = {
 		DefaultTransparency = 0.9,
 		HoverTransparency = 0.85,
 		EasingStyle = Enum.EasingStyle.Sine
 	}
 
+	local function GetWindowScale()
+		return math.max(baseUIScale.Scale, 0.001)
+	end
+
+	local function GetLogicalSidebarWidth()
+		return sidebar.AbsoluteSize.X / GetWindowScale()
+	end
+
+	local function GetLogicalBaseWidth()
+		return base.AbsoluteSize.X / GetWindowScale()
+	end
+
 	local function SyncContentLayout(requestedSidebarWidth)
-		local baseWidth = math.max(minSidebarWidth * 2, base.AbsoluteSize.X)
+		local baseWidth = GetLogicalBaseWidth()
 		maxSidebarWidth = math.max(minSidebarWidth, baseWidth - minSidebarWidth)
-		local sidebarWidth = requestedSidebarWidth or sidebar.AbsoluteSize.X
-		sidebarWidth = math.clamp(sidebarWidth, minSidebarWidth, maxSidebarWidth)
+		local sidebarWidth = math.clamp(requestedSidebarWidth or GetLogicalSidebarWidth(), minSidebarWidth, maxSidebarWidth)
 		sidebar.Size = UDim2.new(0, sidebarWidth, 1, 0)
-		content.Size = UDim2.new(0, math.max(minSidebarWidth, baseWidth - sidebarWidth), 1, 0)
+		content.Size = UDim2.new(1, -sidebarWidth, 1, 0)
 	end
 
 	local function ChangeState(State)
@@ -803,7 +813,7 @@ function MacLib:Window(Settings)
 	dividerInteract.MouseButton1Down:Connect(function()
 		resizingContent = true
 		initialMouseX = UserInputService:GetMouseLocation().X
-		initialSidebarWidth = sidebar.AbsoluteSize.X
+		initialSidebarWidth = GetLogicalSidebarWidth()
 	end)
 	UserInputService.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -812,21 +822,21 @@ function MacLib:Window(Settings)
 	end)
 	UserInputService.InputChanged:Connect(function(input)
 		if resizingContent and input.UserInputType == Enum.UserInputType.MouseMovement then
-			local deltaX = UserInputService:GetMouseLocation().X - initialMouseX
+			local deltaX = (UserInputService:GetMouseLocation().X - initialMouseX) / GetWindowScale()
 			local newSidebarWidth = initialSidebarWidth + deltaX
-			if math.abs(newSidebarWidth - defaultSidebarWidth) < snapRange then
+			if defaultSidebarWidth and math.abs(newSidebarWidth - defaultSidebarWidth) < snapRange then
 				newSidebarWidth = defaultSidebarWidth
 			end
 			SyncContentLayout(newSidebarWidth)
 		end
 	end)
-
 	base:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-		SyncContentLayout()
+		if sidebar.Size.X.Scale == 0 then
+			SyncContentLayout()
+		end
 	end)
 	task.defer(function()
-		defaultSidebarWidth = math.max(minSidebarWidth, sidebar.AbsoluteSize.X)
-		SyncContentLayout(defaultSidebarWidth)
+		defaultSidebarWidth = GetLogicalSidebarWidth()
 	end)
 
 	local topbar = Instance.new("Frame")
