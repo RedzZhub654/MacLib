@@ -31,9 +31,7 @@ MacLib is distributed as a single Lua file, [`maclib.txt`](./maclib.txt). It pro
 This is the repository’s **only** runnable example. It loads MacLib, creates a visible window, enables the mobile floating control and responsive player stats, and prints a readable warning if loading or window creation fails.
 
 ```lua
-loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/RedzZhub654/MacLib/main/example.lua"
-))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RedzZhub654/MacLib/main/example.lua"))()
 ```
 
 > **Expected result:** a window titled **MacLib** appears. Press **RightControl** to hide or restore it, use the floating touch button on mobile, and select **Show notification** to verify the callback.
