@@ -24,6 +24,11 @@ local created, Window = pcall(function()
         AutoDPIMinScale = 0.35,
         AutoDPIMargin = 32,
 
+        -- Customizable side-and-corner glow.
+        WindowGlowColor = Color3.fromRGB(129, 103, 255),
+        WindowGlowTransparency = 0.955,
+        WindowGlowStrokeTransparency = 0.84,
+
         -- Remains available on touch devices while the window is open or minimized.
         -- Dragging keeps the entire button inside the viewport.
         MobileFloatButton = true,

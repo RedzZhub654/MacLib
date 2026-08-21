@@ -62,6 +62,11 @@ local Window = MacLib:Window({
     AcrylicBlur = true,
     AutoDPI = true,
 
+    -- Optional custom edge-and-corner glow
+    WindowGlowColor = Color3.fromRGB(129, 103, 255),
+    WindowGlowTransparency = 0.955,
+    WindowGlowStrokeTransparency = 0.84,
+
     MobileFloatButton = true,
 })
 ```
@@ -139,6 +144,27 @@ On touch-only devices, a circular menu button remains available whenever `Mobile
 MobileFloatButton = true,
 MobileFloatButtonPosition = UDim2.new(1, -24, 1, -24),
 ```
+
+---
+
+## Custom window glow
+
+MacLib adds a compact halo behind the main window, softly illuminating its sides and rounded corners. Set `WindowGlowColor` to any Roblox `Color3` value to match your hub palette. The fill and outline transparencies are independent so you can keep the glow restrained or make it more prominent.
+
+```lua
+local Window = MacLib:Window({
+    Title = "My Hub",
+    WindowGlowColor = Color3.fromRGB(129, 103, 255), -- Custom glow color
+    WindowGlowTransparency = 0.955,                  -- Soft outer halo
+    WindowGlowStrokeTransparency = 0.84,             -- Defined edge
+})
+```
+
+| Option | Default | Purpose |
+|---|---:|---|
+| `WindowGlowColor` | `Color3.fromRGB(92, 164, 255)` | Sets the color used at the window sides and corners. |
+| `WindowGlowTransparency` | `0.955` | Controls the soft halo fill; lower values are brighter. |
+| `WindowGlowStrokeTransparency` | `0.84` | Controls the two-pixel edge stroke; lower values are brighter. |
 
 ---
 
