@@ -535,7 +535,7 @@ function MacLib:Window(Settings)
 	userInfo.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	userInfo.BorderSizePixel = 0
 	userInfo.Position = UDim2.fromScale(0, 1)
-	userInfo.Size = UDim2.new(1, 0, 0, 107)
+	userInfo.Size = UDim2.new(1, 0, 0, 78)
 
 	local informationGroup = Instance.new("Frame")
 	informationGroup.Name = "InformationGroup"
@@ -560,8 +560,9 @@ function MacLib:Window(Settings)
 
 	local informationGroupUIPadding = Instance.new("UIPadding")
 	informationGroupUIPadding.Name = "InformationGroupUIPadding"
-	informationGroupUIPadding.PaddingBottom = UDim.new(0, 17)
-	informationGroupUIPadding.PaddingLeft = UDim.new(0, 25)
+	informationGroupUIPadding.PaddingBottom = UDim.new(0, 10)
+	informationGroupUIPadding.PaddingLeft = UDim.new(0, 14)
+	informationGroupUIPadding.PaddingRight = UDim.new(0, 14)
 	informationGroupUIPadding.Parent = informationGroup
 
 	local informationGroupUIListLayout = Instance.new("UIListLayout")
@@ -1872,10 +1873,55 @@ local function BindAutoDPI()
 						end
 
 						memberStats.Text = "●  Refreshing live stats..."
-						local success, response = pcall(function()
-							return game:HttpGet("https://discord.com/api/v10/invites/" .. HttpService:UrlEncode(inviteCode) .. "?with_counts=true")
-						end)
-						if not success or type(response) ~= "string" then
+						local inviteURL = "https://discord.com/api/v10/invites/" .. HttpService:UrlEncode(inviteCode) .. "?with_counts=true"
+						local function ExtractResponseBody(response)
+							if type(response) == "string" then
+								return response
+							end
+							if type(response) == "table" then
+								local status = tonumber(response.StatusCode or response.Status or 200)
+								local body = response.Body or response.body
+								if status >= 200 and status < 300 and type(body) == "string" then
+									return body
+								end
+							end
+							return nil
+						end
+						local function TryRequest(requestFunction, argument)
+							if type(requestFunction) ~= "function" then return nil end
+							local ok, rawResponse = pcall(requestFunction, argument)
+							return ok and ExtractResponseBody(rawResponse) or nil
+						end
+						local function RequestInvite(url)
+							local requestTable = {
+								Url = url,
+								Method = "GET",
+							}
+							if type(Config.Request) == "function" then
+								local body = TryRequest(Config.Request, url)
+								if body then return body end
+								body = TryRequest(Config.Request, requestTable)
+								if body then return body end
+							end
+							local executorRequest = (syn and syn.request)
+								or http_request
+								or request
+								or (fluxus and fluxus.request)
+								or (krnl and krnl.request)
+							local body = TryRequest(executorRequest, requestTable)
+							if body then return body end
+							local ok, rawResponse = pcall(function()
+								return game:HttpGet(url)
+							end)
+							body = ok and ExtractResponseBody(rawResponse)
+							if body then return body end
+							ok, rawResponse = pcall(function()
+								return HttpService:GetAsync(url, false)
+							end)
+							return ok and ExtractResponseBody(rawResponse) or nil
+						end
+						local response = RequestInvite(inviteURL)
+						if type(response) ~= "string" then
 							memberStats.Text = "●  Live stats unavailable"
 							return false
 						end

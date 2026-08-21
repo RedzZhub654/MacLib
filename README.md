@@ -149,7 +149,7 @@ MobileToggleButton = true,
 
 ## Executor profile card
 
-The executor profile area in the lower-left sidebar now uses a restrained slate outline and a dark card surface. Beneath the display name and Roblox username, it shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor line follows the existing profile privacy state and is redacted when user information is hidden.
+The executor profile area in the lower-left sidebar now uses a restrained slate outline, a dark card surface, and tighter padding so the lower-left area remains compact. Beneath the display name and Roblox username, it shows **`Executor: <name>`** using `identifyexecutor()` or `getexecutorname()` when either function is available. If no supported detector is present, it displays **`Executor: Unknown Executor`**. The executor line follows the existing profile privacy state and is redacted when user information is hidden.
 
 By default, the card uses the local player’s Roblox avatar thumbnail. Supply any valid Roblox image string—such as an `rbxassetid://` image asset or an `rbxthumb://` thumbnail—to replace it.
 
@@ -320,7 +320,7 @@ Window:Dialog({
 
 ## Discord invite widget
 
-`Tab:CreateDiscordInvite(config)` creates a community card in either tab column. It supports optional Roblox icon and banner assets, copy-link feedback, and live online and total member counts. The example below uses the verified **Enzo Hub** invite with the default hub logo as both its card icon and banner. The widget uses Discord’s public invite endpoint with `with_counts=true`, which returns the approximate presence and member count fields. [10]
+`Tab:CreateDiscordInvite(config)` creates a community card in either tab column. It supports optional Roblox icon and banner assets, copy-link feedback, and live online and total member counts. The example below uses the verified **Enzo Hub** invite with the default hub logo as both its card icon and banner. For live counts, the widget first uses an optional custom request callback, then common executor request functions (`syn.request`, `http_request`, `request`, Fluxus, and KRNL), before falling back to `game:HttpGet` and `HttpService:GetAsync`. It uses Discord’s public invite endpoint with `with_counts=true`, which returns the approximate presence and member count fields. [10]
 
 ```lua
 local HUB_LOGO = "rbxassetid://137471163061841"
@@ -354,6 +354,7 @@ local Card = MainTab:CreateDiscordInvite({
 | `Button` | `"Join Server"` | Copy-action label. |
 | `Side` | `1` | Use `1` or `"Left"`; use `2` or `"Right"` for the other column. |
 | `RefreshInterval` | `5` seconds | Live-stat cadence; values below five seconds are raised to five. |
+| `Request` | None | Optional `function(url)` or executor-compatible request callback. It receives a `GET` request table and should return a response body string or a table with `Body` and a 2xx `StatusCode`. |
 | `OnCopy` | None | Receives `link` and the clipboard success flag. |
 
 ### Card methods
