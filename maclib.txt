@@ -535,7 +535,7 @@ function MacLib:Window(Settings)
 	userInfo.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	userInfo.BorderSizePixel = 0
 	userInfo.Position = UDim2.fromScale(0, 1)
-	userInfo.Size = UDim2.new(1, 0, 0, 78)
+	userInfo.Size = UDim2.fromOffset(220, 60)
 
 	local informationGroup = Instance.new("Frame")
 	informationGroup.Name = "InformationGroup"
@@ -560,9 +560,9 @@ function MacLib:Window(Settings)
 
 	local informationGroupUIPadding = Instance.new("UIPadding")
 	informationGroupUIPadding.Name = "InformationGroupUIPadding"
-	informationGroupUIPadding.PaddingBottom = UDim.new(0, 10)
-	informationGroupUIPadding.PaddingLeft = UDim.new(0, 14)
-	informationGroupUIPadding.PaddingRight = UDim.new(0, 14)
+	informationGroupUIPadding.PaddingBottom = UDim.new(0, 6)
+	informationGroupUIPadding.PaddingLeft = UDim.new(0, 10)
+	informationGroupUIPadding.PaddingRight = UDim.new(0, 10)
 	informationGroupUIPadding.Parent = informationGroup
 
 	local informationGroupUIListLayout = Instance.new("UIListLayout")
@@ -590,7 +590,7 @@ function MacLib:Window(Settings)
 	headshot.BackgroundTransparency = 1
 	headshot.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	headshot.BorderSizePixel = 0
-	headshot.Size = UDim2.fromOffset(32, 32)
+	headshot.Size = UDim2.fromOffset(26, 26)
 	headshot.Image = GetProfileAvatarImage()
 
 	local uICorner3 = Instance.new("UICorner")
@@ -616,7 +616,7 @@ function MacLib:Window(Settings)
 	userAndDisplayFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	userAndDisplayFrame.BorderSizePixel = 0
 	userAndDisplayFrame.LayoutOrder = 1
-	userAndDisplayFrame.Size = UDim2.new(1, -42, 0, 44)
+	userAndDisplayFrame.Size = UDim2.new(1, -34, 0, 37)
 
 	local displayName = Instance.new("TextLabel")
 	displayName.Name = "DisplayName"
@@ -627,7 +627,7 @@ function MacLib:Window(Settings)
 	)
 	displayName.Text = LocalPlayer.DisplayName
 	displayName.TextColor3 = Color3.fromRGB(255, 255, 255)
-	displayName.TextSize = 13
+	displayName.TextSize = 11
 	displayName.TextTransparency = 0.1
 	displayName.TextTruncate = Enum.TextTruncate.SplitWord
 	displayName.TextXAlignment = Enum.TextXAlignment.Left
@@ -642,13 +642,13 @@ function MacLib:Window(Settings)
 
 	local userAndDisplayFrameUIPadding = Instance.new("UIPadding")
 	userAndDisplayFrameUIPadding.Name = "UserAndDisplayFrameUIPadding"
-	userAndDisplayFrameUIPadding.PaddingLeft = UDim.new(0, 8)
-	userAndDisplayFrameUIPadding.PaddingTop = UDim.new(0, 3)
+	userAndDisplayFrameUIPadding.PaddingLeft = UDim.new(0, 5)
+	userAndDisplayFrameUIPadding.PaddingTop = UDim.new(0, 0)
 	userAndDisplayFrameUIPadding.Parent = userAndDisplayFrame
 
 	local userAndDisplayFrameUIListLayout = Instance.new("UIListLayout")
 	userAndDisplayFrameUIListLayout.Name = "UserAndDisplayFrameUIListLayout"
-	userAndDisplayFrameUIListLayout.Padding = UDim.new(0, 1)
+	userAndDisplayFrameUIListLayout.Padding = UDim.new(0, 0)
 	userAndDisplayFrameUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	userAndDisplayFrameUIListLayout.Parent = userAndDisplayFrame
 
@@ -661,7 +661,7 @@ function MacLib:Window(Settings)
 	)
 	username.Text = "@" .. LocalPlayer.Name
 	username.TextColor3 = Color3.fromRGB(255, 255, 255)
-	username.TextSize = 12
+	username.TextSize = 10
 	username.TextTransparency = 0.7
 	username.TextTruncate = Enum.TextTruncate.SplitWord
 	username.TextXAlignment = Enum.TextXAlignment.Left
@@ -684,7 +684,7 @@ function MacLib:Window(Settings)
 	)
 	executorLabel.Text = "Executor: " .. executorName
 	executorLabel.TextColor3 = Color3.fromRGB(175, 182, 198)
-	executorLabel.TextSize = 10
+	executorLabel.TextSize = 9
 	executorLabel.TextTransparency = 0.25
 	executorLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	executorLabel.TextXAlignment = Enum.TextXAlignment.Left
