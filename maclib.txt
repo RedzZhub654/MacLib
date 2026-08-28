@@ -536,7 +536,7 @@ function MacLib:Window(Settings)
 	userInfo.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	userInfo.BorderSizePixel = 0
 	userInfo.Position = UDim2.new(0, 0, 1, -12)
-	userInfo.Size = UDim2.new(1, -4, 0, 96)
+	userInfo.Size = UDim2.new(1, -4, 0, 82)
 
 	local informationGroup = Instance.new("Frame")
 	informationGroup.Name = "InformationGroup"
@@ -599,6 +599,12 @@ function MacLib:Window(Settings)
 	uICorner3.CornerRadius = UDim.new(1, 0)
 	uICorner3.Parent = headshot
 
+	local headshotStroke = Instance.new("UIStroke")
+	headshotStroke.Name = "HeadshotStroke"
+	headshotStroke.Color = Color3.fromRGB(112, 118, 132)
+	headshotStroke.Transparency = 0.55
+	headshotStroke.Parent = headshot
+
 	headshot.Parent = informationGroup
 
 	local executorName = "Unknown Executor"
@@ -618,7 +624,7 @@ function MacLib:Window(Settings)
 	userAndDisplayFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	userAndDisplayFrame.BorderSizePixel = 0
 	userAndDisplayFrame.LayoutOrder = 1
-	userAndDisplayFrame.Size = UDim2.new(1, -50, 0, 64)
+	userAndDisplayFrame.Size = UDim2.new(1, -50, 0, 54)
 
 	local displayName = Instance.new("TextLabel")
 	displayName.Name = "DisplayName"
@@ -629,8 +635,8 @@ function MacLib:Window(Settings)
 	)
 	displayName.Text = LocalPlayer.DisplayName
 	displayName.TextColor3 = Color3.fromRGB(255, 255, 255)
-	displayName.TextSize = 20
-	displayName.TextTransparency = 0.1
+	displayName.TextSize = 16
+	displayName.TextTransparency = 0.05
 	displayName.TextTruncate = Enum.TextTruncate.SplitWord
 	displayName.TextXAlignment = Enum.TextXAlignment.Left
 	displayName.TextYAlignment = Enum.TextYAlignment.Top
@@ -650,7 +656,7 @@ function MacLib:Window(Settings)
 
 	local userAndDisplayFrameUIListLayout = Instance.new("UIListLayout")
 	userAndDisplayFrameUIListLayout.Name = "UserAndDisplayFrameUIListLayout"
-	userAndDisplayFrameUIListLayout.Padding = UDim.new(0, 0)
+	userAndDisplayFrameUIListLayout.Padding = UDim.new(0, 3)
 	userAndDisplayFrameUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	userAndDisplayFrameUIListLayout.Parent = userAndDisplayFrame
 
@@ -662,9 +668,9 @@ function MacLib:Window(Settings)
 		Enum.FontStyle.Normal
 	)
 	username.Text = "@" .. LocalPlayer.Name
-	username.TextColor3 = Color3.fromRGB(255, 255, 255)
-	username.TextSize = 17
-	username.TextTransparency = 0.7
+	username.TextColor3 = Color3.fromRGB(190, 198, 214)
+	username.TextSize = 13
+	username.TextTransparency = 0.15
 	username.TextTruncate = Enum.TextTruncate.SplitWord
 	username.TextXAlignment = Enum.TextXAlignment.Left
 	username.TextYAlignment = Enum.TextYAlignment.Top
@@ -682,7 +688,7 @@ function MacLib:Window(Settings)
 	statusRow.BackgroundTransparency = 1
 	statusRow.BorderSizePixel = 0
 	statusRow.LayoutOrder = 2
-	statusRow.Size = UDim2.new(1, 0, 0, 21)
+	statusRow.Size = UDim2.new(1, 0, 0, 16)
 	statusRow.Parent = userAndDisplayFrame
 
 	local executorLabel = Instance.new("TextLabel")
@@ -692,16 +698,16 @@ function MacLib:Window(Settings)
 		Enum.FontWeight.Medium,
 		Enum.FontStyle.Normal
 	)
-	executorLabel.Text = "Executor: " .. executorName
-	executorLabel.TextColor3 = Color3.fromRGB(190, 198, 214)
-	executorLabel.TextSize = 17
+	executorLabel.Text = executorName
+	executorLabel.TextColor3 = Color3.fromRGB(150, 158, 176)
+	executorLabel.TextSize = 12
 	executorLabel.TextTransparency = 0.08
 	executorLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	executorLabel.TextXAlignment = Enum.TextXAlignment.Left
 	executorLabel.TextYAlignment = Enum.TextYAlignment.Center
 	executorLabel.BackgroundTransparency = 1
 	executorLabel.BorderSizePixel = 0
-	executorLabel.Size = UDim2.new(0.62, 0, 1, 0)
+	executorLabel.Size = UDim2.new(0.56, 0, 1, 0)
 	executorLabel.Parent = statusRow
 
 	local latencyRefreshInterval = math.max(0.1, tonumber(Settings.PingRefreshInterval) or 0.25)
@@ -720,9 +726,9 @@ function MacLib:Window(Settings)
 		Enum.FontWeight.Medium,
 		Enum.FontStyle.Normal
 	)
-	latencyLabel.Text = "Ping: -- ms"
+	latencyLabel.Text = "-- ms"
 	latencyLabel.TextColor3 = Color3.fromRGB(151, 211, 168)
-	latencyLabel.TextSize = 17
+	latencyLabel.TextSize = 12
 	latencyLabel.TextTransparency = 0.05
 	latencyLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	latencyLabel.TextXAlignment = Enum.TextXAlignment.Right
@@ -730,7 +736,7 @@ function MacLib:Window(Settings)
 	latencyLabel.BackgroundTransparency = 1
 	latencyLabel.BorderSizePixel = 0
 	latencyLabel.Position = UDim2.fromScale(1, 0)
-	latencyLabel.Size = UDim2.new(0.38, 0, 1, 0)
+	latencyLabel.Size = UDim2.new(0.44, 0, 1, 0)
 	latencyLabel.Parent = statusRow
 
 	local function GetLatencyMilliseconds()
@@ -756,17 +762,17 @@ function MacLib:Window(Settings)
 
 	local function UpdateLatency()
 		if not showUserInfo then
-			latencyLabel.Text = "Ping: -- ms"
+			latencyLabel.Text = "-- ms"
 			latencyLabel.TextColor3 = latencyColors.Unknown
 			return
 		end
 		local milliseconds = GetLatencyMilliseconds()
 		if not milliseconds then
-			latencyLabel.Text = "Ping: -- ms"
+			latencyLabel.Text = "-- ms"
 			latencyLabel.TextColor3 = latencyColors.Unknown
 			return
 		end
-		latencyLabel.Text = string.format("Ping: %d ms", milliseconds)
+		latencyLabel.Text = string.format("%d ms", milliseconds)
 		if milliseconds <= 80 then
 			latencyLabel.TextColor3 = latencyColors.Good
 		elseif milliseconds <= 150 then
@@ -6113,14 +6119,14 @@ local function BindAutoDPI()
 			headshot.Image = GetProfileAvatarImage()
 			username.Text = "@" .. LocalPlayer.Name
 			displayName.Text = LocalPlayer.DisplayName
-			executorLabel.Text = "Executor: " .. executorName
+			executorLabel.Text = executorName
 		else
 			headshot.Image = assets.userInfoBlurred
 			local nameLength = #LocalPlayer.Name
 			local displayNameLength = #LocalPlayer.DisplayName
 			username.Text = "@" .. string.rep(".", nameLength)
 			displayName.Text = string.rep(".", displayNameLength)
-			executorLabel.Text = string.rep(".", #executorName + 10)
+			executorLabel.Text = string.rep(".", #executorName)
 		end
 		UpdateLatency()
 	end
