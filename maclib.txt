@@ -5718,20 +5718,27 @@ local function BindAutoDPI()
 		return notifications.Visible
 	end
 
-			local mobileToggleButton
-			local mobileToggleInputConnection
-			local mobileToggleEnabled
+		local floatingBar
+		local floatingBarInputConnection
+		local floatingBarFpsConnection
+		local floatingBarEyeOpen
+		local floatingBarEyeClosed
+		local floatingBarEnabled
 		if Settings.MobileToggleButton == nil then
-			mobileToggleEnabled = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+			floatingBarEnabled = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 		else
-			mobileToggleEnabled = Settings.MobileToggleButton
+			floatingBarEnabled = Settings.MobileToggleButton
 		end
 		function WindowFunctions:SetState(State)
 			windowState = State
 			base.Visible = State
-			if mobileToggleButton then
-				-- The fixed toggle stays available so it can always open or close the UI.
-				mobileToggleButton.Visible = mobileToggleEnabled
+			if floatingBar then
+				-- The floating bar stays available so it can always open or close the UI.
+				floatingBar.Visible = floatingBarEnabled
+			end
+			if floatingBarEyeOpen and floatingBarEyeClosed then
+				floatingBarEyeOpen.Visible = State
+				floatingBarEyeClosed.Visible = not State
 			end
 		end
 	function WindowFunctions:GetState()
@@ -5744,8 +5751,11 @@ local function BindAutoDPI()
 		if onUnloadCallback then
 			onUnloadCallback()
 		end
-			if mobileToggleInputConnection then
-				mobileToggleInputConnection:Disconnect()
+			if floatingBarInputConnection then
+				floatingBarInputConnection:Disconnect()
+			end
+			if floatingBarFpsConnection then
+				floatingBarFpsConnection:Disconnect()
 			end
 			if autoDPIViewportConnection then
 				autoDPIViewportConnection:Disconnect()
@@ -5766,7 +5776,7 @@ local function BindAutoDPI()
 		local function ToggleMenu(source)
 			local state = not WindowFunctions:GetState()
 			WindowFunctions:SetState(state)
-			local hint = source == "mobile" and "The mobile toggle button changed the menu visibility." or "Use " .. tostring(MenuKeybind.Name) .. " to toggle it."
+			local hint = source == "floating" and "The floating bar changed the menu visibility." or "Use " .. tostring(MenuKeybind.Name) .. " to toggle it."
 			WindowFunctions:Notify({
 				Title = Settings.Title,
 				Description = (state and "Maximized " or "Minimized ") .. "the menu. " .. hint,
@@ -5774,82 +5784,286 @@ local function BindAutoDPI()
 			})
 		end
 
-		if mobileToggleEnabled then
-			local mobileToggleLogo = Settings.MobileToggleLogo
-			if mobileToggleLogo == nil then
-				mobileToggleLogo = type(hubLogoAsset) == "string" and hubLogoAsset or defaultHubLogo
+		if floatingBarEnabled then
+			floatingBar = Instance.new("Frame")
+			floatingBar.Name = "FloatingBar"
+			floatingBar.AnchorPoint = Vector2.new(0.5, 0)
+			floatingBar.Active = true
+			floatingBar.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+			floatingBar.BackgroundTransparency = 0.05
+			floatingBar.BorderSizePixel = 0
+			floatingBar.AutomaticSize = Enum.AutomaticSize.X
+			floatingBar.Position = UDim2.new(0.5, 0, 0, 14)
+			floatingBar.Size = UDim2.fromOffset(0, 38)
+			floatingBar.Visible = floatingBarEnabled
+			floatingBar.ZIndex = 10
+			floatingBar.Parent = macLib
+
+			local floatingBarCorner = Instance.new("UICorner")
+			floatingBarCorner.CornerRadius = UDim.new(1, 0)
+			floatingBarCorner.Parent = floatingBar
+
+			local floatingBarStroke = Instance.new("UIStroke")
+			floatingBarStroke.Color = Color3.fromRGB(112, 118, 132)
+			floatingBarStroke.Transparency = 0.55
+			floatingBarStroke.Parent = floatingBar
+
+			local floatingBarPadding = Instance.new("UIPadding")
+			floatingBarPadding.PaddingLeft = UDim.new(0, 14)
+			floatingBarPadding.PaddingRight = UDim.new(0, 12)
+			floatingBarPadding.Parent = floatingBar
+
+			local floatingBarLayout = Instance.new("UIListLayout")
+			floatingBarLayout.FillDirection = Enum.FillDirection.Horizontal
+			floatingBarLayout.SortOrder = Enum.SortOrder.LayoutOrder
+			floatingBarLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+			floatingBarLayout.Padding = UDim.new(0, 10)
+			floatingBarLayout.Parent = floatingBar
+
+			local function CreateFloatingDivider(order)
+				local divider = Instance.new("Frame")
+				divider.Name = "Divider"
+				divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				divider.BackgroundTransparency = 0.85
+				divider.BorderSizePixel = 0
+				divider.LayoutOrder = order
+				divider.Size = UDim2.new(0, 1, 0, 16)
+				divider.Parent = floatingBar
+				return divider
 			end
-			mobileToggleButton = Instance.new("ImageButton")
-			mobileToggleButton.Name = "MobileToggleButton"
-			mobileToggleButton.AnchorPoint = Vector2.new(1, 1)
-			mobileToggleButton.Active = true
-			mobileToggleButton.BackgroundColor3 = Color3.fromRGB(28, 28, 30)
-			mobileToggleButton.BorderSizePixel = 0
-			mobileToggleButton.Position = UDim2.new(1, -16, 1, -16)
-			mobileToggleButton.Size = UDim2.fromOffset(48, 48)
-			mobileToggleButton.Image = mobileToggleLogo
-			mobileToggleButton.ImageColor3 = Settings.MobileToggleLogoColor or Color3.fromRGB(255, 255, 255)
-			mobileToggleButton.ScaleType = Enum.ScaleType.Fit
-			mobileToggleButton.AutoButtonColor = false
-			mobileToggleButton.Visible = mobileToggleEnabled
-			mobileToggleButton.ZIndex = 10
-			mobileToggleButton.Parent = macLib
 
-			local mobileToggleCorner = Instance.new("UICorner")
-			mobileToggleCorner.CornerRadius = UDim.new(1, 0)
-			mobileToggleCorner.Parent = mobileToggleButton
+			-- FPS segment
+			local fpsSegment = Instance.new("Frame")
+			fpsSegment.Name = "FpsSegment"
+			fpsSegment.BackgroundTransparency = 1
+			fpsSegment.AutomaticSize = Enum.AutomaticSize.X
+			fpsSegment.Size = UDim2.new(0, 0, 1, 0)
+			fpsSegment.LayoutOrder = 1
+			fpsSegment.Parent = floatingBar
 
-			local mobileToggleStroke = Instance.new("UIStroke")
-			mobileToggleStroke.Color = Color3.fromRGB(255, 255, 255)
-			mobileToggleStroke.Transparency = 0.78
-			mobileToggleStroke.Parent = mobileToggleButton
+			local fpsSegmentLayout = Instance.new("UIListLayout")
+			fpsSegmentLayout.FillDirection = Enum.FillDirection.Horizontal
+			fpsSegmentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+			fpsSegmentLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+			fpsSegmentLayout.Padding = UDim.new(0, 6)
+			fpsSegmentLayout.Parent = fpsSegment
 
-			-- Tap toggles the UI. Drag ownership is tracked so the button never escapes the active pointer.
-			local mobileToggleDragging = false
-			local mobileToggleMoved = false
-			local mobileToggleDragStart
-			local mobileToggleStartPosition
-			local mobileToggleDragInput
+			local fpsDot = Instance.new("Frame")
+			fpsDot.Name = "FpsDot"
+			fpsDot.BackgroundColor3 = latencyColors.Unknown
+			fpsDot.BorderSizePixel = 0
+			fpsDot.Size = UDim2.fromOffset(7, 7)
+			fpsDot.LayoutOrder = 1
+			fpsDot.Parent = fpsSegment
 
-			mobileToggleButton.InputBegan:Connect(function(input)
+			local fpsDotCorner = Instance.new("UICorner")
+			fpsDotCorner.CornerRadius = UDim.new(1, 0)
+			fpsDotCorner.Parent = fpsDot
+
+			local fpsLabel = Instance.new("TextLabel")
+			fpsLabel.Name = "FpsLabel"
+			fpsLabel.FontFace = Font.new(assets.interFont, Enum.FontWeight.SemiBold, Enum.FontStyle.Normal)
+			fpsLabel.Text = "-- FPS"
+			fpsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			fpsLabel.TextSize = 15
+			fpsLabel.TextTransparency = 0.05
+			fpsLabel.TextXAlignment = Enum.TextXAlignment.Left
+			fpsLabel.TextYAlignment = Enum.TextYAlignment.Center
+			fpsLabel.BackgroundTransparency = 1
+			fpsLabel.AutomaticSize = Enum.AutomaticSize.XY
+			fpsLabel.Size = UDim2.fromOffset(0, 0)
+			fpsLabel.LayoutOrder = 2
+			fpsLabel.Parent = fpsSegment
+
+			CreateFloatingDivider(2)
+
+			-- User segment
+			local userSegment = Instance.new("Frame")
+			userSegment.Name = "UserSegment"
+			userSegment.BackgroundTransparency = 1
+			userSegment.AutomaticSize = Enum.AutomaticSize.X
+			userSegment.Size = UDim2.new(0, 0, 1, 0)
+			userSegment.LayoutOrder = 3
+			userSegment.Parent = floatingBar
+
+			local userSegmentLayout = Instance.new("UIListLayout")
+			userSegmentLayout.FillDirection = Enum.FillDirection.Horizontal
+			userSegmentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+			userSegmentLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+			userSegmentLayout.Padding = UDim.new(0, 6)
+			userSegmentLayout.Parent = userSegment
+
+			local userAvatar = Instance.new("ImageLabel")
+			userAvatar.Name = "UserAvatar"
+			userAvatar.BackgroundColor3 = Color3.fromRGB(40, 40, 46)
+			userAvatar.BorderSizePixel = 0
+			userAvatar.Image = GetProfileAvatarImage()
+			userAvatar.ScaleType = Enum.ScaleType.Crop
+			userAvatar.Size = UDim2.fromOffset(20, 20)
+			userAvatar.LayoutOrder = 1
+			userAvatar.Parent = userSegment
+
+			local userAvatarCorner = Instance.new("UICorner")
+			userAvatarCorner.CornerRadius = UDim.new(1, 0)
+			userAvatarCorner.Parent = userAvatar
+
+			local userLabel = Instance.new("TextLabel")
+			userLabel.Name = "UserLabel"
+			userLabel.FontFace = Font.new(assets.interFont, Enum.FontWeight.Medium, Enum.FontStyle.Normal)
+			userLabel.Text = "@" .. LocalPlayer.Name
+			userLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			userLabel.TextSize = 15
+			userLabel.TextTransparency = 0.15
+			userLabel.TextXAlignment = Enum.TextXAlignment.Left
+			userLabel.TextYAlignment = Enum.TextYAlignment.Center
+			userLabel.BackgroundTransparency = 1
+			userLabel.AutomaticSize = Enum.AutomaticSize.XY
+			userLabel.Size = UDim2.fromOffset(0, 0)
+			userLabel.LayoutOrder = 2
+			userLabel.Parent = userSegment
+
+			CreateFloatingDivider(4)
+
+			-- Hub title segment
+			local titleLabel = Instance.new("TextLabel")
+			titleLabel.Name = "TitleLabel"
+			titleLabel.FontFace = Font.new(assets.interFont, Enum.FontWeight.SemiBold, Enum.FontStyle.Normal)
+			titleLabel.Text = Settings.Title or ""
+			titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			titleLabel.TextSize = 15
+			titleLabel.TextTransparency = 0.05
+			titleLabel.TextTruncate = Enum.TextTruncate.AtEnd
+			titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+			titleLabel.TextYAlignment = Enum.TextYAlignment.Center
+			titleLabel.BackgroundTransparency = 1
+			titleLabel.Size = UDim2.new(0, 130, 1, 0)
+			titleLabel.LayoutOrder = 5
+			titleLabel.Parent = floatingBar
+
+			CreateFloatingDivider(6)
+
+			-- Eye toggle indicator (reflects and controls menu visibility)
+			local eyeHolder = Instance.new("Frame")
+			eyeHolder.Name = "EyeHolder"
+			eyeHolder.BackgroundTransparency = 1
+			eyeHolder.Size = UDim2.fromOffset(20, 20)
+			eyeHolder.LayoutOrder = 7
+			eyeHolder.Parent = floatingBar
+
+			floatingBarEyeOpen = Instance.new("Frame")
+			floatingBarEyeOpen.Name = "EyeOpen"
+			floatingBarEyeOpen.AnchorPoint = Vector2.new(0.5, 0.5)
+			floatingBarEyeOpen.BackgroundTransparency = 1
+			floatingBarEyeOpen.Position = UDim2.fromScale(0.5, 0.5)
+			floatingBarEyeOpen.Size = UDim2.fromOffset(18, 11)
+			floatingBarEyeOpen.Visible = true -- the menu starts open
+			floatingBarEyeOpen.Parent = eyeHolder
+
+			local eyeOpenCorner = Instance.new("UICorner")
+			eyeOpenCorner.CornerRadius = UDim.new(1, 0)
+			eyeOpenCorner.Parent = floatingBarEyeOpen
+
+			local eyeOpenStroke = Instance.new("UIStroke")
+			eyeOpenStroke.Color = Color3.fromRGB(255, 255, 255)
+			eyeOpenStroke.Transparency = 0.1
+			eyeOpenStroke.Thickness = 1.4
+			eyeOpenStroke.Parent = floatingBarEyeOpen
+
+			local eyePupil = Instance.new("Frame")
+			eyePupil.Name = "Pupil"
+			eyePupil.AnchorPoint = Vector2.new(0.5, 0.5)
+			eyePupil.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			eyePupil.BorderSizePixel = 0
+			eyePupil.Position = UDim2.fromScale(0.5, 0.5)
+			eyePupil.Size = UDim2.fromOffset(5, 5)
+			eyePupil.Parent = floatingBarEyeOpen
+
+			local eyePupilCorner = Instance.new("UICorner")
+			eyePupilCorner.CornerRadius = UDim.new(1, 0)
+			eyePupilCorner.Parent = eyePupil
+
+			floatingBarEyeClosed = Instance.new("Frame")
+			floatingBarEyeClosed.Name = "EyeClosed"
+			floatingBarEyeClosed.AnchorPoint = Vector2.new(0.5, 0.5)
+			floatingBarEyeClosed.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			floatingBarEyeClosed.BackgroundTransparency = 0.15
+			floatingBarEyeClosed.BorderSizePixel = 0
+			floatingBarEyeClosed.Position = UDim2.fromScale(0.5, 0.5)
+			floatingBarEyeClosed.Size = UDim2.fromOffset(16, 2)
+			floatingBarEyeClosed.Visible = false -- the menu starts open
+			floatingBarEyeClosed.Parent = eyeHolder
+
+			local eyeClosedCorner = Instance.new("UICorner")
+			eyeClosedCorner.CornerRadius = UDim.new(1, 0)
+			eyeClosedCorner.Parent = floatingBarEyeClosed
+
+			-- Live FPS readout
+			local fpsAccumulatedTime = 0
+			local fpsAccumulatedFrames = 0
+			floatingBarFpsConnection = RunService.Heartbeat:Connect(function(dt)
+				if unloaded then return end
+				fpsAccumulatedTime = fpsAccumulatedTime + dt
+				fpsAccumulatedFrames = fpsAccumulatedFrames + 1
+				if fpsAccumulatedTime < 0.5 then return end
+				local fps = math.floor((fpsAccumulatedFrames / fpsAccumulatedTime) + 0.5)
+				fpsLabel.Text = fps .. " FPS"
+				if fps >= 50 then
+					fpsDot.BackgroundColor3 = latencyColors.Good
+				elseif fps >= 30 then
+					fpsDot.BackgroundColor3 = latencyColors.Moderate
+				else
+					fpsDot.BackgroundColor3 = latencyColors.High
+				end
+				fpsAccumulatedTime = 0
+				fpsAccumulatedFrames = 0
+			end)
+
+			-- Tap toggles the UI. Drag ownership is tracked so the bar never escapes the active pointer.
+			local floatingBarDragging = false
+			local floatingBarMoved = false
+			local floatingBarDragStart
+			local floatingBarStartPosition
+			local floatingBarDragInput
+
+			floatingBar.InputBegan:Connect(function(input)
 				if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-				mobileToggleDragging = true
-				mobileToggleMoved = false
-				mobileToggleDragInput = input
-				mobileToggleDragStart = input.Position
-				mobileToggleStartPosition = mobileToggleButton.AbsolutePosition
+				floatingBarDragging = true
+				floatingBarMoved = false
+				floatingBarDragInput = input
+				floatingBarDragStart = input.Position
+				floatingBarStartPosition = floatingBar.AbsolutePosition
 
 				input.Changed:Connect(function()
 					if input.UserInputState ~= Enum.UserInputState.End then return end
-					mobileToggleDragging = false
-					mobileToggleDragInput = nil
-					if not mobileToggleMoved then
-						ToggleMenu("mobile")
+					floatingBarDragging = false
+					floatingBarDragInput = nil
+					if not floatingBarMoved then
+						ToggleMenu("floating")
 					end
 				end)
 			end)
 
-			mobileToggleButton.InputChanged:Connect(function(input)
+			floatingBar.InputChanged:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
-					mobileToggleDragInput = input
+					floatingBarDragInput = input
 				end
 			end)
 
-			mobileToggleInputConnection = UserInputService.InputChanged:Connect(function(input)
-				if unloaded or not mobileToggleDragging or input ~= mobileToggleDragInput then return end
-				local delta = input.Position - mobileToggleDragStart
+			floatingBarInputConnection = UserInputService.InputChanged:Connect(function(input)
+				if unloaded or not floatingBarDragging or input ~= floatingBarDragInput then return end
+				local delta = input.Position - floatingBarDragStart
 				if delta.Magnitude > 6 then
-					mobileToggleMoved = true
+					floatingBarMoved = true
 				end
 
-				-- Intentionally unrestricted: the toggle can be moved beyond every screen edge.
-				local size = mobileToggleButton.AbsoluteSize
+				-- Intentionally unrestricted: the bar can be moved beyond every screen edge.
+				local size = floatingBar.AbsoluteSize
 				if size.X <= 0 or size.Y <= 0 then
-					size = Vector2.new(48, 48)
+					size = Vector2.new(220, 38)
 				end
-				mobileToggleButton.Position = UDim2.fromOffset(
-					mobileToggleStartPosition.X + delta.X + size.X,
-					mobileToggleStartPosition.Y + delta.Y + size.Y
+				floatingBar.Position = UDim2.fromOffset(
+					floatingBarStartPosition.X + delta.X + size.X * 0.5,
+					floatingBarStartPosition.Y + delta.Y
 				)
 			end)
 		end
